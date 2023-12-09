@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "todo",
+    "django_slack_bot",
+    "todo.apps.TodoConfig",
 ]
 
 MIDDLEWARE = [
