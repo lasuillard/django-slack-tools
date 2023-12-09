@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "django-slack-bot"
+version = "0.1.0"
+description = "Slack bot with Django."
+authors = ["Yuchan Lee <lasuillard@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "django_slack_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+slack-bolt = "^1.18.1"
+
+[tool.poetry.group.dev.dependencies]
+django = "^3.2"
+black = "^23.11.0"
+coverage = "^7.3.2"
+mypy = "^1.7.1"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+pytest-sugar = "^0.9.7"
+ruff = "^0.1.7"
+django-coverage-plugin = "^3.1.0"
+pytest-django = "^4.7.0"
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.7"}
+ipykernel = "^6.27.1"
+ngrok = "^0.12.1"
+celery = "^5.3.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ["py38"]
+line-length = 120
+include = '\.pyi?$'
+exclude = """
+/(
+  | .venv
+)/
+"""

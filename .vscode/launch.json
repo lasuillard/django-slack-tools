@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Launch Django application server
+      "name": "Python: Run Django app",
+      "type": "python",
+      "request": "launch",
+      "program":"${workspaceFolder}/main.py",
+      "args": [
+        "--host", "0.0.0.0", "--log-level", "trace"
+      ],
+      "django": true,
+      "justMyCode": false
+    }
+  ]
+}

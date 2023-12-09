@@ -1,0 +1,16 @@
+[run]
+include = src/*
+omit =
+    */migrations/*
+    *tests*
+
+branch = true
+plugins =
+    django_coverage_plugin
+
+[report]
+skip_empty = true
+show_missing = true
+exclude_lines =
+    pragma: no cover
+    if TYPE_CHECKING

@@ -1,0 +1,61 @@
+exclude: |
+  (?x)(
+    ^.*/migrations/.*\.py$
+  )
+default_stages: [commit]
+fail_fast: true
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: local
+    hooks:
+      - id: generate
+        name: Check generated things are up to date
+        language: system
+        pass_filenames: false
+        entry: make generate
+
+      - id: django-migration
+        name: Check migrations created for model changes
+        language: system
+        types: [python]
+        pass_filenames: false
+        entry: poetry run python manage.py makemigrations
+        args: [--check, --dry-run]
+
+      - id: ruff
+        name: Fix using Ruff
+        language: system
+        types: [python]
+        entry: poetry run ruff
+
+      - id: black
+        name: Format with Black
+        language: system
+        types: [python]
+        entry: poetry run black
+
+      - id: mypy
+        name: Type check with Mypy
+        language: system
+        types: [python]
+        entry: poetry run mypy
+        args: [--show-error-codes, --pretty]
+
+      - id: checkov
+        name: Scan using Checkov
+        language: system
+        types: [file]
+        entry: poetry run checkov
+        args: [--quiet, --file]
+
+      - id: pytest
+        name: Test with pytest
+        language: system
+        types: [python]
+        pass_filenames: false
+        entry: poetry run pytest

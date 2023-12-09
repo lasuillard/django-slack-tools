@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+    paths-ignore:
+      - ".devcontainer/**"
+      - ".vscode/**"
+      - "**.md"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - ".devcontainer/**"
+      - ".vscode/**"
+      - "**.md"
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Poetry
+        run: pip install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Install pip deps
+        run: poetry install
+
+      - name: Check code formatting
+        run: poetry run black --check .
+
+      - name: Lint code
+        run: poetry run ruff check .
+
+      - name: Run type checks
+        run: poetry run mypy --show-error-codes --pretty .
+
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          files: coverage.xml
+
+  release:
+    name: Release
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: startswith(github.ref, 'refs/tags/v') # For v* tags
+    permissions:
+      contents: write
+    steps:
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+
+  build-and-publish:
+    name: Build and Publish
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Poetry
+        run: pip install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
+          cache: poetry
+
+      - name: Install pip deps
+        run: poetry install
+
+      - name: Build package
+        run: poetry build
+
+      # TODO: Publish to PyPI
+      #       https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/

@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: workspace
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 127.0.0.1:4040:4040  # ngrok inspect UI
+      - 127.0.0.1:8000:8000
+    environment:
+      CONTAINER: 1
+    command: sleep infinity
+    init: true
+    volumes:
+      - ./ngrok/config.yaml:/root/.config/ngrok/ngrok.yml  # NOTE: ngrok does not use config if suffixed `.yaml`

@@ -1,0 +1,13 @@
+target-version = "py38"
+select = ["ALL"]
+ignore = ["ANN101", "ANN401"]
+line-length = 120
+extend-exclude = ["**/migrations/*"]
+
+[extend-per-file-ignores]
+"__init__.py" = ["D104"]
+"tests/*" = ["D", "S101", "PLR2004", "SLF001"]
+"testproj/*" = ["D100"]
+
+[pydocstyle]
+convention = "google"

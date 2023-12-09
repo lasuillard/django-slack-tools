@@ -1,0 +1,40 @@
+{
+  "name": "lasuillard/django-slack-bot",
+  "dockerComposeFile": [
+    "../docker-compose.yaml",
+    "./docker-compose.override.yaml"
+  ],
+  "runServices": [
+    "workspace"
+  ],
+  "service": "workspace",
+  "overrideCommand": true,
+  "initializeCommand": "./.devcontainer/initializeCommand.sh",
+  "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
+  "updateContentCommand": "./.devcontainer/updateContentCommand.sh",
+  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+  "postStartCommand": "./.devcontainer/postStartCommand.sh",
+  "postAttachCommand": "./.devcontainer/postAttachCommand.sh",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspaces/django-slack-bot",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "batisteo.vscode-django",
+        "ldez.ignore-files",
+        "gruntfuggly.todo-tree",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "streetsidesoftware.code-spell-checker",
+        "EditorConfig.EditorConfig",
+        "ms-python.black-formatter",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "njpwerner.autodocstring"
+      ]
+    }
+  }
+}
