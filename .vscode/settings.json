@@ -24,7 +24,7 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll": true
+      "source.fixAll": "explicit"
     },
   },
   "yaml.format.enable": true,
@@ -35,4 +35,5 @@
   "python.testing.pytestArgs": [
     "--no-cov", // https://code.visualstudio.com/docs/python/testing#_pytest-configuration-settings
   ],
+  "autoDocstring.docstringFormat": "google-notypes"
 }
