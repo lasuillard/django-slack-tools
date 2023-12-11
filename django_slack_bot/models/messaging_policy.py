@@ -2,6 +2,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.utils import validators
+
 from .message_recipient import SlackMessageRecipient
 
 
@@ -23,6 +25,13 @@ class SlackMessagingPolicy(models.Model):
         SlackMessageRecipient,
         verbose_name=_("Message recipients"),
         help_text=_("Those who will receive messages."),
+    )
+    template = models.JSONField(
+        verbose_name=_("Message template object"),
+        help_text=_("Dictionary-based template object."),
+        validators=[validators.dict_template_validator],
+        null=True,
+        blank=True,
     )
 
     class Meta:  # noqa: D106

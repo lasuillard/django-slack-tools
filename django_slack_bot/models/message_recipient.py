@@ -21,7 +21,7 @@ class SeparatedValuesField(models.TextField):
 
         return name, path, args, kwargs
 
-    def from_db_value(self, value: Any, expression: Any, connection: Any) -> Any:  # noqa: ARG002, D102
+    def from_db_value(self, value: Any, *args: Any, **kwargs: Any) -> Any:  # noqa: ARG002, D102
         return self.to_python(value)
 
     def to_python(self, value: str | list | None) -> list[str]:  # noqa: D102
@@ -33,7 +33,7 @@ class SeparatedValuesField(models.TextField):
 
         return value.split(self.separator)
 
-    def get_db_prep_value(self, value: list[str] | None) -> str | None:  # noqa: D102
+    def get_db_prep_value(self, value: list[str] | None, **kwargs: Any) -> str | None:  # noqa: D102, ARG002
         if not value:
             return None
 
