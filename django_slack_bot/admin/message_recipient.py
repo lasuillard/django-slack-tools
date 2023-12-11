@@ -1,9 +1,9 @@
 # noqa: D100
 from django.contrib import admin
 
-from django_slack_bot.models import Recipient
+from django_slack_bot.models import SlackMessageRecipient
 
 
-@admin.register(Recipient)
+@admin.register(SlackMessageRecipient)
 class RecipientAdmin(admin.ModelAdmin):
     """Admin for recipients."""

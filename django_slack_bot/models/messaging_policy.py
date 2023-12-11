@@ -2,10 +2,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .recipient import Recipient
+from .message_recipient import SlackMessageRecipient
 
 
-class MessagingPolicy(models.Model):
+class SlackMessagingPolicy(models.Model):
     """An Slack messaging policy which determines message content and those who receive messages."""
 
     code = models.CharField(
@@ -20,7 +20,7 @@ class MessagingPolicy(models.Model):
         default=True,
     )
     recipients = models.ManyToManyField(
-        Recipient,
+        SlackMessageRecipient,
         verbose_name=_("Message recipients"),
         help_text=_("Those who will receive messages."),
     )

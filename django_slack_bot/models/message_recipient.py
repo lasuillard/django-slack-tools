@@ -40,7 +40,7 @@ class SeparatedValuesField(models.TextField):
         return self.separator.join(value)
 
 
-class Recipient(models.Model):
+class SlackMessageRecipient(models.Model):
     """People or group in channels receive messages."""
 
     channel = models.CharField(

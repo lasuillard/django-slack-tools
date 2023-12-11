@@ -1,3 +1,3 @@
-from .message import Message  # noqa: F401
-from .messaging_policy import MessagingPolicy  # noqa: F401
-from .recipient import Recipient  # noqa: F401
+from .message import SlackMessage  # noqa: F401
+from .message_recipient import SlackMessageRecipient  # noqa: F401
+from .messaging_policy import SlackMessagingPolicy  # noqa: F401
