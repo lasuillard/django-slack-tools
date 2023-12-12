@@ -1,9 +1,9 @@
-import os
-
+from django.conf import settings
 from slack_bolt import App
 
-# TODO(lasuillard): Move env loading to settings
-app = App(
-    token=os.environ["SLACK_BOT_TOKEN"],
-    signing_secret=os.environ["SLACK_SIGNING_SECRET"],
-)
+
+def get_slack_app() -> App:  # noqa: D103
+    return App(
+        token=settings.SLACK_BOT_TOKEN,
+        signing_secret=settings.SLACK_SIGNING_SECRET,
+    )

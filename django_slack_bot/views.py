@@ -1,7 +1,7 @@
 """Some helpful views."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -18,12 +18,20 @@ class SlackEventHandlerView(View):
 
     app: App | None = None
 
-    def __init__(self, *, app: App, **kwargs: Any) -> None:  # noqa: D107
+    def __init__(self, *, app: App | Callable[[], App]) -> None:
+        """Initialize view.
+
+        Args:
+            app: Slack app instance or callable which returns app.
+        """
+        if callable(app):
+            app = app()
+
         self._event_handler = SlackRequestHandler(app=app)
 
-        super().__init__(**kwargs)
+        super().__init__()
 
     # Checking CSRF is nonsense because events come from Slack
     @method_decorator(csrf_exempt)
-    def dispatch(self, request: HttpRequest) -> HttpResponse:  # noqa: D102
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:  # noqa: D102, ARG002
         return self._event_handler.handle(request)

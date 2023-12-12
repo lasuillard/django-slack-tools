@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,7 +38,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_slack_bot",
-    "todo.apps.TodoConfig",
 ]
 
 MIDDLEWARE = [
@@ -152,3 +152,6 @@ LOGGING = {
         },
     },
 }
+
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default=None)
+SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default=None)
