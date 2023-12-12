@@ -35,8 +35,8 @@ build-backend = "poetry.core.masonry.api"
 target-version = ["py38"]
 line-length = 120
 include = '\.pyi?$'
-exclude = """
+extend-exclude = """
 /(
-  | .venv
+  .*/migrations
 )/
 """
