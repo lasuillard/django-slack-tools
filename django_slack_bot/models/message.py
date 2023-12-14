@@ -7,8 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from .messaging_policy import SlackMessagingPolicy
 
 
-# When message created, python template string should be strictly evaluated
-# --- all arguments ({arg}) should be provided
+class SlackMessageManager(models.Manager["SlackMessage"]):
+    """Manager for Slack messages."""
+
+
 class SlackMessage(models.Model):
     """An Slack message."""
 
@@ -55,6 +57,8 @@ class SlackMessage(models.Model):
         help_text=_("Dump of response content for debugging."),
         null=True,
     )
+
+    objects: SlackMessageManager = SlackMessageManager()
 
     class Meta:  # noqa: D106
         verbose_name = _("Message")

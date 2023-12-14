@@ -7,6 +7,10 @@ from django.utils.translation import gettext_lazy as _
 from django_slack_bot.utils.fields import SeparatedValuesField
 
 
+class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
+    """Manager for message recipients model."""
+
+
 class SlackMessageRecipient(models.Model):
     """People or group in channels receive messages."""
 
@@ -19,6 +23,8 @@ class SlackMessageRecipient(models.Model):
         verbose_name=_("Mentions"),
         help_text=_("List of mentions, user or groups in Slack ID (e.g. U06A2DMBTTJ)."),
     )
+
+    objects: SlackMessageRecipientManager = SlackMessageRecipientManager()
 
     class Meta:  # noqa: D106
         verbose_name = _("Recipient")
