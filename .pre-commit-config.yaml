@@ -13,12 +13,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: generate
-        name: Check generated things are up to date
-        language: system
-        pass_filenames: false
-        entry: make generate
-
       - id: django-migration
         name: Check migrations created for model changes
         language: system

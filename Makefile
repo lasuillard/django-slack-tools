@@ -45,10 +45,6 @@ run:  ## Run development server
 ci: lint scan test  ## Run CI tasks
 .PHONY: ci
 
-generate:  ## Autogenerate stuffs
-
-.PHONY: generate
-
 format:  ## Run autoformatters
 	poetry run ruff check --fix .
 	poetry run black .
