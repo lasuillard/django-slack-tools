@@ -10,10 +10,20 @@ from django_slack_bot.utils.fields import SeparatedValuesField
 class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
     """Manager for message recipients model."""
 
+    def get_by_alias(self, alias: str) -> SlackMessageRecipient:
+        """Get recipient by its alias."""
+        return self.get(alias=alias)
+
 
 class SlackMessageRecipient(models.Model):
     """People or group in channels receive messages."""
 
+    alias = models.CharField(
+        verbose_name=_("Alias"),
+        help_text=_("Alias for this recipient."),
+        max_length=256,
+        unique=True,
+    )
     channel = models.CharField(
         verbose_name=_("Channel"),
         help_text=_("Slack channel where messages will be sent."),
