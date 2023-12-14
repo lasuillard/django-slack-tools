@@ -1,10 +1,20 @@
 """Messaging policy model."""
+from __future__ import annotations
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.utils import validators
 
 from .message_recipient import SlackMessageRecipient
+
+
+class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
+    """Manager for Slack messaging policies."""
+
+    def get_by_code(self, code: str) -> SlackMessagingPolicy:
+        """Get policy by its code."""
+        return self.get_queryset().get(code=code)
 
 
 class SlackMessagingPolicy(models.Model):
@@ -33,6 +43,9 @@ class SlackMessagingPolicy(models.Model):
         null=True,
         blank=True,
     )
+
+    # Type is too obvious but due to limits...
+    objects: SlackMessagingPolicyManager = SlackMessagingPolicyManager()
 
     class Meta:  # noqa: D106
         verbose_name = _("Messaging Policy")
