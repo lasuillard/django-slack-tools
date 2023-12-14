@@ -14,7 +14,7 @@ class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
 
     def get_by_code(self, code: str) -> SlackMessagingPolicy:
         """Get policy by its code."""
-        return self.get_queryset().get(code=code)
+        return self.get(code=code)
 
 
 class SlackMessagingPolicy(models.Model):
