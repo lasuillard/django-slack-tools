@@ -38,6 +38,16 @@ run:  ## Run development server
 			$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: run
 
+migration:  ## Make migrations
+	cd testproj && \
+		poetry run python manage.py makemigrations
+.PHONY: migration
+
+migrate:  ## Apply migrations
+	cd testproj && \
+		poetry run python manage.py migrate
+.PHONY: migration
+
 
 # =============================================================================
 # CI

@@ -21,8 +21,8 @@ repos:
         entry: bash -c
         args:
           - |
-            cd testproj
-            poetry run python manage.py makemigrations
+            cd testproj \
+              && poetry run python manage.py makemigrations
 
       - id: ruff
         name: Fix using Ruff
