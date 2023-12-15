@@ -1,4 +1,5 @@
 report.xml
+**/*.ipynb
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,django,python,visualstudiocode,linux,macos,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=git,django,python,visualstudiocode,linux,macos,windows
