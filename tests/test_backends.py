@@ -18,5 +18,5 @@ class SlackBackendTests:
     pass
 
 
-class SlackRedirectBackend:
+class SlackRedirectBackendTests:
     pass
