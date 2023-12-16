@@ -51,9 +51,6 @@ class AppSettings:
 app_settings = AppSettings()
 
 
-# ~ Below are just type stubs ~
-
-
 class ConfigDict(TypedDict):
     """Root config dict."""
 

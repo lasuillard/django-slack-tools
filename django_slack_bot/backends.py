@@ -24,13 +24,15 @@ class BackendBase(ABC):
     def send_message(  # noqa: PLR0913
         self,
         *,
-        args: Sequence[Any] | None = None,
-        kwargs: dict[str, Any],  # There is no allowed cases for keyword arguments being empty
+        # Slack API does not use this, but user inherited classes may do something with this
+        args: Sequence[Any],
+        # There is no allowed cases for keyword arguments being empty
+        kwargs: dict[str, Any],
         channel: str,
-        raise_exception: bool = False,
-        save_db: bool = True,
-        record_detail: bool = False,
-    ) -> SlackResponse | None:
+        raise_exception: bool,
+        save_db: bool,
+        record_detail: bool,
+    ) -> SlackMessage | None:
         """Send Slack message.
 
         Args:
@@ -38,15 +40,12 @@ class BackendBase(ABC):
             kwargs: Slack message keyword arguments.
             channel: Channel to send message.
             raise_exception: Whether to re-raise caught exception while sending messages.
-                Defaults to `False` not to block main application behavior.
             save_db: Whether to save Slack message to database.
             record_detail: Whether to record API interaction detail, HTTP request and response details.
                 Only takes effect if `save_db` is set.
-                Use it with caution because request headers might contain API token. Defaults to `False`.
+                Use it with caution because request headers might contain API token.
         """
-        if args is None:
-            args = ()  # Current Slack SDK does not use any positional arguments, but for future
-
+        # Send Slack message
         response: SlackResponse | None
         try:
             response = self._send_message(*args, channel=channel, **kwargs)
@@ -60,41 +59,43 @@ class BackendBase(ABC):
         if not response:
             return None
 
-        # TODO(lasuillard): Recipients feature not implemented yet
-        # TODO(lasuillard): This possibly to be an bottleneck when handling lots of messages
-        #                   May need an option or bulk handling method to mitigate it
+        # Slack message ORM instance
+        message = None
+
+        # Suppress database exceptions too
         try:
+            req_args = response.req_args
+            ok = response.get("ok")
+            message = SlackMessage(body=req_args["json"], ok=ok)
+            if ok:
+                # `str` if OK, otherwise `None`
+                message.ts = cast(str, response.get("ts"))
+
+            if record_detail:
+                message.request = self._record_request(response)
+                message.response = self._record_response(response)
+
             if save_db:
-                req_args = response.req_args
-                ok = response.get("ok")
-                message = SlackMessage(body=req_args["json"], ok=ok)
-                if ok:
-                    # `str` if OK, otherwise `None`
-                    message.ts = cast(str, response.get("ts"))
-
-                if record_detail:
-                    # TODO(lasuillard): Option to hide sensitive fields? (auth header)
-                    message.request = req_args
-                    message.response = {
-                        "http_verb": response.http_verb,
-                        "api_url": response.api_url,
-                        "status_code": response.status_code,
-                        "headers": response.headers,
-                        "data": response.data,
-                    }
-
                 message.save()
+
         except Exception:
-            logger.exception("Error occurred while sending Slack message.")
+            logger.exception("Error occurred while handling Slack message ORM instance.")
             if raise_exception:
                 raise
 
-        return response
+        return message
 
     @abstractmethod
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         """Internal implementation of actual 'send message' behavior."""
-        # TODO(lasuillard): Throttling can be applied?
+
+    @abstractmethod
+    def _record_request(self, response: SlackResponse) -> Any:
+        """Extract request data to be recorded. Should return JSON-serializable object."""
+
+    @abstractmethod
+    def _record_response(self, response: SlackResponse) -> Any:
+        """Extract response data to be recorded. Should return JSON-serializable object."""
 
 
 class DummyBackend(BackendBase):
@@ -104,6 +105,12 @@ class DummyBackend(BackendBase):
         """This backend will not do anything, just like dummy."""
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
+        ...
+
+    def _record_request(self, *args: Any, **kwargs: Any) -> Any:
+        ...
+
+    def _record_response(self, *args: Any, **kwargs: Any) -> Any:
         ...
 
 
@@ -137,6 +144,18 @@ class SlackBackend(BackendBase):
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         return self._slack_app.client.chat_postMessage(*args, **kwargs)
+
+    def _record_request(self, response: SlackResponse) -> dict[str, Any]:
+        return response.req_args
+
+    def _record_response(self, response: SlackResponse) -> dict[str, Any]:
+        return {
+            "http_verb": response.http_verb,
+            "api_url": response.api_url,
+            "status_code": response.status_code,
+            "headers": response.headers,
+            "data": response.data,
+        }
 
 
 class SlackRedirectBackend(SlackBackend):
