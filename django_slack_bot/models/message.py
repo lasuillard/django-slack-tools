@@ -32,16 +32,10 @@ class SlackMessage(models.Model):
         default=None,
     )
 
-    # As ID assigned by Slack, `ts` and `parent_ts` known after received response
+    # As ID assigned by Slack, `ts` and known after received response
     ts = models.CharField(
         verbose_name=_("Message ID"),
         help_text=_("ID of an Slack message."),
-        max_length=32,
-        default="",
-    )
-    parent_ts = models.CharField(
-        verbose_name=_("Thread ID"),
-        help_text=_("ID of current conversation thread."),
         max_length=32,
         default="",
     )
