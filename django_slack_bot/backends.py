@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, Sequence, cast
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
+from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
@@ -44,6 +45,9 @@ class BackendBase(ABC):
             record_detail: Whether to record API interaction detail, HTTP request and response details.
                 Only takes effect if `save_db` is set.
                 Use it with caution because request headers might contain API token.
+
+        Returns:
+            Sent Slack message or `None`.
         """
         # Send Slack message
         response: SlackResponse | None
@@ -161,7 +165,7 @@ class SlackBackend(BackendBase):
 class SlackRedirectBackend(SlackBackend):
     """Inherited Slack backend with redirection to specific channels."""
 
-    def __init__(self, slack_app: App | str, redirect_channel: str) -> None:
+    def __init__(self, *, slack_app: App | str, redirect_channel: str) -> None:
         """Initialize backend.
 
         Args:
@@ -174,6 +178,26 @@ class SlackRedirectBackend(SlackBackend):
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         # Modify channel to force messages always sent to specific channel
+        original_channel = kwargs["channel"]
         kwargs["channel"] = self._redirect_channel
 
+        # Add an attachment that informing message has been redirected
+        attachments = kwargs.get("attachments", [])
+        attachments = [
+            self._make_inform_attachment(original_channel=original_channel),
+            *attachments,
+        ]
+        kwargs["attachments"] = attachments
+
         return super()._send_message(*args, **kwargs)
+
+    def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
+        msg_redirect_inform = _(
+            ":warning:  This message was originally sent to channel *{channel}* but redirected here.",
+        )
+
+        return {
+            "color": "#eb4034",
+            "mrkdwn_in": ["text"],
+            "text": msg_redirect_inform.format(channel=original_channel),
+        }
