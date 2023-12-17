@@ -19,7 +19,7 @@ repos:
         types: [python]
         pass_filenames: false
         entry: poetry run python manage.py makemigrations
-        args: [--check]
+        args: [--check, --dry-run]
 
       - id: ruff
         name: Fix using Ruff

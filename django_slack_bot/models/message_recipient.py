@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.utils.fields import SeparatedValuesField
+from django_slack_bot.utils.model_mixins import TimestampMixin
 
 
 class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
@@ -15,7 +16,7 @@ class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
         return self.get(alias=alias)
 
 
-class SlackMessageRecipient(models.Model):
+class SlackMessageRecipient(TimestampMixin, models.Model):
     """People or group in channels receive messages."""
 
     alias = models.CharField(

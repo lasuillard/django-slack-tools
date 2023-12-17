@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.utils import validators
+from django_slack_bot.utils.model_mixins import TimestampMixin
 
 from .message_recipient import SlackMessageRecipient
 
@@ -17,7 +18,7 @@ class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
         return self.get(code=code)
 
 
-class SlackMessagingPolicy(models.Model):
+class SlackMessagingPolicy(TimestampMixin, models.Model):
     """An Slack messaging policy which determines message content and those who receive messages."""
 
     code = models.CharField(
