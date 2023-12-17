@@ -21,6 +21,7 @@ class SlackMessage(TimestampMixin, models.Model):
         verbose_name=_("Messaging Policy"),
         help_text=_("Messaging policy for this message."),
         null=True,  # Message can be built from scratch without using templates
+        blank=True,
         on_delete=models.SET_NULL,
     )
     channel = models.CharField(
@@ -46,25 +47,30 @@ class SlackMessage(TimestampMixin, models.Model):
         verbose_name=_("Message ID"),
         help_text=_("ID of an Slack message."),
         max_length=32,
-        default="",
+        null=True,
+        blank=True,
+        unique=True,
     )
     parent_ts = models.CharField(
         verbose_name=_("Thread ID"),
         help_text=_("ID of current conversation thread."),
         max_length=32,
         default="",
+        blank=True,
     )
 
-    # TODO(lasuillard): Detailed call history(req/resp) recording for debugging, with turn on/off
+    # Extraneous call detail for debugging
     request = models.JSONField(
         verbose_name=_("Request"),
         help_text=_("Dump of request content for debugging."),
         null=True,
+        blank=True,
     )
     response = models.JSONField(
         verbose_name=_("Response"),
         help_text=_("Dump of response content for debugging."),
         null=True,
+        blank=True,
     )
 
     objects: SlackMessageManager = SlackMessageManager()
@@ -72,6 +78,7 @@ class SlackMessage(TimestampMixin, models.Model):
     class Meta:  # noqa: D106
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
+        ordering = ("-created",)
 
     def __str__(self) -> str:  # noqa: D105
         if self.ok is True:

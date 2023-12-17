@@ -30,7 +30,10 @@ class SlackMessageFactory(DjangoModelFactory):
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
     body = LazyAttribute(lambda o: {"channel": o.channel, "text": _fake.paragraph()})
     ok = True
-    ts = LazyAttribute(lambda _: str(timezone.now().timestamp()))
+    ts = LazyAttribute(
+        # BUG: Sometimes the digit is shorter (e.g. 1702792470.9649)
+        lambda _: str(timezone.now().timestamp()),
+    )
     parent_ts = ""
     request = None
     response = None
