@@ -155,3 +155,10 @@ LOGGING = {
 
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default=None)
 SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default=None)
+
+DJANGO_SLACK_BOT = {
+    "BACKEND": {
+        "NAME": "django_slack_bot.backends.DummyBackend",
+        "OPTIONS": {},
+    },
+}
