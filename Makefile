@@ -37,14 +37,6 @@ run:  ## Run development server
 		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: run
 
-migration:  ## Make migrations
-	poetry run python manage.py makemigrations
-.PHONY: migration
-
-migrate:  ## Apply migrations
-	poetry run python manage.py migrate
-.PHONY: migration
-
 
 # =============================================================================
 # CI
@@ -82,6 +74,19 @@ docs:  ## Generate dev documents
 shell:  ## Run test project' Django shell
 	poetry run python manage.py shell
 .PHONY: shell
+
+migration:  ## Make migrations
+	poetry run python manage.py makemigrations
+.PHONY: migration
+
+migrate:  ## Apply migrations
+	poetry run python manage.py migrate
+.PHONY: migration
+
+superuser:  ## Create superuser (ID/PW: admin/admin)
+	DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=admin@admin.admin DJANGO_SUPERUSER_PASSWORD=admin \
+		poetry run python manage.py createsuperuser --no-input
+.PHONY: superuser
 
 clean:  ## Remove temporary files
 	rm -rf .mypy_cache/ .pytest_cache/ .ruff-cache/ htmlcov/ .coverage coverage.xml report.xml
