@@ -4,6 +4,6 @@ from tests._helpers import ModelTestBase
 from ._factories import SlackMessageRecipientFactory
 
 
-class SlackMessageRecipientTests(ModelTestBase):
+class TestSlackMessageRecipient(ModelTestBase):
     model_cls = SlackMessageRecipient
     factory_cls = SlackMessageRecipientFactory

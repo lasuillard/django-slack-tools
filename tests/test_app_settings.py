@@ -34,7 +34,7 @@ config_fixtures: dict[str, ConfigDict] = {
     argvalues=config_fixtures.values(),
     ids=config_fixtures.keys(),
 )
-class AppSettingsTests:
+class TestAppSettings:
     def _assert_app_settings(self, app_settings: AppSettings) -> None:
         assert isinstance(app_settings.backend, DummyBackend)
 

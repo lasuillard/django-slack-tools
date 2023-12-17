@@ -1,7 +1,7 @@
 from django_slack_bot.backends import DummyBackend
 
 
-class DummyBackendTests:
+class TestDummyBackend:
     def test_backend(self) -> None:
         backend = DummyBackend()
         backend.send_message()
@@ -10,13 +10,13 @@ class DummyBackendTests:
 # TODO(lasuillard): Do below tests
 
 
-class LoggingBackendTests:
+class TestLoggingBackend:
     pass
 
 
-class SlackBackendTests:
+class TestSlackBackend:
     pass
 
 
-class SlackRedirectBackendTests:
+class TestSlackRedirectBackend:
     pass

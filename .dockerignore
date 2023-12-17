@@ -1,10 +1,10 @@
 **
 
 # Allowed things
+!dev-requirements.txt
 !poetry.lock
 !poetry.toml
 !pyproject.toml
-!requirements.txt
 
 # Extra exclude from allowed things
 **/*~

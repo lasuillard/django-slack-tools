@@ -4,7 +4,7 @@ from tests._helpers import ModelAdminTestBase
 from tests.models._factories import SlackMessageFactory
 
 
-class SlackMessageAdminTests(ModelAdminTestBase):
+class TestSlackMessageAdmin(ModelAdminTestBase):
     admin_cls = SlackMessageAdmin
     model_cls = SlackMessage
     factory_cls = SlackMessageFactory
