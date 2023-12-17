@@ -5,5 +5,5 @@ from django_slack_bot.models import SlackMessageRecipient
 
 
 @admin.register(SlackMessageRecipient)
-class RecipientAdmin(admin.ModelAdmin):
+class SlackMessageRecipientAdmin(admin.ModelAdmin):
     """Admin for recipients."""

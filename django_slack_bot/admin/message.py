@@ -7,5 +7,5 @@ from django_slack_bot.models import SlackMessage
 
 
 @admin.register(SlackMessage)
-class MessageAdmin(admin.ModelAdmin):
+class SlackMessageAdmin(admin.ModelAdmin):
     """Admin for messages."""

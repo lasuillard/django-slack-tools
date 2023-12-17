@@ -5,5 +5,5 @@ from django_slack_bot.models import SlackMessagingPolicy
 
 
 @admin.register(SlackMessagingPolicy)
-class MessagingPolicyAdmin(admin.ModelAdmin):
+class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     """Admin for messaging policies."""
