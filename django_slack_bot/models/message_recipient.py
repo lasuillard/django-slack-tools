@@ -27,7 +27,7 @@ class SlackMessageRecipient(models.Model):
     channel = models.CharField(
         verbose_name=_("Channel"),
         help_text=_("Slack channel where messages will be sent."),
-        max_length=32,
+        max_length=128,
     )
     mentions = SeparatedValuesField(
         verbose_name=_("Mentions"),

@@ -70,7 +70,7 @@ class BackendBase(ABC):
         try:
             req_args = response.req_args
             ok = response.get("ok")
-            message = SlackMessage(body=req_args["json"], ok=ok)
+            message = SlackMessage(channel=channel, body=req_args["json"], ok=ok)
             if ok:
                 # `str` if OK, otherwise `None`
                 message.ts = cast(str, response.get("ts"))

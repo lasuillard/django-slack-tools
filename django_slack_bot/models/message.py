@@ -21,6 +21,12 @@ class SlackMessage(models.Model):
         null=True,  # Message can be built from scratch without using templates
         on_delete=models.SET_NULL,
     )
+    channel = models.CharField(
+        verbose_name=_("Channel"),
+        help_text=_("Channel name this message sent to."),
+        blank=False,
+        max_length=128,  # Maximum length of channel name is 80 characters
+    )
     body = models.JSONField(
         verbose_name=_("Body"),
         help_text=_("Message body."),
@@ -32,7 +38,8 @@ class SlackMessage(models.Model):
         default=None,
     )
 
-    # As ID assigned by Slack, `ts` and `parent_ts` known after received response
+    # As ID, `ts` assigned by Slack, it is known after received response
+    # By known, `ts` refers to timestamp (Format of `datetime.timestamp()`, e.g. `"1702737142.945359"`)
     ts = models.CharField(
         verbose_name=_("Message ID"),
         help_text=_("ID of an Slack message."),
