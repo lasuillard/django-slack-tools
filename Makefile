@@ -33,19 +33,16 @@ init:  ## Initialize project repository
 .PHONY: init
 
 run:  ## Run development server
-	cd testproj && \
-		poetry run python manage.py runserver \
-			$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
+	poetry run python manage.py runserver \
+		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: run
 
 migration:  ## Make migrations
-	cd testproj && \
-		poetry run python manage.py makemigrations
+	poetry run python manage.py makemigrations
 .PHONY: migration
 
 migrate:  ## Apply migrations
-	cd testproj && \
-		poetry run python manage.py migrate
+	poetry run python manage.py migrate
 .PHONY: migration
 
 
@@ -82,6 +79,10 @@ docs:  ## Generate dev documents
 # =============================================================================
 # Handy Scripts
 # =============================================================================
+shell:  ## Run test project' Django shell
+	poetry run python manage.py shell
+.PHONY: shell
+
 clean:  ## Remove temporary files
 	rm -rf .mypy_cache/ .pytest_cache/ .ruff-cache/ htmlcov/ .coverage coverage.xml report.xml
 	find . -path '*/__pycache__*' -delete

@@ -18,11 +18,8 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        entry: bash -c
-        args:
-          - |
-            cd testproj \
-              && poetry run python manage.py makemigrations
+        entry: poetry run python manage.py makemigrations
+        args: [--check]
 
       - id: ruff
         name: Fix using Ruff
