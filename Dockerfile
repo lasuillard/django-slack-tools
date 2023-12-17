@@ -31,8 +31,8 @@ ARG WORKSPACE="/workspace"
 WORKDIR "${WORKSPACE}"
 
 # Dev tools
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY dev-requirements.txt ./
+RUN pip install --no-cache-dir -r dev-requirements.txt
 
 # Deps
 COPY poetry.lock poetry.toml pyproject.toml ./
