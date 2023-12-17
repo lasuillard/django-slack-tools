@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "django_slack_bot",
 ]
 
@@ -158,7 +159,10 @@ SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default=None)
 
 DJANGO_SLACK_BOT = {
     "BACKEND": {
-        "NAME": "django_slack_bot.backends.DummyBackend",
-        "OPTIONS": {},
+        "NAME": "django_slack_bot.backends.SlackRedirectBackend",
+        "OPTIONS": {
+            "slack_app": "testproj.config.slack_app.get_slack_app",
+            "redirect_channel": "D069G3W44SY",
+        },
     },
 }
