@@ -4,7 +4,7 @@ import os
 import sys
 
 
-def main():  # noqa: ANN201
+def main() -> None:
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testproj.config.settings")
     try:

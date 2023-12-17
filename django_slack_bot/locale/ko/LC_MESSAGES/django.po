@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-12-14 12:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: django_slack_bot/apps.py:9
+msgid "Django Slack Bot"
+msgstr ""
+
+#: django_slack_bot/models/message.py:26
+#: django_slack_bot/models/messaging_policy.py:38
+msgid "Messaging Policy"
+msgstr ""
+
+#: django_slack_bot/models/message.py:27
+msgid "Messaging policy for this message."
+msgstr "이 메시지에 사용된 발송 정책입니다."
+
+#: django_slack_bot/models/message.py:32
+msgid "Body"
+msgstr ""
+
+#: django_slack_bot/models/message.py:33
+msgid "Message body."
+msgstr ""
+
+#: django_slack_bot/models/message.py:36
+msgid "OK"
+msgstr ""
+
+#: django_slack_bot/models/message.py:37
+msgid "Whether Slack API respond with OK. If never sent, will be `null`."
+msgstr ""
+
+#: django_slack_bot/models/message.py:44
+msgid "Message ID"
+msgstr ""
+
+#: django_slack_bot/models/message.py:45
+msgid "ID of an Slack message."
+msgstr ""
+
+#: django_slack_bot/models/message.py:50
+msgid "Thread ID"
+msgstr ""
+
+#: django_slack_bot/models/message.py:51
+msgid "ID of current conversation thread."
+msgstr ""
+
+#: django_slack_bot/models/message.py:58
+msgid "Request"
+msgstr ""
+
+#: django_slack_bot/models/message.py:59
+msgid "Dump of request content for debugging."
+msgstr ""
+
+#: django_slack_bot/models/message.py:63
+msgid "Response"
+msgstr ""
+
+#: django_slack_bot/models/message.py:64
+msgid "Dump of response content for debugging."
+msgstr ""
+
+#: django_slack_bot/models/message.py:71
+msgid "Message"
+msgstr ""
+
+#: django_slack_bot/models/message.py:72
+msgid "Messages"
+msgstr ""
+
+#: django_slack_bot/models/message.py:76
+#, python-brace-format
+msgid "Message {id} {ts} (OK)"
+msgstr ""
+
+#: django_slack_bot/models/message.py:79
+#, python-brace-format
+msgid "Message {id} (Not OK)"
+msgstr ""
+
+#: django_slack_bot/models/message.py:81
+#, python-brace-format
+msgid "Message {id} (Not sent)"
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:47
+msgid "Channel"
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:48
+msgid "Slack channel where messages will be sent."
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:53
+msgid "Mentions"
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:54
+msgid "List of mentions, user or groups in Slack ID (e.g. U06A2DMBTTJ)."
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:59
+msgid "Recipient"
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:60
+msgid "Recipients"
+msgstr ""
+
+#: django_slack_bot/models/message_recipient.py:65
+#, python-brace-format
+msgid "{channel} ({num_mentions} mentions)"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:14
+msgid "Code"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:15
+msgid "Unique message code for lookup, mostly by human."
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:20
+msgid "Enabled"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:21
+msgid "Turn on or off current messaging policy."
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:26
+msgid "Message recipients"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:27
+msgid "Those who will receive messages."
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:30
+msgid "Message template object"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:31
+msgid "Dictionary-based template object."
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:39
+msgid "Messaging Policies"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:45
+#, python-brace-format
+msgid "{code} (Enabled)"
+msgstr ""
+
+#: django_slack_bot/models/messaging_policy.py:47
+#, python-brace-format
+msgid "{code} (Disabled)"
+msgstr ""
+
+#: django_slack_bot/utils/validators.py:17
+msgid "Given object is not dictionary"
+msgstr ""

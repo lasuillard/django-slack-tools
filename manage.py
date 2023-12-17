@@ -1,0 +1,1 @@
+./testproj/manage.py

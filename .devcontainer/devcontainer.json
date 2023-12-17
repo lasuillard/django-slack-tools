@@ -33,7 +33,8 @@
         "VisualStudioExptTeam.vscodeintellicode",
         "charliermarsh.ruff",
         "ms-python.mypy-type-checker",
-        "njpwerner.autodocstring"
+        "njpwerner.autodocstring",
+        "ms-toolsai.jupyter"
       ]
     }
   }

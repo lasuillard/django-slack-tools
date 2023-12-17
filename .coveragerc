@@ -1,5 +1,5 @@
 [run]
-include = src/*
+include = django_slack_bot/*
 omit =
     */migrations/*
     *tests*

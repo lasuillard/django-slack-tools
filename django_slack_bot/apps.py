@@ -1,7 +1,9 @@
 # noqa: D100
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
-class SlackBotConfig(AppConfig):  # noqa: D101
+class DjangoSlackBotConfig(AppConfig):  # noqa: D101
     default_auto_field = "django.db.models.BigAutoField"
-    name = "slack_bot"
+    name = "django_slack_bot"
+    verbose_name = _("Django Slack Bot")

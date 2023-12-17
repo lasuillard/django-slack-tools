@@ -6,12 +6,13 @@
       "name": "Python: Run Django app",
       "type": "python",
       "request": "launch",
-      "program":"${workspaceFolder}/main.py",
+      "cwd":"${workspaceFolder}/testproj",
+      "program":"manage.py",
       "args": [
-        "--host", "0.0.0.0", "--log-level", "trace"
+        "runserver", "0.0.0.0:8000"  // TODO: Determine bind address based on $CONTAINER
       ],
       "django": true,
-      "justMyCode": false
+      "justMyCode": true,
     }
-  ]
+  ],
 }
