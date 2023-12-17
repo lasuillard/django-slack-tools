@@ -34,7 +34,9 @@
         "charliermarsh.ruff",
         "ms-python.mypy-type-checker",
         "njpwerner.autodocstring",
-        "ms-toolsai.jupyter"
+        "ms-toolsai.jupyter",
+        "GitHub.vscode-pull-request-github",
+        "GitHub.vscode-github-actions"
       ]
     }
   }
