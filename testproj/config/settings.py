@@ -151,13 +151,8 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": "DEBUG",
         "propagate": True,
-    },
-    "loggers": {
-        "django_slack_bot": {
-            "level": "DEBUG",
-        },
     },
 }
 
