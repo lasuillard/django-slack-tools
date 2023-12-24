@@ -156,8 +156,8 @@ LOGGING = {
     },
 }
 
-SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default=None)
-SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default=None)
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
+SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
 
 DJANGO_SLACK_BOT = {
     "BACKEND": {
