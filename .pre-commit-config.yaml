@@ -37,7 +37,6 @@ repos:
         name: Type check with Mypy
         language: system
         types: [python]
-        exclude: ^examples/
         entry: poetry run mypy
         args: [--show-error-codes, --pretty]
 

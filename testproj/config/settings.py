@@ -9,6 +9,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 import socket
 from pathlib import Path
 
@@ -56,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "testproj.urls"
+ROOT_URLCONF = "testproj.config.urls"
 
 TEMPLATES = [
     {
@@ -75,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "testproj.wsgi.application"
+WSGI_APPLICATION = "testproj.config.wsgi.application"
 
 
 # Database
@@ -154,6 +155,9 @@ LOGGING = {
         "propagate": True,
     },
 }
+
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default=None)
+SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default=None)
 
 DJANGO_SLACK_BOT = {
     "BACKEND": {

@@ -46,7 +46,6 @@ extend-exclude = ["**/migrations/*"]
 "__init__.py" = ["D104"]
 "tests/*" = ["D", "S101", "PLR2004", "SLF001"]
 "testproj/*" = ["D100"]
-"examples/*" = ["D100"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
@@ -63,7 +62,7 @@ extend-exclude = """
 
 [tool.mypy]
 python_version = "3.8"
-exclude = ['^\.venv/*', 'examples/*']
+exclude = ['^\.venv/*']
 plugins = ["mypy_django_plugin.main"]
 namespace_packages = true
 check_untyped_defs = true
@@ -76,13 +75,13 @@ warn_return_any = true
 show_error_codes = true
 
 [tool.django-stubs]
-django_settings_module = "testproj.settings"
+django_settings_module = "testproj.config.settings"
 
 [tool.pytest.ini_options]
 addopts = [
   "--strict-markers",
   "--doctest-modules",
-  "--ds=testproj.settings",
+  "--ds=testproj.config.settings",
   "--reuse-db",
   "--cov",
   "--cov-report=term",

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from django_slack_bot.views import SlackEventHandlerView
-from todo_bot.slack_app import app
+from testproj.config.slack_app import app
 
 urlpatterns = [
     path("admin/", admin.site.urls),
