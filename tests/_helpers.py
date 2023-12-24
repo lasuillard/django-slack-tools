@@ -51,6 +51,7 @@ class ModelAdminTestBase:
 
     @pytest.mark.django_db()
     def test_changelist(self, admin_client: Client) -> None:
+        self.factory_cls.create_batch(size=3)
         url = self._reverse("changelist")
 
         # Test visit
