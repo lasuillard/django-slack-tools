@@ -36,5 +36,6 @@
   "python.testing.pytestArgs": [
     "--no-cov", // https://code.visualstudio.com/docs/python/testing#_pytest-configuration-settings
   ],
-  "autoDocstring.docstringFormat": "google-notypes"
+  "autoDocstring.docstringFormat": "google-notypes",
+  "mypy-type-checker.ignorePatterns": ["examples/**/*.py"]
 }
