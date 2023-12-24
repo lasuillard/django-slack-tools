@@ -42,7 +42,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     readonly_fields = ("id", "_count_recipients", "created", "last_modified")
 
     # Actions
-    actions = ()  # TODO(lasuillard): Delete recursively (by default related messages not deleted due to `SET_NULL`)
+    actions = ()
 
     # Changelist
     # ------------------------------------------------------------------------
@@ -66,7 +66,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("code", "enabled", "recipients"),
+                "fields": ("code", "enabled", "recipients", "template"),
             },
         ),
         (

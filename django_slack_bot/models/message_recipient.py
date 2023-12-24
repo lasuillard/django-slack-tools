@@ -11,10 +11,6 @@ from django_slack_bot.utils.model_mixins import TimestampMixin
 class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
     """Manager for message recipients model."""
 
-    def get_by_alias(self, alias: str) -> SlackMessageRecipient:
-        """Get recipient by its alias."""
-        return self.get(alias=alias)
-
 
 class SlackMessageRecipient(TimestampMixin, models.Model):
     """People or group in channels receive messages."""
@@ -44,7 +40,8 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
     def __str__(self) -> str:  # noqa: D105
         mentions: list[str] = self.mentions
 
-        return _("{channel} ({num_mentions} mentions)").format(
+        return _("{alias} ({channel}, {num_mentions} mentions)").format(
+            alias=self.alias,
             channel=self.channel,
             num_mentions=len(mentions),
         )

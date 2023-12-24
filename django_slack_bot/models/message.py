@@ -82,9 +82,9 @@ class SlackMessage(TimestampMixin, models.Model):
 
     def __str__(self) -> str:  # noqa: D105
         if self.ok is True:
-            return _("Message {id} {ts} (OK)").format(id=self.id, ts=self.ts)
+            return _("Message ({ts}, OK)").format(id=self.id, ts=self.ts)
 
         if self.ok is False:
-            return _("Message {id} (Not OK)").format(id=self.id)
+            return _("Message ({id}, not OK)").format(id=self.id)
 
-        return _("Message {id} (Not sent)").format(id=self.id)
+        return _("Message ({id}, not sent)").format(id=self.id)

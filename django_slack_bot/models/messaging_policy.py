@@ -13,10 +13,6 @@ from .message_recipient import SlackMessageRecipient
 class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
     """Manager for Slack messaging policies."""
 
-    def get_by_code(self, code: str) -> SlackMessagingPolicy:
-        """Get policy by its code."""
-        return self.get(code=code)
-
 
 class SlackMessagingPolicy(TimestampMixin, models.Model):
     """An Slack messaging policy which determines message content and those who receive messages."""
@@ -55,7 +51,11 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
     # TODO(lasuillard): Type stubs for related managers
 
     def __str__(self) -> str:  # noqa: D105
+        num_recipients = self.recipients.all().count()
         if self.enabled:
-            return _("{code} (Enabled)").format(code=self.code)
+            return _("{code} (enabled, {num_recipients} recipients)").format(
+                code=self.code,
+                num_recipients=num_recipients,
+            )
 
-        return _("{code} (Disabled)").format(code=self.code)
+        return _("{code} (disabled, {num_recipients} recipients)").format(code=self.code, num_recipients=num_recipients)

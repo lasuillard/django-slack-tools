@@ -14,6 +14,7 @@ from django.utils.module_loading import import_string
 from .backends import BackendBase
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
+"Django settings key for this application."
 
 
 class AppSettings:
@@ -41,7 +42,9 @@ class AppSettings:
         # Find backend class
         messaging_backend = import_string(settings_dict["BACKEND"]["NAME"])
         if not issubclass(messaging_backend, BackendBase):
-            msg = ""
+            msg = "Provided backend is not a subclass of `{qualified_path}` class.".format(
+                qualified_path=f"{BackendBase.__module__}.{BackendBase.__name__}",
+            )
             raise ImproperlyConfigured(msg)
 
         # Initialize with provided options
