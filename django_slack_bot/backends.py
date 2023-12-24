@@ -171,29 +171,33 @@ class SlackBackend(BackendBase):
 class SlackRedirectBackend(SlackBackend):
     """Inherited Slack backend with redirection to specific channels."""
 
-    def __init__(self, *, slack_app: App | str, redirect_channel: str) -> None:
+    def __init__(self, *, slack_app: App | str, redirect_channel: str, inform_redirect: bool = True) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
             redirect_channel: Slack channel to redirect.
+            inform_redirect: Whether to append an attachment informing that the message has been redirected.
+                Defaults to `True`.
         """
-        self._redirect_channel = redirect_channel
+        self.redirect_channel = redirect_channel
+        self.inform_redirect = inform_redirect
 
         super().__init__(slack_app=slack_app)
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         # Modify channel to force messages always sent to specific channel
         original_channel = kwargs["channel"]
-        kwargs["channel"] = self._redirect_channel
+        kwargs["channel"] = self.redirect_channel
 
         # Add an attachment that informing message has been redirected
-        attachments = kwargs.get("attachments", [])
-        attachments = [
-            self._make_inform_attachment(original_channel=original_channel),
-            *attachments,
-        ]
-        kwargs["attachments"] = attachments
+        if self.inform_redirect:
+            attachments = kwargs.get("attachments", [])
+            attachments = [
+                self._make_inform_attachment(original_channel=original_channel),
+                *attachments,
+            ]
+            kwargs["attachments"] = attachments
 
         return super()._send_message(*args, **kwargs)
 
@@ -204,6 +208,5 @@ class SlackRedirectBackend(SlackBackend):
 
         return {
             "color": "#eb4034",
-            "mrkdwn_in": ["text"],
             "text": msg_redirect_inform.format(channel=original_channel),
         }
