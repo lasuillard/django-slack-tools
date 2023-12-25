@@ -70,6 +70,3 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
             },
         ),
     )
-
-    # TODO(lasuillard): Backlint to policy model
-    # TODO(lasuillard): Mention inline

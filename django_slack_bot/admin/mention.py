@@ -18,7 +18,7 @@ class SlackMentionAdmin(admin.ModelAdmin):
     # Changelist
     # ------------------------------------------------------------------------
     date_hierarchy = "last_modified"
-    search_fields = ("name", "mention")  # TODO(lasuillard): Search by mention
+    search_fields = ("name", "mention")
     list_display = ("id", "name", "type", "mention", "created", "last_modified")
     list_display_links = ("id", "name", "mention")
     list_filter = (

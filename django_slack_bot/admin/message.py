@@ -15,7 +15,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
     readonly_fields = ("id", "created", "last_modified")
 
     # Actions
-    actions = ()  # TODO(lasuillard): (Re)send messages, clone, ...
+    actions = ()
     actions_on_bottom = True  # Likely to be there are lots of messages
 
     # Changelist
