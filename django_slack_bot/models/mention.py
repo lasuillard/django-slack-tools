@@ -55,5 +55,5 @@ class SlackMention(TimestampMixin, models.Model):
         return _("{name} ({mention}, {type})").format(
             name=self.name,
             mention=self.mention,
-            type=self.MentionType(self.type).label,
+            type=self.get_type_display(),
         )
