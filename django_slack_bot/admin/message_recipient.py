@@ -1,18 +1,37 @@
 # noqa: D100
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
+
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
+from django.db.models import Count
+from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.models import SlackMessageRecipient
 
-# TODO(lasuillard): Choice field for recipients (via Slack API)
-# TODO(lasuillard): Override admin to display Slack workspace information (what Bot detect)
-#                   > channels, users, ... (and there ID)
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
+    class SlackMessageRecipientWithAnnotates(SlackMessageRecipient):  # noqa: D101
+        num_mentions: int
 
 
 @admin.register(SlackMessageRecipient)
 class SlackMessageRecipientAdmin(admin.ModelAdmin):
     """Admin for recipients."""
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[SlackMessageRecipientWithAnnotates]:  # noqa: D102
+        return cast(
+            QuerySet["SlackMessageRecipientWithAnnotates"],  # Unsafe force type casting
+            super()
+            .get_queryset(request)
+            .annotate(
+                # Avoid calling `.recipients.count()` per records
+                num_mentions=Count("mentions"),
+            ),
+        )
 
     readonly_fields = ("id", "created", "last_modified")
 
@@ -31,8 +50,8 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
     )
 
     @admin.display(description=_("Number of Mentions"))
-    def _num_mentions(self, instance: SlackMessageRecipient) -> int:
-        return len(instance.mentions)
+    def _num_mentions(self, instance: SlackMessageRecipientWithAnnotates) -> int:
+        return instance.num_mentions
 
     # Change
     # ------------------------------------------------------------------------
@@ -52,4 +71,5 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
         ),
     )
 
-    # TODO(lasuillard): Related policy model inline
+    # TODO(lasuillard): Backlint to policy model
+    # TODO(lasuillard): Mention inline

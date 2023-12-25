@@ -5,9 +5,18 @@ from django.utils import timezone
 from factory import Faker, LazyAttribute, post_generation
 from factory.django import DjangoModelFactory
 
-from django_slack_bot.models import SlackMessage, SlackMessageRecipient, SlackMessagingPolicy
+from django_slack_bot.models import SlackMention, SlackMessage, SlackMessageRecipient, SlackMessagingPolicy
 
 _fake = faker.Faker()
+
+
+class SlackMentionFactory(DjangoModelFactory):
+    class Meta:
+        model = SlackMention
+
+    type = SlackMention.MentionType.USER  # noqa: A003
+    name = Faker("name")
+    mention = LazyAttribute(lambda _: f"<@{_fake.pystr(max_chars=12)}>")
 
 
 class SlackMessageRecipientFactory(DjangoModelFactory):
@@ -16,10 +25,18 @@ class SlackMessageRecipientFactory(DjangoModelFactory):
 
     alias = Faker("name")
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
-    mentions = LazyAttribute(
-        # This is CSV field
-        lambda _: [_fake.pystr() for _ in range(3)],
-    )
+
+    @post_generation
+    def mentions(
+        self: SlackMessageRecipient,
+        create: bool,  # noqa: FBT001
+        extracted: Sequence[SlackMention],
+        **kwargs: Any,  # noqa: ARG002
+    ) -> None:
+        if not create or not extracted:
+            return
+
+        self.mentions.add(*extracted)
 
 
 class SlackMessageFactory(DjangoModelFactory):

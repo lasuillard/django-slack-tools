@@ -101,7 +101,7 @@ def slack(  # noqa: PLR0913
 
     messages: list[SlackMessage | None] = []
     for recipient in policy.recipients.all():
-        mentions = ", ".join(f"<@{m}>" for m in recipient.mentions)
+        mentions = ", ".join(recipient.mentions.values_list("mention", flat=True))
 
         dictpl_kwargs.setdefault("mentions", mentions)
         if "mentions" in dictpl_kwargs:

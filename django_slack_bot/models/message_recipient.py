@@ -4,8 +4,9 @@ from __future__ import annotations
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.utils.fields import SeparatedValuesField
 from django_slack_bot.utils.model_mixins import TimestampMixin
+
+from .mention import SlackMention
 
 
 class SlackMessageRecipientManager(models.Manager["SlackMessageRecipient"]):
@@ -24,11 +25,13 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
     channel = models.CharField(
         verbose_name=_("Channel"),
         help_text=_("Slack channel where messages will be sent."),
+        blank=False,
         max_length=128,
     )
-    mentions = SeparatedValuesField(
+    mentions = models.ManyToManyField(
+        SlackMention,
         verbose_name=_("Mentions"),
-        help_text=_("List of mentions, user or groups in Slack ID (e.g. U06A2DMBTTJ)."),
+        help_text=_("List of mentions."),
     )
 
     objects: SlackMessageRecipientManager = SlackMessageRecipientManager()
@@ -38,10 +41,10 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
         verbose_name_plural = _("Recipients")
 
     def __str__(self) -> str:  # noqa: D105
-        mentions: list[str] = self.mentions
+        num_mentions = self.mentions.count()
 
         return _("{alias} ({channel}, {num_mentions} mentions)").format(
             alias=self.alias,
             channel=self.channel,
-            num_mentions=len(mentions),
+            num_mentions=num_mentions,
         )
