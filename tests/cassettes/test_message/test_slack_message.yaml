@@ -1,0 +1,90 @@
+interactions:
+- request:
+    body: '{"channel": "D069G3W44SY", "text": "Hello, World!", "attachments": [{"color":
+      "#eb4034", "text": ":warning:  This message was originally sent to channel *D069G3W44SY*
+      but redirected here."}]}'
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '191'
+      Content-Type:
+      - application/json;charset=utf-8
+      Host:
+      - www.slack.com
+      User-Agent:
+      - Bolt/1.18.1 Python/3.8.18 slackclient/3.26.1 Linux/6.2.0-1018-azure
+    method: POST
+    uri: https://www.slack.com/api/chat.postMessage
+  response:
+    body:
+      string: '{"ok":true,"channel":"D069G3W44SY","ts":"1703595135.314149","message":{"bot_id":"B069DGRTW7M","type":"message","text":"Hello,
+        World!","user":"U06A2DMBTTJ","ts":"1703595135.314149","app_id":"A069DG9QS91","blocks":[{"type":"rich_text","block_id":"KTEN","elements":[{"type":"rich_text_section","elements":[{"type":"text","text":"Hello,
+        World!"}]}]}],"team":"T030E52QPT5","bot_profile":{"id":"B069DGRTW7M","app_id":"A069DG9QS91","name":"Test
+        Bot","icons":{"image_36":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_36.jpg","image_48":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_48.jpg","image_72":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_72.jpg"},"deleted":false,"updated":1702100193,"team_id":"T030E52QPT5"},"attachments":[{"id":1,"color":"eb4034","fallback":":warning:  This
+        message was originally sent to channel *D069G3W44SY* but redirected here.","text":":warning:  This
+        message was originally sent to channel *D069G3W44SY* but redirected here."}]}}'
+    headers:
+      access-control-allow-headers:
+      - slack-route, x-slack-version-ts, x-b3-traceid, x-b3-spanid, x-b3-parentspanid,
+        x-b3-sampled, x-b3-flags
+      access-control-allow-origin:
+      - '*'
+      access-control-expose-headers:
+      - x-slack-req-id, retry-after
+      cache-control:
+      - private, no-cache, no-store, must-revalidate
+      connection:
+      - close
+      content-length:
+      - '1063'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 26 Dec 2023 12:52:15 GMT
+      expires:
+      - Sat, 26 Jul 1997 05:00:00 GMT
+      pragma:
+      - no-cache
+      referrer-policy:
+      - no-referrer
+      server:
+      - Apache
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Accept-Encoding
+      via:
+      - 1.1 slack-prod.tinyspeck.com, envoy-www-iad-qexgusuz, envoy-edge-bom-xyfugtre
+      x-accepted-oauth-scopes:
+      - chat:write
+      x-backend:
+      - main_normal main_canary_with_overflow main_control_with_overflow
+      x-content-type-options:
+      - nosniff
+      x-edge-backend:
+      - envoy-www
+      x-envoy-attempt-count:
+      - '1'
+      x-envoy-upstream-service-time:
+      - '240'
+      x-oauth-scopes:
+      - chat:write,app_mentions:read,channels:read,mpim:read,im:read,groups:read,users:read,usergroups:read,team:read,usergroups:write,chat:write.customize
+      x-server:
+      - slack-www-hhvm-main-iad-lkgi
+      x-slack-backend:
+      - r
+      x-slack-edge-shared-secret-outcome:
+      - no-match
+      x-slack-req-id:
+      - 3588f0b2244e908c77c61669d5874326
+      x-slack-shared-secret-outcome:
+      - no-match
+      x-slack-unique-id:
+      - ZYrMfw6iXTdeorkczA59kwAAABM
+      x-xss-protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
