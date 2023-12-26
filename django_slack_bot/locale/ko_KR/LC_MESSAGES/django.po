@@ -62,7 +62,7 @@ msgstr "유형"
 
 #: django_slack_bot/models/mention.py:32
 msgid "Type of mentions."
-msgstr "멘션 유형"
+msgstr "멘션 유형입니다."
 
 #: django_slack_bot/models/mention.py:38
 msgid "Name"
