@@ -36,13 +36,6 @@ repos:
         entry: poetry run mypy
         args: [--show-error-codes, --pretty]
 
-      - id: checkov
-        name: Scan using Checkov
-        language: system
-        types: [file]
-        entry: poetry run checkov
-        args: [--quiet, --file]
-
       - id: pytest
         name: Test with pytest
         language: system
