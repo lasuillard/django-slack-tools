@@ -78,5 +78,3 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         ),
     )
     autocomplete_fields = ("recipients",)
-
-    # TODO(lasuillard): Message and recipients inline

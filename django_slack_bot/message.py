@@ -60,7 +60,7 @@ def slack_message(  # noqa: PLR0913
     )
 
 
-def slack(  # noqa: PLR0913
+def slack_message_via_policy(  # noqa: PLR0913
     policy: str | SlackMessagingPolicy,
     *,
     args: Sequence[Any] = (),
@@ -101,24 +101,17 @@ def slack(  # noqa: PLR0913
 
     messages: list[SlackMessage | None] = []
     for recipient in policy.recipients.all():
-        mentions = ", ".join(f"<@{m}>" for m in recipient.mentions)
-
-        dictpl_kwargs.setdefault("mentions", mentions)
+        mentions = ", ".join(recipient.mentions.values_list("mention", flat=True))
         if "mentions" in dictpl_kwargs:
             logger.warning(
                 "Template keyword argument `mentions` is reserved for passing mentions, but already exists."
-                " It will be overridden by user provided value.",
+                " It will be ignored.",
             )
 
-        body = render(template, **dictpl_kwargs)
-        kwargs = {
-            **body,
-            **kwargs,
-        }
-
+        body = render(template, **dictpl_kwargs, mentions=mentions)
         message = app_settings.backend.send_message(
             args=args,
-            kwargs=kwargs,
+            kwargs={**body, **kwargs},
             channel=recipient.channel,
             raise_exception=raise_exception,
             save_db=save_db,

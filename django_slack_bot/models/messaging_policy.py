@@ -48,8 +48,6 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         verbose_name = _("Messaging Policy")
         verbose_name_plural = _("Messaging Policies")
 
-    # TODO(lasuillard): Type stubs for related managers
-
     def __str__(self) -> str:  # noqa: D105
         num_recipients = self.recipients.all().count()
         if self.enabled:
