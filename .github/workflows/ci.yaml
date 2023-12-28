@@ -4,26 +4,22 @@ on:
   push:
     branches:
       - main
-    tags:
-      - v*
     paths-ignore:
       - ".devcontainer/**"
       - ".vscode/**"
-      - "**.md"
   pull_request:
     branches:
       - main
     paths-ignore:
       - ".devcontainer/**"
       - ".vscode/**"
-      - "**.md"
   workflow_dispatch:
 
 permissions: read-all
 
 jobs:
-  lint-and-test:
-    name: Lint and Test
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,36 +46,13 @@ jobs:
       - name: Run type checks
         run: poetry run mypy --show-error-codes --pretty .
 
-      - name: Run tests
-        run: poetry run pytest
-
-      - name: Upload coverage report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-          files: coverage.xml
-
-  release:
-    name: Release
-    needs: lint-and-test
+  test:
+    name: Test (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
     runs-on: ubuntu-latest
-    if: startswith(github.ref, 'refs/tags/v') # For v* tags
-    permissions:
-      contents: write
-    steps:
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-
-  build-and-publish:
-    name: Build and Publish
-    needs: release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+        django-version: ["3.2.*"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -90,14 +63,25 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version-file: .python-version
+          python-version: ${{ matrix.python-version }}
           cache: poetry
 
       - name: Install pip deps
         run: poetry install
 
-      - name: Build package
-        run: poetry build
+      - name: Install Django
+        run: poetry run pip install Django=="${{ matrix.django-version }}"
 
-      # TODO: Publish to PyPI
-      #       https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        env:
+          PYTHON: ${{ matrix.python-version }}
+          DJANGO: ${{ matrix.django-version }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          files: coverage.xml
+          env_vars: PYTHON,DJANGO
