@@ -60,6 +60,15 @@ jobs:
           fail_ci_if_error: false
           files: coverage.xml
 
+      - name: Generate API docs
+        run: make docs
+
+      - name: Upload docs artifact
+        uses: actions/upload-pages-artifact@v2
+        if: ${{ github.event_name == 'push' }}
+        with:
+          path: site/
+
   release:
     name: Release
     needs: lint-and-test
@@ -72,6 +81,24 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
+
+  api-docs:
+    name: API Docs
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Publish API docs to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
 
   build-and-publish:
     name: Build and Publish
