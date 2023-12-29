@@ -1,7 +1,8 @@
 from django_slack_bot.admin import SlackMessageRecipientAdmin
 from django_slack_bot.models import SlackMessageRecipient
-from tests._helpers import ModelAdminTestBase
 from tests.models._factories import SlackMessageRecipientFactory
+
+from ._helpers import ModelAdminTestBase
 
 
 class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
