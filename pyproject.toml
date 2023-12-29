@@ -88,6 +88,9 @@ addopts = [
   "--junitxml=report.xml",
 ]
 testpaths = ["tests"]
+markers = [
+  "slack: Tests working with Slack."
+]
 
 [tool.coverage.run]
 include = ["django_slack_bot/*"]

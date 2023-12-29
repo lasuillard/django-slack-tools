@@ -7,6 +7,7 @@ from django_slack_bot.models import SlackMessage
 from tests.models._factories import SlackMentionFactory, SlackMessageRecipientFactory, SlackMessagingPolicyFactory
 
 
+@pytest.mark.slack()
 @pytest.mark.vcr()
 @pytest.mark.django_db()
 def test_slack_message(redirect_slack: None) -> None:  # noqa: ARG001
@@ -17,6 +18,7 @@ def test_slack_message(redirect_slack: None) -> None:  # noqa: ARG001
     assert msg_from_db.ok
 
 
+@pytest.mark.slack()
 @pytest.mark.vcr()
 @pytest.mark.django_db()
 def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001

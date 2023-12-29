@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 
 class TestSlackBackend:
+    @pytest.mark.slack()
     @pytest.mark.vcr()
     def test_send_message(self, slack_app: App, slack_channel: str) -> None:
         backend = SlackBackend(slack_app=slack_app)
@@ -27,6 +28,7 @@ class TestSlackBackend:
 
 
 class TestSlackRedirectBackend:
+    @pytest.mark.slack()
     @pytest.mark.vcr()
     def test_send_message(self, slack_app: App, slack_channel: str) -> None:
         backend = SlackRedirectBackend(slack_app=slack_app, redirect_channel=slack_channel)
