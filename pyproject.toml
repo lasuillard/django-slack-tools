@@ -9,7 +9,7 @@ packages = [{ include = "django_slack_bot" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-slack-bolt = "^1.18.1"
+slack-bolt = ">=1,<2"
 django = ">=3.2"
 
 [tool.poetry.group.dev.dependencies]
