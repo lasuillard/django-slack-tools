@@ -64,7 +64,7 @@ test:  ## Run tests
 .PHONY: test
 
 docs:  ## Generate dev documents
-
+	poetry run mkdocs build
 .PHONY: docs
 
 

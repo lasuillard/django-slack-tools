@@ -1,0 +1,20 @@
+site_name: django-slack-bot
+repo_url: https://github.com/lasuillard/django-slack-bot
+repo_name: lasuillard/django-slack-bot
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_submodules: true
+  - search
+nav:
+  - Introduction: index.md
+  - Features: features.md
+  - Tutorials: tutorials.md
+  - Release Notes: release-notes.md
+  - API References: api-references.md
