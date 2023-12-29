@@ -11,7 +11,6 @@ jobs:
   build-docs:
     name: Build Docs
     runs-on: ubuntu-latest
-    if: startswith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
