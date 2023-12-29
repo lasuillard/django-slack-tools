@@ -5,18 +5,6 @@ class TestDummyBackend:
     def test_backend(self) -> None:
         backend = DummyBackend()
         backend.send_message()
-
-
-# TODO(lasuillard): Do below tests
-
-
-class TestLoggingBackend:
-    pass
-
-
-class TestSlackBackend:
-    pass
-
-
-class TestSlackRedirectBackend:
-    pass
+        backend._send_message()
+        backend._record_request()
+        backend._record_response()
