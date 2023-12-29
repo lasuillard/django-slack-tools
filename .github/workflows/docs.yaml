@@ -23,6 +23,7 @@ jobs:
         with:
           python-version-file: .python-version
           cache: poetry
+          cache-dependency-path: pyproject.toml
 
       - name: Install pip deps
         run: poetry install
