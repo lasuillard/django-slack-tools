@@ -9,15 +9,22 @@ from .base import BackendBase
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
+    from .base import WorkspaceInfo
+
 logger = getLogger(__name__)
 
 
 class DummyBackend(BackendBase):
     """An dummy backend that does nothing with message."""
 
+    def get_workspace_info(self) -> WorkspaceInfo:
+        """Returns meaningless, hard-coded info."""
+        return {"team_id": "T000X00XXX0"}
+
     def send_message(self, *args: Any, **kwargs: Any) -> None:
         """This backend will not do anything, just like dummy."""
 
+    # TODO(lasuillard): Construct dummy `SlackResponse` instance and return it
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         ...
 

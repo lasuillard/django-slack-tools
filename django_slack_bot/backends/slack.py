@@ -14,6 +14,8 @@ from .base import BackendBase
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
+    from .base import WorkspaceInfo
+
 logger = getLogger(__name__)
 
 
@@ -37,6 +39,15 @@ class SlackBackend(BackendBase):
             raise ImproperlyConfigured(msg)
 
         self._slack_app = slack_app
+
+    # TODO(lasuillard): Cache workspace info (default an hour, allow force invalidating cache via arg)
+    def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
+        team_info = self._slack_app.client.team_info()
+        team_id = team_info["team"]["id"]
+
+        return {
+            "team_id": team_id,
+        }
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         return self._slack_app.client.chat_postMessage(*args, **kwargs)

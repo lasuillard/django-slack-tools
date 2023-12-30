@@ -1,18 +1,23 @@
 # noqa: D100
 from __future__ import annotations
 
+import json
+import urllib.parse
 from typing import TYPE_CHECKING, cast
 
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
 from django.db.models import Count
 from django.db.models.query import QuerySet
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessagingPolicy
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+    from django_stubs_ext import StrOrPromise
 
     # I can't make any better idea for my experience, extending model instance with annotates
     # If you, reader, knows better one, plz make PR :)
@@ -39,7 +44,27 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             ),
         )
 
-    readonly_fields = ("id", "_count_recipients", "created", "last_modified")
+    @admin.display(description=_("Number of Recipients"))
+    def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
+        return instance.num_recipients
+
+    # TODO(lasuillard): Render payload partially with reserved arguments
+    @admin.display(description=_("Block Kit Builder"))
+    def _block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
+        """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
+        if not instance.template:
+            return _("Template is empty, no link available.")
+
+        workspace_info = app_settings.backend.get_workspace_info()
+        team_id = workspace_info["team_id"]
+        payload_urlencoded = urllib.parse.quote(json.dumps(instance.template))
+        url = f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
+        return format_html("<a href='{url}'>Link</a>", url=url)
+
+    # TODO(lasuillard): Display list of template arguments
+    # TODO(lasuillard): Display available reserved arguments (mentions, etc.)
+
+    readonly_fields = ("id", "_count_recipients", "_block_kit_builder_url", "created", "last_modified")
 
     # Actions
     actions = ()
@@ -56,10 +81,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         ("last_modified", DateFieldListFilter),
     )
 
-    @admin.display(description=_("Number of Recipients"))
-    def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
-        return instance.num_recipients
-
     # Change
     # ------------------------------------------------------------------------
     fieldsets = (
@@ -67,6 +88,12 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             None,
             {
                 "fields": ("code", "enabled", "recipients", "template"),
+            },
+        ),
+        (
+            _("Utility"),
+            {
+                "fields": ("_block_kit_builder_url",),
             },
         ),
         (

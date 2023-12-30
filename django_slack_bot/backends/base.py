@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Sequence, cast
+from typing import TYPE_CHECKING, Any, Sequence, TypedDict, cast
 
 from slack_sdk.errors import SlackApiError
 
@@ -17,6 +17,10 @@ logger = getLogger(__name__)
 
 class BackendBase(ABC):
     """Abstract base class for backends."""
+
+    @abstractmethod
+    def get_workspace_info(self) -> WorkspaceInfo:
+        """Get current Slack workspace info."""
 
     def send_message(  # noqa: PLR0913
         self,
@@ -96,3 +100,9 @@ class BackendBase(ABC):
     @abstractmethod
     def _record_response(self, response: SlackResponse) -> Any:
         """Extract response data to be recorded. Should return JSON-serializable object."""
+
+
+class WorkspaceInfo(TypedDict):
+    """Slack workspace info."""
+
+    team_id: str
