@@ -1,9 +1,12 @@
 """Message recipients model."""
 from __future__ import annotations
 
+from typing import Any
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.choices import MentionType
 from django_slack_bot.utils.model_mixins import TimestampMixin
 
 
@@ -13,19 +16,6 @@ class SlackMentionManager(models.Manager["SlackMention"]):
 
 class SlackMention(TimestampMixin, models.Model):
     """People or group in channels receive messages."""
-
-    class MentionType(models.TextChoices):
-        """Possible mention types."""
-
-        USER = "U", _("User")
-        "User mentions. e.g. `@lasuillard`."
-
-        TEAM = "T", _("Team")
-        "Team mentions. e.g. `@backend`."
-
-        RAW = "R", _("Raw")
-        "System mentions (e.g. `@everyone`) and raw mentions controlled by users. No processing will be applied to this type of mentions."  # noqa: E501
-        # https://slack.com/help/articles/202009646-Notify-a-channel-or-workspace
 
     type = models.CharField(  # noqa: A003
         verbose_name=_("Type"),
@@ -57,3 +47,9 @@ class SlackMention(TimestampMixin, models.Model):
             mention=self.mention,
             type=self.get_type_display(),
         )
+
+    def save(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+        if not self.type:
+            self.type = MentionType.infer(self.mention)
+
+        return super().save(*args, **kwargs)

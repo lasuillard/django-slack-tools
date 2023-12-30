@@ -14,18 +14,18 @@ def _forwards_func(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) -> 
     db_alias: str = schema_editor.connection.alias
     SlackMention = apps.get_model("django_slack_bot", "SlackMention")
 
-    SlackMention.objects.using(db_alias).get_or_create(type="R", name="Here", mention="<!here>")
-    SlackMention.objects.using(db_alias).get_or_create(type="R", name="All", mention="<!all>")
-    SlackMention.objects.using(db_alias).get_or_create(type="R", name="Everyone", mention="<!everyone>")
+    SlackMention.objects.using(db_alias).get_or_create(type="S", name="Here", mention="<!here>")
+    SlackMention.objects.using(db_alias).get_or_create(type="S", name="Channel", mention="<!channel>")
+    SlackMention.objects.using(db_alias).get_or_create(type="S", name="Everyone", mention="<!everyone>")
 
 
 def _reverse_func(apps: StateApps, schema_editor: BaseDatabaseSchemaEditor) -> None:
     db_alias: str = schema_editor.connection.alias
     SlackMention = apps.get_model("django_slack_bot", "SlackMention")
 
-    SlackMention.objects.using(db_alias).filter(type="R", name="Here", mention="<!here>").delete()
-    SlackMention.objects.using(db_alias).filter(type="R", name="All", mention="<!all>").delete()
-    SlackMention.objects.using(db_alias).filter(type="R", name="Everyone", mention="<!everyone>").delete()
+    SlackMention.objects.using(db_alias).filter(type="S", name="Here", mention="<!here>").delete()
+    SlackMention.objects.using(db_alias).filter(type="S", name="Channel", mention="<!channel>").delete()
+    SlackMention.objects.using(db_alias).filter(type="S", name="Everyone", mention="<!everyone>").delete()
 
 
 class Migration(migrations.Migration):
