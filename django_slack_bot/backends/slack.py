@@ -4,10 +4,13 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Callable
 
+from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
+
+from django_slack_bot.utils.cache import generate_cache_key
 
 from .base import BackendBase
 
@@ -22,11 +25,13 @@ logger = getLogger(__name__)
 class SlackBackend(BackendBase):
     """Backend actually sending the messages."""
 
-    def __init__(self, *, slack_app: App | Callable[[], App] | str) -> None:
+    def __init__(self, *, slack_app: App | Callable[[], App] | str, workspace_cache_timeout: int = 60 * 60) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
+            workspace_cache_timeout: Cache timeout for workspace information, in seconds.
+                Defaults to an hour.
         """
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
@@ -39,15 +44,20 @@ class SlackBackend(BackendBase):
             raise ImproperlyConfigured(msg)
 
         self._slack_app = slack_app
+        self._workspace_cache_timeout = workspace_cache_timeout
 
-    # TODO(lasuillard): Cache workspace info (default an hour, allow force invalidating cache via arg)
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
+        cache_key = generate_cache_key(self.get_workspace_info.__name__)
+        if cached := cache.get(cache_key):
+            return cached  # type: ignore[no-any-return]
+
         team_info = self._slack_app.client.team_info()
         team_id = team_info["team"]["id"]
-
-        return {
+        info: WorkspaceInfo = {
             "team_id": team_id,
         }
+        cache.set(key=cache_key, value=info, timeout=self._workspace_cache_timeout)
+        return info
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
         return self._slack_app.client.chat_postMessage(*args, **kwargs)
