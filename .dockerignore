@@ -2,7 +2,6 @@
 
 # Allowed things
 !dev-requirements.txt
-!poetry.lock
 !poetry.toml
 !pyproject.toml
 

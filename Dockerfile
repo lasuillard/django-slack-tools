@@ -35,7 +35,7 @@ COPY dev-requirements.txt ./
 RUN pip install --no-cache-dir -r dev-requirements.txt
 
 # Deps
-COPY poetry.lock poetry.toml pyproject.toml ./
+COPY poetry.toml pyproject.toml ./
 RUN poetry install --verbose --no-ansi --no-interaction --no-root --sync --with dev
 
 VOLUME ["${WORKSPACE}/.venv"]
