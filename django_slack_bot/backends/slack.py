@@ -46,15 +46,25 @@ class SlackBackend(BackendBase):
         self._slack_app = slack_app
         self._workspace_cache_timeout = workspace_cache_timeout
 
+    # TODO(lasuillard): Increase the warm-up performance by calling API in parallel
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
             return cached  # type: ignore[no-any-return]
 
-        team_info = self._slack_app.client.team_info()
-        team_id = team_info["team"]["id"]
+        team: dict = self._slack_app.client.team_info().get("team", default={})
+
+        # TODO(lasuillard): For large workspace (users > 200?) it should handle pagination in future
+        #                   but not considering it for now
+        members: list[dict] = self._slack_app.client.users_list().get("members", default=[])
+        usergroups: list[dict] = self._slack_app.client.usergroups_list().get("usergroups", default=[])
+        channels: list[dict] = self._slack_app.client.conversations_list().get("channels", default=[])
+
         info: WorkspaceInfo = {
-            "team_id": team_id,
+            "team": team,
+            "members": members,
+            "usergroups": usergroups,
+            "channels": channels,
         }
         cache.set(key=cache_key, value=info, timeout=self._workspace_cache_timeout)
         return info

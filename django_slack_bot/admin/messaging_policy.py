@@ -60,11 +60,11 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no blocks.")
 
         workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info["team_id"]
+        team_id = workspace_info["team"]["id"]
         payload = {"blocks": template["blocks"]}
         payload_urlencoded = urllib.parse.quote(json.dumps(payload))
         url = f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
-        return format_html("<a href='{url}'>Link</a>", url=url)
+        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Render payload partially with reserved arguments
     @admin.display(description=_("Attachments Preview"))
@@ -78,11 +78,11 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no attachments.")
 
         workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info["team_id"]
+        team_id = workspace_info["team"]["id"]
         payload = {"attachments": template["attachments"]}
         payload_urlencoded = urllib.parse.quote(json.dumps(payload))
         url = f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
-        return format_html("<a href='{url}'>Link</a>", url=url)
+        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Display list of template arguments
     # TODO(lasuillard): Display available reserved arguments (mentions, etc.)

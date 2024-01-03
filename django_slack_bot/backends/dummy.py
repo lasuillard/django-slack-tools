@@ -19,7 +19,14 @@ class DummyBackend(BackendBase):
 
     def get_workspace_info(self) -> WorkspaceInfo:
         """Returns meaningless, hard-coded info."""
-        return {"team_id": "T000X00XXX0"}
+        return {
+            "team": {
+                "id": "-",
+            },
+            "members": [],
+            "usergroups": [],
+            "channels": [],
+        }
 
     def send_message(self, *args: Any, **kwargs: Any) -> None:
         """This backend will not do anything, just like dummy."""

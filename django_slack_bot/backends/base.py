@@ -102,7 +102,18 @@ class BackendBase(ABC):
         """Extract response data to be recorded. Should return JSON-serializable object."""
 
 
+# TODO(#17): Better typing; inherit Slack app & client instance with type annotations
 class WorkspaceInfo(TypedDict):
     """Slack workspace info."""
 
-    team_id: str
+    # https://api.slack.com/methods/team.info
+    team: dict
+
+    # https://api.slack.com/methods/users.list
+    members: list[dict]
+
+    # https://api.slack.com/methods/usergroups.list
+    usergroups: list[dict]
+
+    # https://api.slack.com/methods/conversations.list
+    channels: list[dict]
