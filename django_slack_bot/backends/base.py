@@ -74,6 +74,7 @@ class BackendBase(ABC):
             if ok:
                 # `str` if OK, otherwise `None`
                 message.ts = cast(str, response.get("ts"))
+                message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
 
             if record_detail:
                 message.request = self._record_request(response)
