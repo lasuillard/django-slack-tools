@@ -32,6 +32,7 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
         SlackMention,
         verbose_name=_("Mentions"),
         help_text=_("List of mentions."),
+        blank=True,
     )
 
     objects: SlackMessageRecipientManager = SlackMessageRecipientManager()
