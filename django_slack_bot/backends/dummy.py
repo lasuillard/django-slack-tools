@@ -22,6 +22,7 @@ class DummyBackend(BackendBase):
         return {
             "team": {
                 "id": "-",
+                "url": "https://example.com/",
             },
             "members": [],
             "usergroups": [],

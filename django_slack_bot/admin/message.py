@@ -1,10 +1,14 @@
 # noqa: D100
 from __future__ import annotations
 
+import urllib.parse
+
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessage
 
 
@@ -12,7 +16,23 @@ from django_slack_bot.models import SlackMessage
 class SlackMessageAdmin(admin.ModelAdmin):
     """Admin for messages."""
 
-    readonly_fields = ("id", "created", "last_modified")
+    readonly_fields = ("id", "_get_permalink", "created", "last_modified")
+
+    @admin.display(description=_("Permalink"))
+    def _get_permalink(self, instance: SlackMessage) -> str:
+        workspace_info = app_settings.backend.get_workspace_info()
+        team_url = workspace_info["team"]["url"]
+        if not instance.ts:
+            return ""
+
+        url = urllib.parse.urljoin(
+            base=team_url,
+            url="/archives/{channel}/{ts}".format(
+                channel=instance.channel,
+                ts="p{ts}".format(ts=instance.ts.replace(".", "")),
+            ),
+        )
+        return format_html("<a href='{url}'>Permalink</a>", url=url)
 
     # Actions
     actions = ()
@@ -22,7 +42,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
     # ------------------------------------------------------------------------
     date_hierarchy = "created"
     search_fields = ("id", "ts", "parent_ts", "policy__code", "channel")
-    list_display = ("id", "ts", "ok", "policy", "channel", "parent_ts", "created", "last_modified")
+    list_display = ("id", "ts", "ok", "policy", "channel", "parent_ts", "_get_permalink", "created", "last_modified")
     list_display_links = ("id", "ts")
     list_select_related = ("policy",)
     list_filter = (
@@ -38,7 +58,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "body"),
+                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "_get_permalink", "body"),
             },
         ),
         (
