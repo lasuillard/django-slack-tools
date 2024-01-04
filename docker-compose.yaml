@@ -15,5 +15,3 @@ services:
       CONTAINER: 1
     command: sleep infinity
     init: true
-    volumes:
-      - ./ngrok/config.yaml:/root/.config/ngrok/ngrok.yml  # NOTE: ngrok does not use config if suffixed `.yaml`

@@ -26,13 +26,13 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 RUN pip install --no-cache-dir poetry
 
+# Dev tools
+COPY dev-requirements.txt /tmp/dev-requirements.txt
+RUN pip install --no-cache-dir -r /tmp/dev-requirements.txt
+
 ARG WORKSPACE="/workspace"
 
 WORKDIR "${WORKSPACE}"
-
-# Dev tools
-COPY dev-requirements.txt ./
-RUN pip install --no-cache-dir -r dev-requirements.txt
 
 # Deps
 COPY poetry.toml pyproject.toml ./
@@ -45,5 +45,8 @@ RUN git config --system --add safe.directory "${WORKSPACE}"
 # Python control variables
 ENV PYTHONUNBUFFERED="1"
 ENV PYTHONPATH="${WORKSPACE}:${PYTHONPATH}"
+
+# Some config files
+COPY ngrok/config.yaml ~/.config/ngrok/ngrok.yml
 
 HEALTHCHECK NONE

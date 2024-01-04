@@ -1,6 +1,7 @@
 **
 
 # Allowed things
+!ngrok/config.yaml
 !dev-requirements.txt
 !poetry.toml
 !pyproject.toml
