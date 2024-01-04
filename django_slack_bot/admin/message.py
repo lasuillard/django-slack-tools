@@ -1,7 +1,7 @@
 # noqa: D100
 from __future__ import annotations
 
-import urllib.parse
+from typing import TYPE_CHECKING
 
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
@@ -11,6 +11,9 @@ from django.utils.translation import gettext_lazy as _
 from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessage
 
+if TYPE_CHECKING:
+    from django_stubs_ext import StrOrPromise
+
 
 @admin.register(SlackMessage)
 class SlackMessageAdmin(admin.ModelAdmin):
@@ -19,20 +22,14 @@ class SlackMessageAdmin(admin.ModelAdmin):
     readonly_fields = ("id", "_get_permalink", "created", "last_modified")
 
     @admin.display(description=_("Permalink"))
-    def _get_permalink(self, instance: SlackMessage) -> str:
+    def _get_permalink(self, instance: SlackMessage) -> StrOrPromise:
         workspace_info = app_settings.backend.get_workspace_info()
         team_url = workspace_info["team"]["url"]
-        if not instance.ts:
-            return ""
+        url = instance.get_permalink(team_url=team_url)
+        if not url:
+            return _("No permalink")
 
-        url = urllib.parse.urljoin(
-            base=team_url,
-            url="/archives/{channel}/{ts}".format(
-                channel=instance.channel,
-                ts="p{ts}".format(ts=instance.ts.replace(".", "")),
-            ),
-        )
-        return format_html("<a href='{url}'>Permalink</a>", url=url)
+        return format_html("<a href='{url}'>{title}</a>", url=url, title=_("Permalink"))
 
     # Actions
     actions = ()
