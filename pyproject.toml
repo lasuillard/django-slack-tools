@@ -25,7 +25,7 @@ pytest-django = "^4.7.0"
 django-stubs = { extras = ["compatible-mypy"], version = "^4.2.7" }
 ipykernel = "^6.27.1"
 celery = "^5.3.6"
-faker = "^21.0.0"
+faker = "^22.0.0"
 factory-boy = "^3.3.0"
 django-extensions = "^3.2.3"
 django-debug-toolbar = "^4.2.0"
