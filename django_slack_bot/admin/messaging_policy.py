@@ -1,8 +1,6 @@
 # noqa: D100
 from __future__ import annotations
 
-import json
-import urllib.parse
 from typing import TYPE_CHECKING, cast
 
 from django.contrib import admin
@@ -14,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessagingPolicy
+from django_slack_bot.utils.slack import get_block_kit_builder_url
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -61,9 +60,10 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
         workspace_info = app_settings.backend.get_workspace_info()
         team_id = workspace_info["team"]["id"]
-        payload = {"blocks": template["blocks"]}
-        payload_urlencoded = urllib.parse.quote(json.dumps(payload))
-        url = f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
+        url = get_block_kit_builder_url(
+            team_id=team_id,
+            payload={"blocks": template["blocks"]},
+        )
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Render payload partially with reserved arguments
@@ -79,9 +79,10 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
         workspace_info = app_settings.backend.get_workspace_info()
         team_id = workspace_info["team"]["id"]
-        payload = {"attachments": template["attachments"]}
-        payload_urlencoded = urllib.parse.quote(json.dumps(payload))
-        url = f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
+        url = get_block_kit_builder_url(
+            team_id=team_id,
+            payload={"attachments": template["attachments"]},
+        )
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Display list of template arguments
