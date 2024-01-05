@@ -30,7 +30,12 @@
   },
   "yaml.format.enable": true,
   "json.format.enable": true,
-  "cSpell.words": [],
+  "cSpell.words": [
+    "lasuillard",
+    "Pylance",
+    "usergroup",
+    "usergroups"
+  ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
   "python.testing.pytestArgs": [

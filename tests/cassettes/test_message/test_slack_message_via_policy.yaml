@@ -1,271 +1,72 @@
 interactions:
 - request:
-    body: '{"channel": "D069G3W44SY", "attachments": [{"color": "#eb4034", "text":
-      ":warning:  This message was originally sent to channel *#xavvnuLeHSwznNlcTgSE*
+    body: '{"channel": "<REDACTED>", "attachments": [{"color": "#eb4034", "text":
+      ":warning:  This message was originally sent to channel *#zAWpkDtgPerPJOIzOuWK*
       but redirected here."}], "blocks": [{"type": "section", "text": {"type": "mrkdwn",
-      "text": "Hello, World!, <@XyrxDcvXQisx>, <@pmYbJuWxsCbX>"}}]}'
-    headers:
-      Connection:
-      - close
-      Content-Length:
-      - '296'
-      Content-Type:
-      - application/json;charset=utf-8
-      Host:
-      - www.slack.com
-      User-Agent:
-      - Bolt/1.18.1 Python/3.8.18 slackclient/3.26.1 Linux/6.2.0-1018-azure
+      "text": "Nice to meet you, <@kYUAGgyrXdWu>, <@RXnvtGDaOfzg>"}}]}'
+    headers: {}
     method: POST
     uri: https://www.slack.com/api/chat.postMessage
   response:
     body:
-      string: '{"ok":true,"channel":"D069G3W44SY","ts":"1703677520.463479","message":{"bot_id":"B069DGRTW7M","type":"message","text":"Hello,
-        World!, <@XyrxDcvXQisx>, <@pmYbJuWxsCbX>","user":"U06A2DMBTTJ","ts":"1703677520.463479","app_id":"A069DG9QS91","blocks":[{"type":"section","block_id":"vq+zA","text":{"type":"mrkdwn","text":"Hello,
-        World!, <@XyrxDcvXQisx>, <@pmYbJuWxsCbX>","verbatim":false}}],"team":"T030E52QPT5","bot_profile":{"id":"B069DGRTW7M","app_id":"A069DG9QS91","name":"Test
-        Bot","icons":{"image_36":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_36.jpg","image_48":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_48.jpg","image_72":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_72.jpg"},"deleted":false,"updated":1702100193,"team_id":"T030E52QPT5"},"attachments":[{"id":1,"color":"eb4034","fallback":":warning:  This
-        message was originally sent to channel *#xavvnuLeHSwznNlcTgSE* but redirected
-        here.","text":":warning:  This message was originally sent to channel *#xavvnuLeHSwznNlcTgSE*
-        but redirected here."}]}}'
-    headers:
-      access-control-allow-headers:
-      - slack-route, x-slack-version-ts, x-b3-traceid, x-b3-spanid, x-b3-parentspanid,
-        x-b3-sampled, x-b3-flags
-      access-control-allow-origin:
-      - '*'
-      access-control-expose-headers:
-      - x-slack-req-id, retry-after
-      cache-control:
-      - private, no-cache, no-store, must-revalidate
-      connection:
-      - close
-      content-length:
-      - '1121'
-      content-type:
-      - application/json; charset=utf-8
-      date:
-      - Wed, 27 Dec 2023 11:45:20 GMT
-      expires:
-      - Sat, 26 Jul 1997 05:00:00 GMT
-      pragma:
-      - no-cache
-      referrer-policy:
-      - no-referrer
-      server:
-      - Apache
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      vary:
-      - Accept-Encoding
-      via:
-      - 1.1 slack-prod.tinyspeck.com, envoy-www-iad-fgritxjc, envoy-edge-nrt-bvijyxtr
-      x-accepted-oauth-scopes:
-      - chat:write
-      x-backend:
-      - main_normal main_canary_with_overflow main_control_with_overflow
-      x-content-type-options:
-      - nosniff
-      x-edge-backend:
-      - envoy-www
-      x-envoy-attempt-count:
-      - '1'
-      x-envoy-upstream-service-time:
-      - '216'
-      x-oauth-scopes:
-      - chat:write,app_mentions:read,channels:read,mpim:read,im:read,groups:read,users:read,usergroups:read,team:read,usergroups:write,chat:write.customize
-      x-server:
-      - slack-www-hhvm-main-iad-tgne
-      x-slack-backend:
-      - r
-      x-slack-edge-shared-secret-outcome:
-      - no-match
-      x-slack-req-id:
-      - 32fc533f74ed0e722be503444f0b77b4
-      x-slack-shared-secret-outcome:
-      - no-match
-      x-slack-unique-id:
-      - ZYwOUB4a2xspCt3wMniSLgAAEBs
-      x-xss-protection:
-      - '0'
+      string: '{"ok": true, "channel": "<REDACTED>", "ts": "1703857090.526999", "message":
+        {"bot_id": "<REDACTED>", "type": "message", "text": "Nice to meet you, <@kYUAGgyrXdWu>,
+        <@RXnvtGDaOfzg>", "user": "<REDACTED>", "ts": "1703857090.526999", "app_id":
+        "<REDACTED>", "blocks": [{"type": "section", "block_id": "0zXtO", "text":
+        {"type": "mrkdwn", "text": "Nice to meet you, <@kYUAGgyrXdWu>, <@RXnvtGDaOfzg>",
+        "verbatim": false}}], "team": "<REDACTED>", "bot_profile": {}, "attachments":
+        [{"id": 1, "color": "eb4034", "fallback": ":warning:  This message was originally
+        sent to channel *#zAWpkDtgPerPJOIzOuWK* but redirected here.", "text": ":warning:  This
+        message was originally sent to channel *#zAWpkDtgPerPJOIzOuWK* but redirected
+        here."}]}}'
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
-    body: '{"channel": "D069G3W44SY", "attachments": [{"color": "#eb4034", "text":
-      ":warning:  This message was originally sent to channel *#cxUzJNyuENyNXXvwdHUz*
+    body: '{"channel": "<REDACTED>", "attachments": [{"color": "#eb4034", "text":
+      ":warning:  This message was originally sent to channel *#JrghdoyJLLqRvmYnAQLb*
       but redirected here."}], "blocks": [{"type": "section", "text": {"type": "mrkdwn",
-      "text": "Hello, World!, <@ByPMMSgQbLmO>, <@wsNWGbALhKMu>"}}]}'
-    headers:
-      Connection:
-      - close
-      Content-Length:
-      - '296'
-      Content-Type:
-      - application/json;charset=utf-8
-      Host:
-      - www.slack.com
-      User-Agent:
-      - Bolt/1.18.1 Python/3.8.18 slackclient/3.26.1 Linux/6.2.0-1018-azure
+      "text": "Nice to meet you, <@CFoXoNcsqLNg>, <@CTDzGonwopXx>"}}]}'
+    headers: {}
     method: POST
     uri: https://www.slack.com/api/chat.postMessage
   response:
     body:
-      string: '{"ok":true,"channel":"D069G3W44SY","ts":"1703677520.925839","message":{"bot_id":"B069DGRTW7M","type":"message","text":"Hello,
-        World!, <@ByPMMSgQbLmO>, <@wsNWGbALhKMu>","user":"U06A2DMBTTJ","ts":"1703677520.925839","app_id":"A069DG9QS91","blocks":[{"type":"section","block_id":"Ifv3i","text":{"type":"mrkdwn","text":"Hello,
-        World!, <@ByPMMSgQbLmO>, <@wsNWGbALhKMu>","verbatim":false}}],"team":"T030E52QPT5","bot_profile":{"id":"B069DGRTW7M","app_id":"A069DG9QS91","name":"Test
-        Bot","icons":{"image_36":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_36.jpg","image_48":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_48.jpg","image_72":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_72.jpg"},"deleted":false,"updated":1702100193,"team_id":"T030E52QPT5"},"attachments":[{"id":1,"color":"eb4034","fallback":":warning:  This
-        message was originally sent to channel *#cxUzJNyuENyNXXvwdHUz* but redirected
-        here.","text":":warning:  This message was originally sent to channel *#cxUzJNyuENyNXXvwdHUz*
-        but redirected here."}]}}'
-    headers:
-      access-control-allow-headers:
-      - slack-route, x-slack-version-ts, x-b3-traceid, x-b3-spanid, x-b3-parentspanid,
-        x-b3-sampled, x-b3-flags
-      access-control-allow-origin:
-      - '*'
-      access-control-expose-headers:
-      - x-slack-req-id, retry-after
-      cache-control:
-      - private, no-cache, no-store, must-revalidate
-      connection:
-      - close
-      content-length:
-      - '1121'
-      content-type:
-      - application/json; charset=utf-8
-      date:
-      - Wed, 27 Dec 2023 11:45:20 GMT
-      expires:
-      - Sat, 26 Jul 1997 05:00:00 GMT
-      pragma:
-      - no-cache
-      referrer-policy:
-      - no-referrer
-      server:
-      - Apache
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      vary:
-      - Accept-Encoding
-      via:
-      - 1.1 slack-prod.tinyspeck.com, envoy-www-iad-vysnvkun, envoy-edge-nrt-ihabildp
-      x-accepted-oauth-scopes:
-      - chat:write
-      x-backend:
-      - main_normal main_canary_with_overflow main_control_with_overflow
-      x-content-type-options:
-      - nosniff
-      x-edge-backend:
-      - envoy-www
-      x-envoy-attempt-count:
-      - '1'
-      x-envoy-upstream-service-time:
-      - '216'
-      x-oauth-scopes:
-      - chat:write,app_mentions:read,channels:read,mpim:read,im:read,groups:read,users:read,usergroups:read,team:read,usergroups:write,chat:write.customize
-      x-server:
-      - slack-www-hhvm-main-iad-ajlv
-      x-slack-backend:
-      - r
-      x-slack-edge-shared-secret-outcome:
-      - no-match
-      x-slack-req-id:
-      - 7bf99959fa752fc5155f3e0d9ac92f1b
-      x-slack-shared-secret-outcome:
-      - no-match
-      x-slack-unique-id:
-      - ZYwOUGXMDM6nsz_QJL-XjQAAMBI
-      x-xss-protection:
-      - '0'
+      string: '{"ok": true, "channel": "<REDACTED>", "ts": "1703857090.999219", "message":
+        {"bot_id": "<REDACTED>", "type": "message", "text": "Nice to meet you, <@CFoXoNcsqLNg>,
+        <@CTDzGonwopXx>", "user": "<REDACTED>", "ts": "1703857090.999219", "app_id":
+        "<REDACTED>", "blocks": [{"type": "section", "block_id": "eEdFo", "text":
+        {"type": "mrkdwn", "text": "Nice to meet you, <@CFoXoNcsqLNg>, <@CTDzGonwopXx>",
+        "verbatim": false}}], "team": "<REDACTED>", "bot_profile": {}, "attachments":
+        [{"id": 1, "color": "eb4034", "fallback": ":warning:  This message was originally
+        sent to channel *#JrghdoyJLLqRvmYnAQLb* but redirected here.", "text": ":warning:  This
+        message was originally sent to channel *#JrghdoyJLLqRvmYnAQLb* but redirected
+        here."}]}}'
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
-    body: '{"channel": "D069G3W44SY", "attachments": [{"color": "#eb4034", "text":
-      ":warning:  This message was originally sent to channel *#CDrrCJDcLBqCPTPWWqLd*
+    body: '{"channel": "<REDACTED>", "attachments": [{"color": "#eb4034", "text":
+      ":warning:  This message was originally sent to channel *#thHAVylaXrebILwNDtNi*
       but redirected here."}], "blocks": [{"type": "section", "text": {"type": "mrkdwn",
-      "text": "Hello, World!, <!here>"}}]}'
-    headers:
-      Connection:
-      - close
-      Content-Length:
-      - '271'
-      Content-Type:
-      - application/json;charset=utf-8
-      Host:
-      - www.slack.com
-      User-Agent:
-      - Bolt/1.18.1 Python/3.8.18 slackclient/3.26.1 Linux/6.2.0-1018-azure
+      "text": "Nice to meet you, <!here>"}}]}'
+    headers: {}
     method: POST
     uri: https://www.slack.com/api/chat.postMessage
   response:
     body:
-      string: '{"ok":true,"channel":"D069G3W44SY","ts":"1703677521.402829","message":{"bot_id":"B069DGRTW7M","type":"message","text":"Hello,
-        World!, <!here>","user":"U06A2DMBTTJ","ts":"1703677521.402829","app_id":"A069DG9QS91","blocks":[{"type":"section","block_id":"ZkxWx","text":{"type":"mrkdwn","text":"Hello,
-        World!, <!here>","verbatim":false}}],"team":"T030E52QPT5","bot_profile":{"id":"B069DGRTW7M","app_id":"A069DG9QS91","name":"Test
-        Bot","icons":{"image_36":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_36.jpg","image_48":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_48.jpg","image_72":"https:\/\/avatars.slack-edge.com\/2023-12-08\/6322122918868_7fe7528423c0562e6f85_72.jpg"},"deleted":false,"updated":1702100193,"team_id":"T030E52QPT5"},"attachments":[{"id":1,"color":"eb4034","fallback":":warning:  This
-        message was originally sent to channel *#CDrrCJDcLBqCPTPWWqLd* but redirected
-        here.","text":":warning:  This message was originally sent to channel *#CDrrCJDcLBqCPTPWWqLd*
+      string: '{"ok": true, "channel": "<REDACTED>", "ts": "1703857091.463069", "message":
+        {"bot_id": "<REDACTED>", "type": "message", "text": "Nice to meet you, <!here>",
+        "user": "<REDACTED>", "ts": "1703857091.463069", "app_id": "<REDACTED>", "blocks":
+        [{"type": "section", "block_id": "/T7jS", "text": {"type": "mrkdwn", "text":
+        "Nice to meet you, <!here>", "verbatim": false}}], "team": "<REDACTED>", "bot_profile":
+        {}, "attachments": [{"id": 1, "color": "eb4034", "fallback": ":warning:  This
+        message was originally sent to channel *#thHAVylaXrebILwNDtNi* but redirected
+        here.", "text": ":warning:  This message was originally sent to channel *#thHAVylaXrebILwNDtNi*
         but redirected here."}]}}'
-    headers:
-      access-control-allow-headers:
-      - slack-route, x-slack-version-ts, x-b3-traceid, x-b3-spanid, x-b3-parentspanid,
-        x-b3-sampled, x-b3-flags
-      access-control-allow-origin:
-      - '*'
-      access-control-expose-headers:
-      - x-slack-req-id, retry-after
-      cache-control:
-      - private, no-cache, no-store, must-revalidate
-      connection:
-      - close
-      content-length:
-      - '1071'
-      content-type:
-      - application/json; charset=utf-8
-      date:
-      - Wed, 27 Dec 2023 11:45:21 GMT
-      expires:
-      - Sat, 26 Jul 1997 05:00:00 GMT
-      pragma:
-      - no-cache
-      referrer-policy:
-      - no-referrer
-      server:
-      - Apache
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      vary:
-      - Accept-Encoding
-      via:
-      - 1.1 slack-prod.tinyspeck.com, envoy-www-iad-wmrfngpz, envoy-edge-nrt-tqkhukob
-      x-accepted-oauth-scopes:
-      - chat:write
-      x-backend:
-      - main_normal main_canary_with_overflow main_control_with_overflow
-      x-content-type-options:
-      - nosniff
-      x-edge-backend:
-      - envoy-www
-      x-envoy-attempt-count:
-      - '1'
-      x-envoy-upstream-service-time:
-      - '216'
-      x-oauth-scopes:
-      - chat:write,app_mentions:read,channels:read,mpim:read,im:read,groups:read,users:read,usergroups:read,team:read,usergroups:write,chat:write.customize
-      x-server:
-      - slack-www-hhvm-main-iad-ueip
-      x-slack-backend:
-      - r
-      x-slack-edge-shared-secret-outcome:
-      - no-match
-      x-slack-req-id:
-      - 70985815f2f282441932fdffaa570d27
-      x-slack-shared-secret-outcome:
-      - no-match
-      x-slack-unique-id:
-      - ZYwOUQ7LEkj2a-e5MnK-mQAAEDs
-      x-xss-protection:
-      - '0'
+    headers: {}
     status:
       code: 200
       message: OK

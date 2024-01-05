@@ -1,6 +1,8 @@
 """Message model."""
 from __future__ import annotations
 
+import urllib.parse
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -88,3 +90,25 @@ class SlackMessage(TimestampMixin, models.Model):
             return _("Message ({id}, not OK)").format(id=self.id)
 
         return _("Message ({id}, not sent)").format(id=self.id)
+
+    def get_permalink(self, *, team_url: str) -> str | None:
+        """Returns permalink to current message.
+
+        Slack app already provides `.chat_getPermalink()` method for this purpose, but as we have
+        all the necessary information, generate one for efficiency.
+
+        Args:
+            team_url: URL of current Slack team, e.g. `"https://awesome.slack.com/"`
+
+        Returns:
+            Permalink to this message instance.
+        """
+        if not self.ts:
+            return None
+
+        ts = "p{ts}".format(ts=self.ts.replace(".", ""))
+        path = f"/archives/{self.channel}/{ts}"
+        if self.parent_ts:
+            path += f"?thread_ts={self.parent_ts}&cid={self.channel}"
+
+        return urllib.parse.urljoin(base=team_url, url=path)

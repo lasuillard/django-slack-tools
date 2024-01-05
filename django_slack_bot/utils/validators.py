@@ -10,10 +10,10 @@ from django.utils.translation import gettext_lazy as _
 def dict_template_validator(value: Any) -> None:
     """Validate given value is valid dictionary template."""
     if value is None:  # No-op template, should work equally to empty dict `{}`
-        pass
+        return
 
     if not isinstance(value, dict):
         raise ValidationError(
-            _("Given object is not dictionary"),
+            _("Given object is not a dictionary: %(value)r"),
             params={"value": value},
         )

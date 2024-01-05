@@ -9,10 +9,12 @@ from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessageRecipient
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+    from django_stubs_ext import StrOrPromise
 
     class SlackMessageRecipientWithAnnotates(SlackMessageRecipient):  # noqa: D101
         num_mentions: int
@@ -33,7 +35,17 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
             ),
         )
 
-    readonly_fields = ("id", "created", "last_modified")
+    @admin.display(description=_("Channel Name"))
+    def _get_channel_name(self, instance: SlackMessageRecipient) -> StrOrPromise:
+        workspace_info = app_settings.backend.get_workspace_info()
+        for channel in workspace_info["channels"]:
+            if channel["id"] == instance.channel:
+                return "#{channel}".format(channel=channel["name"])
+
+        # In cases of channel not exist, bot is not in channel, DM between user and bot, etc.
+        return _("?")
+
+    readonly_fields = ("id", "_get_channel_name", "created", "last_modified")
 
     # Actions
     actions = ()
@@ -41,8 +53,8 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
     # Changelist
     # ------------------------------------------------------------------------
     date_hierarchy = "last_modified"
-    search_fields = ("alias", "channel")  # TODO(lasuillard): Search by mention
-    list_display = ("id", "alias", "channel", "_num_mentions", "created", "last_modified")
+    search_fields = ("alias", "channel", "mentions__mention")
+    list_display = ("id", "alias", "channel", "_get_channel_name", "_num_mentions", "created", "last_modified")
     list_display_links = ("id", "alias")
     list_filter = (
         ("created", DateFieldListFilter),
@@ -59,7 +71,7 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("alias", "channel", "mentions"),
+                "fields": ("alias", "channel", "_get_channel_name", "mentions"),
             },
         ),
         (

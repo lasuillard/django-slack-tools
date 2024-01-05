@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 
 from django_slack_bot.models import SlackMessage
-from tests._helpers import ModelTestBase
 
 from ._factories import SlackMessageFactory
+from ._helpers import ModelTestBase
 
 
 class TestSlackMessage(ModelTestBase):

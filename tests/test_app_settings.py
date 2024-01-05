@@ -78,7 +78,7 @@ class TestAppSettings:
     def test_raises_if_backend_is_not_subclass_of_base_class(self) -> None:
         with pytest.raises(
             ImproperlyConfigured,
-            match="Provided backend is not a subclass of `django_slack_bot.backends.BackendBase` class.",
+            match="Provided backend is not a subclass of `django_slack_bot.backends.base.BackendBase` class.",
         ):
             AppSettings(
                 {

@@ -24,7 +24,7 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
     )
     channel = models.CharField(
         verbose_name=_("Channel"),
-        help_text=_("Slack channel where messages will be sent."),
+        help_text=_("Slack channel ID where messages will be sent."),
         blank=False,
         max_length=128,
     )
@@ -32,6 +32,7 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
         SlackMention,
         verbose_name=_("Mentions"),
         help_text=_("List of mentions."),
+        blank=True,
     )
 
     objects: SlackMessageRecipientManager = SlackMessageRecipientManager()

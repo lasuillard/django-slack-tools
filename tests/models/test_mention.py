@@ -4,10 +4,11 @@ from typing import Any
 
 import pytest
 
+from django_slack_bot.choices import MentionType
 from django_slack_bot.models import SlackMention
-from tests._helpers import ModelTestBase
 
 from ._factories import SlackMentionFactory
+from ._helpers import ModelTestBase
 
 
 class TestSlackMention(ModelTestBase):
@@ -18,16 +19,16 @@ class TestSlackMention(ModelTestBase):
         argnames=["kwargs", "expect"],
         argvalues=[
             [
-                {"type": SlackMention.MentionType.RAW, "name": "Here", "mention": "<!here>"},
-                "Here (<!here>, Raw)",
+                {"type": MentionType.SPECIAL, "name": "Here", "mention": "<!here>"},
+                "Here (<!here>, Special)",
             ],
             [
-                {"type": SlackMention.MentionType.USER, "name": "lasuillard", "mention": "<@U0000000000>"},
+                {"type": MentionType.USER, "name": "lasuillard", "mention": "<@U0000000000>"},
                 "lasuillard (<@U0000000000>, User)",
             ],
             [
-                {"type": SlackMention.MentionType.TEAM, "name": "Backend", "mention": "<subteam^T0000000000>"},
-                "Backend (<subteam^T0000000000>, Team)",
+                {"type": MentionType.GROUP, "name": "Backend", "mention": "<subteam^T0000000000>"},
+                "Backend (<subteam^T0000000000>, Group)",
             ],
         ],
         ids=["special mention", "user mention", "team mention"],

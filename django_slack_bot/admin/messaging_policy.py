@@ -7,12 +7,16 @@ from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
 from django.db.models import Count
 from django.db.models.query import QuerySet
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessagingPolicy
+from django_slack_bot.utils.slack import get_block_kit_builder_url
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
+    from django_stubs_ext import StrOrPromise
 
     # I can't make any better idea for my experience, extending model instance with annotates
     # If you, reader, knows better one, plz make PR :)
@@ -39,7 +43,59 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             ),
         )
 
-    readonly_fields = ("id", "_count_recipients", "created", "last_modified")
+    @admin.display(description=_("Number of Recipients"))
+    def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
+        return instance.num_recipients
+
+    # TODO(lasuillard): Render payload partially with reserved arguments
+    @admin.display(description=_("Blocks Preview"))
+    def _blocks_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
+        """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
+        template = instance.template
+        if not instance.template:
+            return _("Template is empty, no link available.")
+
+        if "blocks" not in template:
+            return _("Template has no blocks.")
+
+        workspace_info = app_settings.backend.get_workspace_info()
+        team_id = workspace_info["team"]["id"]
+        url = get_block_kit_builder_url(
+            team_id=team_id,
+            payload={"blocks": template["blocks"]},
+        )
+        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+
+    # TODO(lasuillard): Render payload partially with reserved arguments
+    @admin.display(description=_("Attachments Preview"))
+    def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
+        """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
+        template = instance.template
+        if not instance.template:
+            return _("Template is empty, no link available.")
+
+        if "attachments" not in template:
+            return _("Template has no attachments.")
+
+        workspace_info = app_settings.backend.get_workspace_info()
+        team_id = workspace_info["team"]["id"]
+        url = get_block_kit_builder_url(
+            team_id=team_id,
+            payload={"attachments": template["attachments"]},
+        )
+        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+
+    # TODO(lasuillard): Display list of template arguments
+    # TODO(lasuillard): Display available reserved arguments (mentions, etc.)
+
+    readonly_fields = (
+        "id",
+        "_count_recipients",
+        "_blocks_block_kit_builder_url",
+        "_attachments_block_kit_builder_url",
+        "created",
+        "last_modified",
+    )
 
     # Actions
     actions = ()
@@ -56,10 +112,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         ("last_modified", DateFieldListFilter),
     )
 
-    @admin.display(description=_("Number of Recipients"))
-    def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
-        return instance.num_recipients
-
     # Change
     # ------------------------------------------------------------------------
     fieldsets = (
@@ -67,6 +119,12 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             None,
             {
                 "fields": ("code", "enabled", "recipients", "template"),
+            },
+        ),
+        (
+            _("Utility"),
+            {
+                "fields": ("_blocks_block_kit_builder_url", "_attachments_block_kit_builder_url"),
             },
         ),
         (

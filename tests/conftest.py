@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import os
+import re
 from typing import TYPE_CHECKING, Generator
 
 import pytest
@@ -11,14 +13,43 @@ from django_slack_bot.backends import SlackRedirectBackend
 
 if TYPE_CHECKING:
     from pytest import FixtureRequest  # noqa: PT013
+    from vcr.request import Request
 
 
 @pytest.fixture(scope="session")
 def vcr_config() -> dict:
+    """VCR cassette configurations.
+
+    To minimize changes on cassettes by test update, some headers and data fields are reduced, removed or
+    substituted.
+    """
+
+    def scrub_id(s: str) -> str:
+        return re.sub(r"[0-9A-Z]{11}", "<REDACTED>", s)
+
+    def before_record_request(request: Request) -> Request:
+        request.headers = {}  # No header needed in tests (yet)
+        request.body = scrub_id(request.body.decode())
+
+        return request
+
+    def before_record_response(response: dict) -> dict:
+        response["headers"] = {}  # No header needed in tests (yet)
+
+        # Filter response data
+        body: dict = json.loads(response["body"]["string"])
+        body["message"]["bot_profile"] = {}
+        response["body"]["string"] = scrub_id(json.dumps(body)).encode()
+
+        return response
+
     return {
-        # Filter out authorization header in request containing Slack token
-        "filter_headers": ["authorization"],
+        "before_record_request": before_record_request,
+        "before_record_response": before_record_response,
     }
+
+
+# TODO(lasuillard): Test settings quite dirty and not straightforward; need refactor
 
 
 @pytest.fixture(scope="session")
@@ -41,27 +72,34 @@ def slack_app(request: FixtureRequest) -> App:
     return App(token=token, signing_secret=signing_secret, token_verification_enabled=False)
 
 
+@pytest.fixture(scope="session")
+def slack_channel(request: FixtureRequest) -> str:
+    vcr_mode = request.config.getoption("--record-mode")
+    if vcr_mode in ("none", None):
+        return "test-channel"
+
+    return os.environ["TEST_SLACK_CHANNEL"]
+
+
 @pytest.fixture()
-def slack_redirect_backend(request: FixtureRequest, slack_app: App) -> Generator[SlackRedirectBackend, None, None]:
-    """Use Slack redirect backend for a test.
+def redirect_slack(
+    slack_app: App,
+    slack_channel: str,
+) -> Generator[None, None, None]:
+    """Replace app backend to Slack redirect backend temporarily.
 
     CAUTION: This will actually send messages to specified channel with given bot credentials.
 
     It replaces global backend with `SlackRedirectBackend` with app instance taken from `slack_app` fixture.
-    In addition, `"TEST_SLACK_REDIRECT_CHANNEL"` environment variable should be provided.
+    In addition, `"TEST_SLACK_CHANNEL"` environment variable should be provided.
     """
-    vcr_mode = request.config.getoption("--record-mode")
-    redirect_channel = "redirect-channel"
-    if vcr_mode not in ("none", None):
-        redirect_channel = os.environ["TEST_SLACK_REDIRECT_CHANNEL"]
-
     old_backend = app_settings.backend
 
     # Swap app global backend temporarily
     app_settings.backend = SlackRedirectBackend(
         slack_app=slack_app,
-        redirect_channel=redirect_channel,
+        redirect_channel=slack_channel,
     )
-    yield app_settings.backend
+    yield None
 
     app_settings.backend = old_backend

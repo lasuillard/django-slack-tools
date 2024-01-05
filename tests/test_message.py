@@ -1,20 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 
 from django_slack_bot.message import slack_message, slack_message_via_policy
 from django_slack_bot.models import SlackMessage
 from tests.models._factories import SlackMentionFactory, SlackMessageRecipientFactory, SlackMessagingPolicyFactory
 
-if TYPE_CHECKING:
-    from django_slack_bot.backends import SlackRedirectBackend
 
-
+@pytest.mark.slack()
 @pytest.mark.vcr()
 @pytest.mark.django_db()
-def test_slack_message(slack_redirect_backend: SlackRedirectBackend) -> None:  # noqa: ARG001
+def test_slack_message(redirect_slack: None) -> None:  # noqa: ARG001
     msg = slack_message("Hello, World!", channel="whatever-channel")
     assert isinstance(msg, SlackMessage)
     msg_from_db = SlackMessage.objects.get(id=msg.id)
@@ -22,9 +18,10 @@ def test_slack_message(slack_redirect_backend: SlackRedirectBackend) -> None:  #
     assert msg_from_db.ok
 
 
+@pytest.mark.slack()
 @pytest.mark.vcr()
 @pytest.mark.django_db()
-def test_slack_message_via_policy(slack_redirect_backend: SlackRedirectBackend) -> None:  # noqa: ARG001
+def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),

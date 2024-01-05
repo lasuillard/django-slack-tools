@@ -4,8 +4,8 @@ from __future__ import annotations
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.utils import validators
 from django_slack_bot.utils.model_mixins import TimestampMixin
+from django_slack_bot.utils.validators import dict_template_validator
 
 from .message_recipient import SlackMessageRecipient
 
@@ -36,7 +36,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
     template = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),
-        validators=[validators.dict_template_validator],
+        validators=[dict_template_validator],
         null=True,
         blank=True,
     )
