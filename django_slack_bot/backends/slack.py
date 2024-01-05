@@ -17,6 +17,8 @@ from .base import BackendBase
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
+    from django_slack_bot.utils.slack import MessageBody, MessageHeader
+
     from .base import WorkspaceInfo
 
 logger = getLogger(__name__)
@@ -50,7 +52,7 @@ class SlackBackend(BackendBase):
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return cached  # type: ignore[no-any-return]
+            return cached
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 
@@ -69,11 +71,11 @@ class SlackBackend(BackendBase):
         cache.set(key=cache_key, value=info, timeout=self._workspace_cache_timeout)
         return info
 
-    def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
-        return self._slack_app.client.chat_postMessage(*args, **kwargs)
+    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:
+        return self._slack_app.client.chat_postMessage(channel=channel, **header.model_dump(), **body.model_dump())
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        return response.req_args
+        return response.req_args  # type: ignore[no-any-return]
 
     def _record_response(self, response: SlackResponse) -> dict[str, Any]:
         return {
@@ -102,21 +104,16 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
+    def _send_message(self, *, channel: str, body: MessageBody, **kwargs: Any) -> SlackResponse | None:
         # Modify channel to force messages always sent to specific channel
-        original_channel = kwargs["channel"]
-        kwargs["channel"] = self.redirect_channel
-
         # Add an attachment that informing message has been redirected
         if self.inform_redirect:
-            attachments = kwargs.get("attachments", [])
-            attachments = [
-                self._make_inform_attachment(original_channel=original_channel),
-                *attachments,
+            body.attachments = [
+                self._make_inform_attachment(original_channel=channel),
+                *(body.attachments or []),
             ]
-            kwargs["attachments"] = attachments
 
-        return super()._send_message(*args, **kwargs)
+        return super()._send_message(channel=self.redirect_channel, body=body, **kwargs)
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
         msg_redirect_inform = _(

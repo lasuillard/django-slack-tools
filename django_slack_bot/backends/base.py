@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from slack_sdk.errors import SlackApiError
 
@@ -12,7 +12,11 @@ from django_slack_bot.models import SlackMessage
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
+    from django_slack_bot.utils.slack import MessageBody, MessageHeader
+
 logger = getLogger(__name__)
+
+# TODO(#10): Celery backend to send messages
 
 
 class BackendBase(ABC):
@@ -25,11 +29,9 @@ class BackendBase(ABC):
     def send_message(  # noqa: PLR0913
         self,
         *,
-        # Slack API does not use this, but user inherited classes may do something with this
-        args: Sequence[Any],
-        # There is no allowed cases for keyword arguments being empty
-        kwargs: dict[str, Any],
         channel: str,
+        header: MessageHeader,
+        body: MessageBody,
         raise_exception: bool,
         save_db: bool,
         record_detail: bool,
@@ -37,9 +39,9 @@ class BackendBase(ABC):
         """Send Slack message.
 
         Args:
-            args: Slack message arguments.
-            kwargs: Slack message keyword arguments.
             channel: Channel to send message.
+            header: Message header that controls how message will sent.
+            body: Message body describing content of the message.
             raise_exception: Whether to re-raise caught exception while sending messages.
             save_db: Whether to save Slack message to database.
             record_detail: Whether to record API interaction detail, HTTP request and response details.
@@ -52,7 +54,7 @@ class BackendBase(ABC):
         # Send Slack message
         response: SlackResponse | None
         try:
-            response = self._send_message(*args, channel=channel, **kwargs)
+            response = self._send_message(channel=channel, header=header, body=body)
         except SlackApiError as err:
             logger.exception("Error occurred while sending Slack message.")
             if raise_exception:
@@ -65,38 +67,30 @@ class BackendBase(ABC):
 
         # Slack message ORM instance
         message = None
+        ok = response.get("ok")
+        message = SlackMessage(channel=channel, header=header.model_dump(), body=body.model_dump(), ok=ok)
+        if ok:
+            # `str` if OK, otherwise `None`
+            message.ts = cast(str, response.get("ts"))
+            message.parent_ts = response.get("message", {}).get("thread_ts", "")
 
-        # Suppress database exceptions too
-        try:
-            req_args = response.req_args
-            ok = response.get("ok")
-            message = SlackMessage(channel=channel, body=req_args["json"], ok=ok)
-            if ok:
-                # `str` if OK, otherwise `None`
-                message.ts = cast(str, response.get("ts"))
-                message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
+        if record_detail:
+            message.request = self._record_request(response)
+            message.response = self._record_response(response)
 
-            if record_detail:
-                message.request = self._record_request(response)
-                message.response = self._record_response(response)
-
-            if save_db:
-                message.save()
-
-        except Exception:
-            logger.exception("Error occurred while handling Slack message ORM instance.")
-            if raise_exception:
-                raise
+        if save_db:
+            message.save()
 
         return message
 
     @abstractmethod
-    def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse | None:
+    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:
         """Internal implementation of actual 'send message' behavior."""
 
     @abstractmethod
     def _record_request(self, response: SlackResponse) -> Any:
         """Extract request data to be recorded. Should return JSON-serializable object."""
+        # TODO(#34): Mask auth header
 
     @abstractmethod
     def _record_response(self, response: SlackResponse) -> Any:

@@ -29,7 +29,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
         team_url = workspace_info["team"]["url"]
         url = instance.get_permalink(team_url=team_url)
         if not url:
-            return _("No permalink")
+            return _("This message has no permalink")
 
         return format_html("<a href='{url}'>{title}</a>", url=url, title=_("Permalink"))
 
@@ -60,7 +60,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "_get_permalink", "body"),
+                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "_get_permalink", "header", "body"),
             },
         ),
         (

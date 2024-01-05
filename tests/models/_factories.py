@@ -46,6 +46,7 @@ class SlackMessageFactory(DjangoModelFactory):
 
     policy = None
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
+    header: dict = {}  # noqa: RUF012
     body = LazyAttribute(lambda o: {"channel": o.channel, "text": _fake.paragraph()})
     ok = True
     ts = LazyAttribute(
