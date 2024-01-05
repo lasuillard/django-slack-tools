@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, cast
 
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
+from django.db import models
 from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.html import format_html
@@ -13,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessagingPolicy
 from django_slack_bot.utils.slack import get_block_kit_builder_url
+from django_slack_bot.utils.widgets import JSONWidget
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -114,6 +116,9 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
     # Change
     # ------------------------------------------------------------------------
+    formfield_overrides = {  # noqa: RUF012
+        models.JSONField: {"widget": JSONWidget},
+    }
     fieldsets = (
         (
             None,

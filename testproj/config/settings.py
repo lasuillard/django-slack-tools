@@ -96,7 +96,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": BASE_DIR / "django.cache",
+        "LOCATION": BASE_DIR / ".cache",
     },
 }
 

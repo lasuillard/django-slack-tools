@@ -5,11 +5,13 @@ from typing import TYPE_CHECKING
 
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
+from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessage
+from django_slack_bot.utils.widgets import JSONWidget
 
 if TYPE_CHECKING:
     from django_stubs_ext import StrOrPromise
@@ -51,6 +53,9 @@ class SlackMessageAdmin(admin.ModelAdmin):
 
     # Change
     # ------------------------------------------------------------------------
+    formfield_overrides = {  # noqa: RUF012
+        models.JSONField: {"widget": JSONWidget},
+    }
     fieldsets = (
         (
             None,
