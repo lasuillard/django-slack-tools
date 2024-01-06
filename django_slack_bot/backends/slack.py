@@ -52,7 +52,7 @@ class SlackBackend(BackendBase):
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return cached
+            return cached  # type: ignore[no-any-return]
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 

@@ -74,6 +74,8 @@ warn_unused_configs = true
 warn_return_any = true
 show_error_codes = true
 follow_imports = "skip"
+strict_optional = true
+no_implicit_reexport = true
 
 [tool.django-stubs]
 django_settings_module = "testproj.config.settings"

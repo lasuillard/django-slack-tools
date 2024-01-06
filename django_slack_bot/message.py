@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from django_slack_bot.utils.dict_template import render
 from django_slack_bot.utils.slack import MessageBody, MessageHeader
@@ -41,12 +41,8 @@ def slack_message(  # noqa: PLR0913
         Sent message instance or `None`.
     """
     # If body is just an string, make a simple message body
-    if isinstance(body, str):
-        body = MessageBody(text=body)
-    else:
-        MessageBody.model_validate(body)
-
-    header = MessageHeader.model_validate(header or {})
+    body = MessageBody(text=body) if isinstance(body, str) else MessageBody.model_validate(body)
+    header = cast(MessageHeader, MessageHeader.model_validate(header or {}))
 
     return app_settings.backend.send_message(
         channel=channel,
@@ -91,7 +87,7 @@ def slack_message_via_policy(
     if isinstance(policy, str):
         policy = SlackMessagingPolicy.objects.get(code=policy)
 
-    header = MessageHeader.model_validate(header or {})
+    header = cast(MessageHeader, MessageHeader.model_validate(header or {}))
 
     # Prepare template
     template = policy.template
@@ -111,7 +107,10 @@ def slack_message_via_policy(
 
         # Render and send message
         body = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **dictpl_kwargs)
-        body = MessageBody.model_validate(body)
+        body = cast(  # Not sure why mypy complain about this
+            MessageBody,
+            MessageBody.model_validate(body),
+        )
         message = app_settings.backend.send_message(
             channel=recipient.channel,
             header=header,
