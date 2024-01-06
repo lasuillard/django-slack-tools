@@ -29,7 +29,7 @@ class SlackMessage(TimestampMixin, models.Model):
     )
     channel = models.CharField(
         verbose_name=_("Channel"),
-        help_text=_("Channel name this message sent to."),
+        help_text=_("ID of channel this message sent to."),
         blank=False,
         max_length=128,  # Maximum length of channel name is 80 characters
     )

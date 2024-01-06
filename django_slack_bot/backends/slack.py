@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
+from pydantic import ValidationError
 from slack_bolt import App
 
 from django_slack_bot.utils.cache import generate_cache_key
@@ -17,7 +18,8 @@ from .base import BackendBase, WorkspaceInfo
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_bot.utils.slack import MessageBody, MessageHeader
+    from django_slack_bot.models import SlackMessage
+    from django_slack_bot.utils.slack import MessageBody
 
 
 logger = getLogger(__name__)
@@ -26,13 +28,21 @@ logger = getLogger(__name__)
 class SlackBackend(BackendBase):
     """Backend actually sending the messages."""
 
-    def __init__(self, *, slack_app: App | Callable[[], App] | str, workspace_cache_timeout: int = 60 * 60) -> None:
+    def __init__(
+        self,
+        *,
+        slack_app: App | Callable[[], App] | str,
+        workspace_cache_timeout: int = 60 * 60,
+        remove_auth_header: bool = True,
+    ) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
             workspace_cache_timeout: Cache timeout for workspace information, in seconds.
                 Defaults to an hour.
+            remove_auth_header: Whether to remove auth header from request headers on recording.
+                Enabled by default.
         """
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
@@ -46,12 +56,17 @@ class SlackBackend(BackendBase):
 
         self._slack_app = slack_app
         self._workspace_cache_timeout = workspace_cache_timeout
+        self._remove_auth_header = remove_auth_header
 
     # TODO(lasuillard): Increase the warm-up performance by calling API in parallel
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return WorkspaceInfo.model_validate(cached)  # type: ignore[no-any-return]
+            try:
+                return WorkspaceInfo.model_validate(cached)
+            except ValidationError:
+                cache.delete(cache_key)
+                logger.exception("Failed to validate cached workspace info. Cache has been invalidated.")
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 
@@ -70,11 +85,14 @@ class SlackBackend(BackendBase):
         cache.set(key=cache_key, value=info.model_dump(), timeout=self._workspace_cache_timeout)
         return info
 
-    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:
-        return self._slack_app.client.chat_postMessage(channel=channel, **header.model_dump(), **body.model_dump())
+    def _send_message(self, *, message: SlackMessage) -> SlackResponse:
+        return self._slack_app.client.chat_postMessage(channel=message.channel, **message.header, **message.body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        return response.req_args  # type: ignore[no-any-return]
+        if self._remove_auth_header:
+            response.req_args["headers"].pop("Authorization")
+
+        return response.req_args
 
     def _record_response(self, response: SlackResponse) -> dict[str, Any]:
         return {
@@ -103,7 +121,7 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def _send_message(self, *, channel: str, body: MessageBody, **kwargs: Any) -> SlackResponse | None:
+    def _prepare_message(self, *args: Any, channel: str, body: MessageBody, **kwargs: Any) -> SlackMessage:
         # Modify channel to force messages always sent to specific channel
         # Add an attachment that informing message has been redirected
         if self.inform_redirect:
@@ -112,7 +130,7 @@ class SlackRedirectBackend(SlackBackend):
                 *(body.attachments or []),
             ]
 
-        return super()._send_message(channel=self.redirect_channel, body=body, **kwargs)
+        return super()._prepare_message(*args, channel=self.redirect_channel, body=body, **kwargs)
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
         msg_redirect_inform = _(

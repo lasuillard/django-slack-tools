@@ -61,6 +61,7 @@ scan:  ## Run all scans
 
 test:  ## Run tests
 	poetry run pytest
+	poetry run coverage html
 .PHONY: test
 
 docs:  ## Generate dev documents

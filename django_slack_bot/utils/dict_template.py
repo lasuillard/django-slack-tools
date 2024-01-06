@@ -3,6 +3,9 @@ from __future__ import annotations
 
 from typing import Any, TypeVar
 
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
 
 def render(template: dict, **kwargs: Any) -> dict:
     """Render given dictionary template.
@@ -20,6 +23,18 @@ def render(template: dict, **kwargs: Any) -> dict:
         result[k] = _format_obj(v, **kwargs)
 
     return result
+
+
+def dict_template_validator(value: Any) -> None:
+    """Validate given value is valid dictionary template."""
+    if value is None:  # No-op template, should work equally to empty dict `{}`
+        return
+
+    if not isinstance(value, dict):
+        raise ValidationError(
+            _("Given object is not a dictionary: %(value)r"),
+            params={"value": value},
+        )
 
 
 T = TypeVar("T", dict, list, str)

@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Sequence
+from typing import Any, Sequence
 
 import faker
 from django.utils import timezone
@@ -77,7 +77,7 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
 
         self.recipients.add(*extracted)
 
-    template: ClassVar = {
+    template = {  # noqa: RUF012
         "blocks": [
             {
                 "type": "section",
@@ -88,3 +88,4 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
             },
         ],
     }
+    header_defaults: dict = {}  # noqa: RUF012

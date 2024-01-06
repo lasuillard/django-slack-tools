@@ -13,6 +13,9 @@ if TYPE_CHECKING:
 
 
 class TestSlackBackend:
+    # TODO(lasuillard): Test `.__init__()` for import string & callable
+    # TODO(lasuillard): Test `.get_workspace_info()`
+
     @pytest.mark.slack()
     @pytest.mark.vcr()
     def test_send_message(self, slack_app: App, slack_channel: str) -> None:
@@ -26,6 +29,12 @@ class TestSlackBackend:
             record_detail=True,
         )
         assert isinstance(msg, SlackMessage)
+        assert "Authorization" not in msg.request["headers"]
+
+    # TODO(lasuillard): Test `.send_message()` for prepared messages (overload signatures)
+    # TODO(lasuillard): Test `.send_message()` on error response
+    # TODO(lasuillard): Test `._record_request()`
+    # TODO(lasuillard): Test `._record_response()`
 
 
 class TestSlackRedirectBackend:
@@ -42,3 +51,6 @@ class TestSlackRedirectBackend:
             record_detail=True,
         )
         assert isinstance(msg, SlackMessage)
+
+    # TODO(lasuillard): Test `.prepare_message()`
+    # TODO(lasuillard): Test `._make_inform_attachment()`
