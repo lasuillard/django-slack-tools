@@ -18,7 +18,8 @@ from .base import BackendBase, WorkspaceInfo
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_bot.utils.slack import MessageBody, MessageHeader
+    from django_slack_bot.models import SlackMessage
+    from django_slack_bot.utils.slack import MessageBody
 
 
 logger = getLogger(__name__)
@@ -84,8 +85,8 @@ class SlackBackend(BackendBase):
         cache.set(key=cache_key, value=info.model_dump(), timeout=self._workspace_cache_timeout)
         return info
 
-    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:
-        return self._slack_app.client.chat_postMessage(channel=channel, **header.model_dump(), **body.model_dump())
+    def _send_message(self, *, message: SlackMessage) -> SlackResponse:
+        return self._slack_app.client.chat_postMessage(channel=message.channel, **message.header, **message.body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
         if self._remove_auth_header:
@@ -120,7 +121,7 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def _send_message(self, *, channel: str, body: MessageBody, **kwargs: Any) -> SlackResponse | None:
+    def _prepare_message(self, *args: Any, channel: str, body: MessageBody, **kwargs: Any) -> SlackMessage:
         # Modify channel to force messages always sent to specific channel
         # Add an attachment that informing message has been redirected
         if self.inform_redirect:
@@ -129,7 +130,7 @@ class SlackRedirectBackend(SlackBackend):
                 *(body.attachments or []),
             ]
 
-        return super()._send_message(channel=self.redirect_channel, body=body, **kwargs)
+        return super()._prepare_message(*args, channel=self.redirect_channel, body=body, **kwargs)
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
         msg_redirect_inform = _(

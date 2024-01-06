@@ -37,47 +37,41 @@ class BackendBase(ABC):
         raise_exception: bool,
         save_db: bool,
         record_detail: bool,
-    ) -> SlackMessage | None:
+    ) -> SlackMessage:
         """Send Slack message.
 
         Args:
-            policy: Reference to policy created this message.
+            policy: Messaging policy to create message with.
             channel: Channel to send message.
             header: Message header that controls how message will sent.
             body: Message body describing content of the message.
             raise_exception: Whether to re-raise caught exception while sending messages.
-            save_db: Whether to save Slack message to database.
+            save_db: Whether to save Slack message changes.
             record_detail: Whether to record API interaction detail, HTTP request and response details.
-                Only takes effect if `save_db` is set.
-                Use it with caution because request headers might contain API token.
+                Would take effect only if `save_db` set `True`.
+                Also, existing data will be overwritten (if message has been sent already).
 
         Returns:
             Sent Slack message or `None`.
         """
+        message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
+
         # Send Slack message
-        response: SlackResponse | None
+        response: SlackResponse
         try:
-            response = self._send_message(channel=channel, header=header, body=body)
+            response = self._send_message(message=message)
         except SlackApiError as err:
-            logger.exception("Error occurred while sending Slack message.")
             if raise_exception:
                 raise
 
+            logger.exception(
+                "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
+            )
             response = err.response
 
-        if not response:
-            return None
-
-        # Slack message ORM instance
-        message = None
+        # Update message detail
         ok = response.get("ok")
-        message = SlackMessage(
-            policy=policy,
-            channel=channel,
-            header=header.model_dump(),
-            body=body.model_dump(),
-            ok=ok,
-        )
+        message.ok = ok
         if ok:
             # `str` if OK, otherwise `None`
             message.ts = cast(str, response.get("ts"))
@@ -92,14 +86,26 @@ class BackendBase(ABC):
 
         return message
 
+    def _prepare_message(
+        self,
+        *,
+        policy: SlackMessagingPolicy | None = None,
+        channel: str,
+        header: MessageHeader,
+        body: MessageBody,
+    ) -> SlackMessage:
+        _header: dict = policy.header_defaults if policy else {}
+        _header.update(header.model_dump(exclude_unset=True))
+        _body = body.model_dump()
+        return SlackMessage(policy=policy, channel=channel, header=_header, body=_body)
+
     @abstractmethod
-    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:
+    def _send_message(self, *, message: SlackMessage) -> SlackResponse:
         """Internal implementation of actual 'send message' behavior."""
 
     @abstractmethod
     def _record_request(self, response: SlackResponse) -> Any:
         """Extract request data to be recorded. Should return JSON-serializable object."""
-        # TODO(#34): Mask auth header
 
     @abstractmethod
     def _record_response(self, response: SlackResponse) -> Any:

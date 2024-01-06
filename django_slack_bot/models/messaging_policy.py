@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.utils.model_mixins import TimestampMixin
+from django_slack_bot.utils.slack import header_validator
 from django_slack_bot.utils.validators import dict_template_validator
 
 from .message_recipient import SlackMessageRecipient
@@ -33,6 +34,12 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         verbose_name=_("Message recipients"),
         help_text=_("Those who will receive messages."),
     )
+    header_defaults = models.JSONField(
+        verbose_name=_("Default header"),
+        help_text=_("Default header values applied to messages on creation."),
+        validators=[header_validator],
+        default=dict,
+    )
     template = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),
@@ -40,7 +47,6 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         null=True,
         blank=True,
     )
-
     # Type is too obvious but due to limits...
     objects: SlackMessagingPolicyManager = SlackMessagingPolicyManager()
 

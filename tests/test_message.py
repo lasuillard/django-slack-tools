@@ -57,7 +57,7 @@ def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
 @pytest.mark.slack()
 @pytest.mark.vcr()
 @pytest.mark.django_db()
-def test_slack_message_via_policy_lazy(redirect_slack: None) -> None:  # noqa: ARG001
+def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None) -> None:  # noqa: ARG001
     # Policy not exist at first
     code = "TEST-PO-LAZY-001"
     assert not SlackMessagingPolicy.objects.filter(code=code).exists()
@@ -91,7 +91,7 @@ def test_slack_message_via_policy_lazy(redirect_slack: None) -> None:  # noqa: A
     policy.save()
     policy.recipients.add(
         SlackMessageRecipientFactory(
-            channel="some-channel",
+            channel=slack_channel,
             mentions=[SlackMentionFactory(mention="<!channel>")],
         ),
     )
@@ -102,7 +102,7 @@ def test_slack_message_via_policy_lazy(redirect_slack: None) -> None:  # noqa: A
     message = messages.pop()
     assert isinstance(message, SlackMessage)
     assert message.policy == policy
-    assert message.channel == "some-channel"
+    assert message.channel == slack_channel
     assert message.body["blocks"] == [
         {
             "type": "section",

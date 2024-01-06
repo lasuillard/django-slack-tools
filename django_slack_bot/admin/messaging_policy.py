@@ -117,7 +117,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("code", "enabled", "recipients", "template"),
+                "fields": ("code", "enabled", "recipients", "header_defaults", "template"),
             },
         ),
         (
