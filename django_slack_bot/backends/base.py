@@ -36,7 +36,7 @@ class BackendBase(ABC):
         save_db: bool,
         record_detail: bool,
     ) -> SlackMessage:
-        ...
+        ...  # pragma: no cover
 
     @overload
     def send_message(
@@ -50,7 +50,7 @@ class BackendBase(ABC):
         save_db: bool,
         record_detail: bool,
     ) -> SlackMessage:
-        ...
+        ...  # pragma: no cover
 
     def send_message(  # noqa: PLR0913
         self,
