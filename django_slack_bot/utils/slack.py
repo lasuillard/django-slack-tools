@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import urllib.parse
-from typing import Any, List, Optional, TypedDict
+from typing import Any, List, Optional
 
 import pydantic
 from django.core.exceptions import ValidationError
@@ -11,18 +11,27 @@ from django.utils.translation import gettext_lazy as _
 from pydantic import BaseModel, model_validator
 
 
-def get_block_kit_builder_url(*, team_id: str, payload: _BlocksPayload | _AttachmentsPayload) -> str:
-    """Returns URL to Slack Block Kit Builder."""
+def get_block_kit_builder_url(*, team_id: str, blocks: dict | None = None, attachments: dict | None = None) -> str:
+    """Returns URL to Slack Block Kit Builder.
+
+    Args:
+        team_id: Slack team ID.
+        blocks: Message blocks. Defaults to None.
+        attachments: Message attachments. Defaults to None.
+
+    Raises:
+        ValueError: Thrown if not only single value of blocks or attachments provided.
+
+    Returns:
+        URL to Block Kit Builder preview.
+    """
+    if (not blocks and not attachments) or (blocks and attachments):
+        msg = "Only one of `blocks` or `attachments` should be provided."
+        raise ValueError(msg)
+
+    payload = {"blocks": blocks} if blocks else {"attachments": attachments} if attachments else {}
     payload_urlencoded = urllib.parse.quote(json.dumps(payload))
     return f"https://app.slack.com/block-kit-builder/{team_id}#{payload_urlencoded}"
-
-
-class _BlocksPayload(TypedDict):
-    blocks: dict
-
-
-class _AttachmentsPayload(TypedDict):
-    attachments: dict
 
 
 class MessageHeader(BaseModel):
@@ -40,7 +49,7 @@ class MessageHeader(BaseModel):
 
 
 def header_validator(value: Any) -> None:
-    """Validate given value is valid dictionary template."""
+    """Validate given value is valid message header."""
     try:
         MessageHeader.model_validate(value)
     except pydantic.ValidationError as exc:
@@ -72,7 +81,7 @@ class MessageBody(BaseModel):
 
 
 def body_validator(value: Any) -> None:
-    """Validate given value is valid dictionary template."""
+    """Validate given value is valid message body."""
     try:
         MessageBody.model_validate(value)
     except pydantic.ValidationError as exc:

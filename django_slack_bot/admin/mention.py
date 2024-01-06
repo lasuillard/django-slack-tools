@@ -19,13 +19,13 @@ class SlackMentionAdmin(admin.ModelAdmin):
         workspace_info = app_settings.backend.get_workspace_info()
 
         if instance.type == MentionType.USER:
-            for member in workspace_info["members"]:
+            for member in workspace_info.members:
                 if "<@{id}>".format(id=member["id"]) == instance.mention:
                     return str(member["profile"]["display_name"])
             return "?"
 
         if instance.type == MentionType.GROUP:
-            for usergroup in workspace_info["usergroups"]:
+            for usergroup in workspace_info.usergroups:
                 if "<!subteam^{id}>".format(id=usergroup["id"]) == instance.mention:
                     return str(usergroup["name"])
             return "?"

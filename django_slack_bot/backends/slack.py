@@ -12,14 +12,13 @@ from slack_bolt import App
 
 from django_slack_bot.utils.cache import generate_cache_key
 
-from .base import BackendBase
+from .base import BackendBase, WorkspaceInfo
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
     from django_slack_bot.utils.slack import MessageBody, MessageHeader
 
-    from .base import WorkspaceInfo
 
 logger = getLogger(__name__)
 
@@ -52,7 +51,7 @@ class SlackBackend(BackendBase):
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return cached  # type: ignore[no-any-return]
+            return WorkspaceInfo.model_validate(cached)  # type: ignore[no-any-return]
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 
@@ -62,13 +61,13 @@ class SlackBackend(BackendBase):
         usergroups: list[dict] = self._slack_app.client.usergroups_list().get("usergroups", default=[])
         channels: list[dict] = self._slack_app.client.conversations_list().get("channels", default=[])
 
-        info: WorkspaceInfo = {
-            "team": team,
-            "members": members,
-            "usergroups": usergroups,
-            "channels": channels,
-        }
-        cache.set(key=cache_key, value=info, timeout=self._workspace_cache_timeout)
+        info = WorkspaceInfo(
+            team=team,
+            members=members,
+            usergroups=usergroups,
+            channels=channels,
+        )
+        cache.set(key=cache_key, value=info.model_dump(), timeout=self._workspace_cache_timeout)
         return info
 
     def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse | None:

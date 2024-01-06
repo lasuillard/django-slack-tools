@@ -26,7 +26,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
     @admin.display(description=_("Permalink"))
     def _get_permalink(self, instance: SlackMessage) -> StrOrPromise:
         workspace_info = app_settings.backend.get_workspace_info()
-        team_url = workspace_info["team"]["url"]
+        team_url = workspace_info.team["url"]
         url = instance.get_permalink(team_url=team_url)
         if not url:
             return _("This message has no permalink")

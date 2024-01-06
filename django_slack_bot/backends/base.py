@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, TypedDict, cast
+from typing import TYPE_CHECKING, Any, List, cast
 
+from pydantic import BaseModel
 from slack_sdk.errors import SlackApiError
 
 from django_slack_bot.models import SlackMessage
@@ -97,18 +98,17 @@ class BackendBase(ABC):
         """Extract response data to be recorded. Should return JSON-serializable object."""
 
 
-# TODO(#17): Better typing; inherit Slack app & client instance with type annotations
-class WorkspaceInfo(TypedDict):
+class WorkspaceInfo(BaseModel):
     """Slack workspace info."""
 
     # https://api.slack.com/methods/team.info
     team: dict
 
     # https://api.slack.com/methods/users.list
-    members: list[dict]
+    members: List[dict]  # noqa: UP006
 
     # https://api.slack.com/methods/usergroups.list
-    usergroups: list[dict]
+    usergroups: List[dict]  # noqa: UP006
 
     # https://api.slack.com/methods/conversations.list
-    channels: list[dict]
+    channels: List[dict]  # noqa: UP006
