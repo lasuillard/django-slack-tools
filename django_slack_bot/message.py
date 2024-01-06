@@ -61,7 +61,7 @@ def slack_message_via_policy(
     raise_exception: bool = False,
     save_db: bool = True,
     record_detail: bool = False,
-    **dictpl_kwargs: Any | None,
+    **kwargs: Any | None,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 
@@ -76,7 +76,7 @@ def slack_message_via_policy(
         record_detail: Whether to record API interaction detail, HTTP request and response details.
             Only takes effect if `save_db` is set.
             Use it with caution because request headers might contain API token.
-        dictpl_kwargs: Keyword arguments passed to policy template.
+        kwargs: Arbitrary keyword arguments passed to policy template.
 
     Returns:
         Sent message instance or `None`.
@@ -91,7 +91,7 @@ def slack_message_via_policy(
 
     # Prepare template
     template = policy.template
-    overridden_reserved = {"mentions", "mentions_as_str"} & set(dictpl_kwargs.keys())
+    overridden_reserved = {"mentions", "mentions_as_str"} & set(kwargs.keys())
     if overridden_reserved:
         logger.warning(
             "Template keyword argument(s) %s reserved for passing mentions, but already exists."
@@ -106,7 +106,7 @@ def slack_message_via_policy(
         mentions_as_str = ", ".join(recipient.mentions.values_list("mention", flat=True))
 
         # Render and send message
-        body = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **dictpl_kwargs)
+        body = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **kwargs)
         body = cast(  # Not sure why mypy complain about this
             MessageBody,
             MessageBody.model_validate(body),
