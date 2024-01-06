@@ -26,13 +26,21 @@ logger = getLogger(__name__)
 class SlackBackend(BackendBase):
     """Backend actually sending the messages."""
 
-    def __init__(self, *, slack_app: App | Callable[[], App] | str, workspace_cache_timeout: int = 60 * 60) -> None:
+    def __init__(
+        self,
+        *,
+        slack_app: App | Callable[[], App] | str,
+        workspace_cache_timeout: int = 60 * 60,
+        remove_auth_header: bool = True,
+    ) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
             workspace_cache_timeout: Cache timeout for workspace information, in seconds.
                 Defaults to an hour.
+            remove_auth_header: Whether to remove auth header from request headers on recording.
+                Enabled by default.
         """
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
@@ -46,6 +54,7 @@ class SlackBackend(BackendBase):
 
         self._slack_app = slack_app
         self._workspace_cache_timeout = workspace_cache_timeout
+        self._remove_auth_header = remove_auth_header
 
     # TODO(lasuillard): Increase the warm-up performance by calling API in parallel
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
@@ -74,6 +83,9 @@ class SlackBackend(BackendBase):
         return self._slack_app.client.chat_postMessage(channel=channel, **header.model_dump(), **body.model_dump())
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
+        if self._remove_auth_header:
+            response.req_args["headers"].pop("Authorization")
+
         return response.req_args
 
     def _record_response(self, response: SlackResponse) -> dict[str, Any]:

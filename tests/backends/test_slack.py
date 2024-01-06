@@ -26,6 +26,7 @@ class TestSlackBackend:
             record_detail=True,
         )
         assert isinstance(msg, SlackMessage)
+        assert "Authorization" not in msg.request["headers"]
 
 
 class TestSlackRedirectBackend:
