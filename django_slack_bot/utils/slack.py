@@ -71,13 +71,13 @@ class MessageBody(BaseModel):
     metadata: Optional[dict] = None  # noqa: UP007
     username: Optional[str] = None  # noqa: UP007
 
-    @model_validator(mode="after")  # type: ignore[arg-type]
+    @model_validator(mode="after")
     def _check_one_of_exists(self) -> MessageBody:
         if not self.attachments and not self.blocks and not self.text:
             msg = "At least one of `attachments`, `blocks` and `text` must set"
             raise ValueError(msg)
 
-        return self  # type: ignore[return-value]
+        return self
 
 
 def body_validator(value: Any) -> None:
