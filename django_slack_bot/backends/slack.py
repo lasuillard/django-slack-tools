@@ -51,7 +51,7 @@ class SlackBackend(BackendBase):
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return WorkspaceInfo.model_validate(cached)  # type: ignore[no-any-return]
+            return WorkspaceInfo.model_validate(cached)
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 
@@ -74,7 +74,7 @@ class SlackBackend(BackendBase):
         return self._slack_app.client.chat_postMessage(channel=channel, **header.model_dump(), **body.model_dump())
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        return response.req_args  # type: ignore[no-any-return]
+        return response.req_args
 
     def _record_response(self, response: SlackResponse) -> dict[str, Any]:
         return {

@@ -71,13 +71,13 @@ class MessageBody(BaseModel):
     metadata: Optional[dict] = None  # noqa: UP007
     username: Optional[str] = None  # noqa: UP007
 
-    @model_validator(mode="after")
+    @model_validator(mode="after")  # type: ignore[arg-type]
     def _check_one_of_exists(self) -> MessageBody:
         if not self.attachments and not self.blocks and not self.text:
             msg = "At least one of `attachments`, `blocks` and `text` must set"
             raise ValueError(msg)
 
-        return self
+        return self  # type: ignore[return-value]
 
 
 def body_validator(value: Any) -> None:
@@ -94,7 +94,7 @@ def _convert_errors(exc: pydantic.ValidationError) -> ValidationError:
     errors = [
         ValidationError(
             _("Input validation failed [msg=%(msg)r, input=%(input)r]"),
-            code=", ".join(err["loc"]),  # TODO(lasuillard): Better error code
+            code=", ".join(map(str, err["loc"])),  # TODO(lasuillard): Better error code
             params={
                 "msg": err["msg"],
                 "input": err["input"],
