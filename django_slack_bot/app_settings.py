@@ -17,7 +17,6 @@ APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
 "Django settings key for this application."
 
 
-# TODO(#17): Rewrite using Pydantic
 class AppSettings:
     """Application settings."""
 
