@@ -4,9 +4,9 @@ from __future__ import annotations
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.utils.dict_template import dict_template_validator
 from django_slack_bot.utils.model_mixins import TimestampMixin
 from django_slack_bot.utils.slack import header_validator
-from django_slack_bot.utils.validators import dict_template_validator
 
 from .message_recipient import SlackMessageRecipient
 
