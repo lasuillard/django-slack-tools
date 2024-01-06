@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, List, cast
+from typing import TYPE_CHECKING, Any, List, cast, overload
 
 from pydantic import BaseModel
 from slack_sdk.errors import SlackApiError
@@ -27,7 +27,19 @@ class BackendBase(ABC):
     def get_workspace_info(self) -> WorkspaceInfo:
         """Get current Slack workspace info."""
 
-    def send_message(  # noqa: PLR0913
+    @overload
+    def send_message(
+        self,
+        message: SlackMessage,
+        *,
+        raise_exception: bool,
+        save_db: bool,
+        record_detail: bool,
+    ) -> SlackMessage:
+        ...
+
+    @overload
+    def send_message(
         self,
         *,
         policy: SlackMessagingPolicy | None = None,
@@ -38,9 +50,25 @@ class BackendBase(ABC):
         save_db: bool,
         record_detail: bool,
     ) -> SlackMessage:
+        ...
+
+    def send_message(  # noqa: PLR0913
+        self,
+        message: SlackMessage | None = None,
+        *,
+        policy: SlackMessagingPolicy | None = None,
+        channel: str | None = None,
+        header: MessageHeader | None = None,
+        body: MessageBody | None = None,
+        raise_exception: bool,
+        save_db: bool,
+        record_detail: bool,
+    ) -> SlackMessage:
         """Send Slack message.
 
         Args:
+            message: Externally prepared message.
+                If not given, make one using `channel`, `header` and `body` parameters.
             policy: Messaging policy to create message with.
             channel: Channel to send message.
             header: Message header that controls how message will sent.
@@ -52,9 +80,17 @@ class BackendBase(ABC):
                 Also, existing data will be overwritten (if message has been sent already).
 
         Returns:
-            Sent Slack message or `None`.
+            Sent Slack message.
         """
-        message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
+        if not message:
+            if not (channel and header and body):
+                msg = (
+                    "Call signature mismatch for overload."
+                    " If `message` not provided, `channel`, `header` and `body` all must given."
+                )
+                raise TypeError(msg)
+
+            message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
 
         # Send Slack message
         response: SlackResponse
