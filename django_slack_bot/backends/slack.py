@@ -8,6 +8,7 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
+from pydantic import ValidationError
 from slack_bolt import App
 
 from django_slack_bot.utils.cache import generate_cache_key
@@ -60,7 +61,11 @@ class SlackBackend(BackendBase):
     def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
         cache_key = generate_cache_key(self.get_workspace_info.__name__)
         if cached := cache.get(cache_key):
-            return WorkspaceInfo.model_validate(cached)
+            try:
+                return WorkspaceInfo.model_validate(cached)
+            except ValidationError:
+                cache.delete(cache_key)
+                logger.exception("Failed to validate cached workspace info. Cache has been invalidated.")
 
         team: dict = self._slack_app.client.team_info().get("team", default={})
 
