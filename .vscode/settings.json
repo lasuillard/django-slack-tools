@@ -32,6 +32,8 @@
   "json.format.enable": true,
   "cSpell.words": [
     "lasuillard",
+    "mrkdwn",
+    "pydantic",
     "Pylance",
     "usergroup",
     "usergroups"

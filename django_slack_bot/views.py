@@ -34,4 +34,4 @@ class SlackEventHandlerView(View):
     # Checking CSRF is nonsense because events come from Slack
     @method_decorator(csrf_exempt)
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:  # noqa: D102, ARG002
-        return self._event_handler.handle(request)
+        return self._event_handler.handle(request)  # type: ignore[no-any-return]

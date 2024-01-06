@@ -11,6 +11,7 @@ packages = [{ include = "django_slack_bot" }]
 python = "^3.8"
 slack-bolt = ">=1,<2"
 django = ">=3.2"
+pydantic = ">=2,<3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.11.0"
@@ -62,7 +63,7 @@ include = '\.pyi?$'
 [tool.mypy]
 python_version = "3.8"
 exclude = ['^\.venv/*']
-plugins = ["mypy_django_plugin.main"]
+plugins = ["mypy_django_plugin.main", "pydantic.mypy"]
 namespace_packages = true
 check_untyped_defs = true
 disallow_untyped_defs = true
@@ -72,6 +73,9 @@ warn_redundant_casts = true
 warn_unused_configs = true
 warn_return_any = true
 show_error_codes = true
+follow_imports = "skip"
+strict_optional = true
+no_implicit_reexport = true
 
 [tool.django-stubs]
 django_settings_module = "testproj.config.settings"

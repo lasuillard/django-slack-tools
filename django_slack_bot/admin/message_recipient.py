@@ -38,7 +38,7 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
     @admin.display(description=_("Channel Name"))
     def _get_channel_name(self, instance: SlackMessageRecipient) -> StrOrPromise:
         workspace_info = app_settings.backend.get_workspace_info()
-        for channel in workspace_info["channels"]:
+        for channel in workspace_info.channels:
             if channel["id"] == instance.channel:
                 return "#{channel}".format(channel=channel["name"])
 

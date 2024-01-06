@@ -49,3 +49,6 @@ def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
 
     ids = [msg.id for msg in messages]  # type: ignore[union-attr]
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
+
+
+# TODO(lasuillard): If policy not enabled, no message should sent (act as dummy)

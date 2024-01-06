@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.utils.model_mixins import TimestampMixin
+from django_slack_bot.utils.slack import body_validator, header_validator
 
 from .messaging_policy import SlackMessagingPolicy
 
@@ -32,9 +33,21 @@ class SlackMessage(TimestampMixin, models.Model):
         blank=False,
         max_length=128,  # Maximum length of channel name is 80 characters
     )
+    header = models.JSONField(
+        verbose_name=_("Header"),
+        help_text=_(
+            "Slack control arguments."
+            " Allowed fields are `mrkdwn`, `parse`, `reply_broadcast`, `thread_ts`, `unfurl_links`, `unfurl_media`.",
+        ),
+        validators=[header_validator],
+    )
     body = models.JSONField(
         verbose_name=_("Body"),
-        help_text=_("Message body."),
+        help_text=_(
+            "Message body."
+            " Allowed fields are `attachments`, `body`, `text`, `icon_emoji`, `icon_url`, `metadata`, `username`.",
+        ),
+        validators=[body_validator],
     )
     ok = models.BooleanField(
         verbose_name=_("OK"),
@@ -101,7 +114,7 @@ class SlackMessage(TimestampMixin, models.Model):
             team_url: URL of current Slack team, e.g. `"https://awesome.slack.com/"`
 
         Returns:
-            Permalink to this message instance.
+            Permalink to this message instance or `None` if not available.
         """
         if not self.ts:
             return None

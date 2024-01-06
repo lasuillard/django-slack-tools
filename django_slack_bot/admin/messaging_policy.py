@@ -61,11 +61,8 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no blocks.")
 
         workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info["team"]["id"]
-        url = get_block_kit_builder_url(
-            team_id=team_id,
-            payload={"blocks": template["blocks"]},
-        )
+        team_id = workspace_info.team["id"]
+        url = get_block_kit_builder_url(team_id=team_id, blocks=template["blocks"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Render payload partially with reserved arguments
@@ -80,11 +77,8 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no attachments.")
 
         workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info["team"]["id"]
-        url = get_block_kit_builder_url(
-            team_id=team_id,
-            payload={"attachments": template["attachments"]},
-        )
+        team_id = workspace_info.team["id"]
+        url = get_block_kit_builder_url(team_id=team_id, attachments=template["attachments"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Display list of template arguments

@@ -4,12 +4,11 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING, Any
 
-from .base import BackendBase
+from .base import BackendBase, WorkspaceInfo
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from .base import WorkspaceInfo
 
 logger = getLogger(__name__)
 
@@ -19,15 +18,15 @@ class DummyBackend(BackendBase):
 
     def get_workspace_info(self) -> WorkspaceInfo:
         """Returns meaningless, hard-coded info."""
-        return {
-            "team": {
+        return WorkspaceInfo(
+            team={
                 "id": "-",
                 "url": "https://example.com/",
             },
-            "members": [],
-            "usergroups": [],
-            "channels": [],
-        }
+            members=[],
+            usergroups=[],
+            channels=[],
+        )
 
     def send_message(self, *args: Any, **kwargs: Any) -> None:
         """This backend will not do anything, just like dummy."""
