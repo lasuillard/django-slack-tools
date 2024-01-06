@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     from .models import SlackMessage
 
 
+# TODO(lasuillard): Add argument `backend` to set messaging backend explicitly,
+#                   defaulting to app settings' backend if not set
+
+
 def slack_message(  # noqa: PLR0913
     body: str | MessageBody | dict[str, Any],
     *,
@@ -54,13 +58,14 @@ def slack_message(  # noqa: PLR0913
     )
 
 
-def slack_message_via_policy(
+def slack_message_via_policy(  # noqa: PLR0913
     policy: str | SlackMessagingPolicy,
     *,
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     save_db: bool = True,
     record_detail: bool = False,
+    lazy: bool = False,
     **kwargs: Any | None,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
@@ -76,6 +81,7 @@ def slack_message_via_policy(
         record_detail: Whether to record API interaction detail, HTTP request and response details.
             Only takes effect if `save_db` is set.
             Use it with caution because request headers might contain API token.
+        lazy: Decide whether try create policy with disabled, if not exists.
         kwargs: Arbitrary keyword arguments passed to policy template.
 
     Returns:
@@ -85,7 +91,12 @@ def slack_message_via_policy(
         SlackMessagingPolicy.DoesNotExist: Policy for given code does not exists.
     """
     if isinstance(policy, str):
-        policy = SlackMessagingPolicy.objects.get(code=policy)
+        if lazy:
+            policy, created = SlackMessagingPolicy.objects.get_or_create(code=policy, defaults={"enabled": False})
+            if created:
+                logger.warning("Policy for code %r created because `lazy` is set.", policy)
+        else:
+            policy = SlackMessagingPolicy.objects.get(code=policy)
 
     header = MessageHeader.model_validate(header or {})
 
@@ -109,6 +120,7 @@ def slack_message_via_policy(
         rendered = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **kwargs)
         body = MessageBody.model_validate(rendered)
         message = app_settings.backend.send_message(
+            policy=policy,
             channel=recipient.channel,
             header=header,
             body=body,

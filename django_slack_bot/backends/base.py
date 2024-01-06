@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, List, cast
 from pydantic import BaseModel
 from slack_sdk.errors import SlackApiError
 
-from django_slack_bot.models import SlackMessage
+from django_slack_bot.models import SlackMessage, SlackMessagingPolicy
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -30,6 +30,7 @@ class BackendBase(ABC):
     def send_message(  # noqa: PLR0913
         self,
         *,
+        policy: SlackMessagingPolicy | None = None,
         channel: str,
         header: MessageHeader,
         body: MessageBody,
@@ -40,6 +41,7 @@ class BackendBase(ABC):
         """Send Slack message.
 
         Args:
+            policy: Reference to policy created this message.
             channel: Channel to send message.
             header: Message header that controls how message will sent.
             body: Message body describing content of the message.
@@ -69,7 +71,13 @@ class BackendBase(ABC):
         # Slack message ORM instance
         message = None
         ok = response.get("ok")
-        message = SlackMessage(channel=channel, header=header.model_dump(), body=body.model_dump(), ok=ok)
+        message = SlackMessage(
+            policy=policy,
+            channel=channel,
+            header=header.model_dump(),
+            body=body.model_dump(),
+            ok=ok,
+        )
         if ok:
             # `str` if OK, otherwise `None`
             message.ts = cast(str, response.get("ts"))
