@@ -171,6 +171,7 @@ SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
 SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
 
 DJANGO_SLACK_BOT = {
+    "SLACK_APP": "testproj.config.slack_app.app",
     "BACKEND": {
         "NAME": "django_slack_bot.backends.LoggingBackend",
         "OPTIONS": {},

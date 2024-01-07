@@ -3,12 +3,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, List, cast, overload
+from typing import TYPE_CHECKING, Any, cast, overload
 
-from pydantic import BaseModel
 from slack_sdk.errors import SlackApiError
 
 from django_slack_bot.models import SlackMessage, SlackMessagingPolicy
+from django_slack_bot.utils.slack import get_permalink
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -21,11 +21,7 @@ logger = getLogger(__name__)
 
 
 class BackendBase(ABC):
-    """Abstract base class for backends."""
-
-    @abstractmethod
-    def get_workspace_info(self) -> WorkspaceInfo:
-        """Get current Slack workspace info."""
+    """Abstract base class for messaging backends."""
 
     @overload
     def send_message(
@@ -112,6 +108,7 @@ class BackendBase(ABC):
             # `str` if OK, otherwise `None`
             message.ts = cast(str, response.get("ts"))
             message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
+            message.permalink = get_permalink(channel=message.channel, ts=message.ts, parent_ts=message.parent_ts) or ""
 
         if record_detail:
             message.request = self._record_request(response)
@@ -146,19 +143,3 @@ class BackendBase(ABC):
     @abstractmethod
     def _record_response(self, response: SlackResponse) -> Any:
         """Extract response data to be recorded. Should return JSON-serializable object."""
-
-
-class WorkspaceInfo(BaseModel):
-    """Slack workspace info."""
-
-    # https://api.slack.com/methods/team.info
-    team: dict
-
-    # https://api.slack.com/methods/users.list
-    members: List[dict]  # noqa: UP006
-
-    # https://api.slack.com/methods/usergroups.list
-    usergroups: List[dict]  # noqa: UP006
-
-    # https://api.slack.com/methods/conversations.list
-    channels: List[dict]  # noqa: UP006

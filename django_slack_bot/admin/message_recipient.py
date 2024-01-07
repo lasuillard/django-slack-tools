@@ -9,8 +9,8 @@ from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessageRecipient
+from django_slack_bot.utils.slack import get_workspace_info
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -37,7 +37,10 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
 
     @admin.display(description=_("Channel Name"))
     def _get_channel_name(self, instance: SlackMessageRecipient) -> StrOrPromise:
-        workspace_info = app_settings.backend.get_workspace_info()
+        workspace_info = get_workspace_info()
+        if workspace_info is None:
+            return _("N/A")
+
         for channel in workspace_info.channels:
             if channel["id"] == instance.channel:
                 return "#{channel}".format(channel=channel["name"])

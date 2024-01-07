@@ -18,18 +18,21 @@ if TYPE_CHECKING:
 # Config fixtures to run in parametrize (map of test id to config dictionary)
 config_fixtures: dict[str, ConfigDict] = {
     "dummy backend": {
+        "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
             "NAME": "django_slack_bot.backends.DummyBackend",
             "OPTIONS": {},
         },
     },
     "logging backend": {
+        "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
             "NAME": "django_slack_bot.backends.LoggingBackend",
             "OPTIONS": {},
         },
     },
     "slack backend": {
+        "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
             "NAME": "django_slack_bot.backends.SlackBackend",
             "OPTIONS": {
@@ -38,6 +41,7 @@ config_fixtures: dict[str, ConfigDict] = {
         },
     },
     "slack redirect backend": {
+        "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
             "NAME": "django_slack_bot.backends.SlackRedirectBackend",
             "OPTIONS": {
@@ -82,6 +86,7 @@ class TestAppSettings:
         ):
             AppSettings(
                 {
+                    "SLACK_APP": "tests.test_app_settings.get_slack_app",
                     "BACKEND": {"NAME": "tests.test_app_settings.ImproperBackend", "OPTIONS": {}},
                 },
             )

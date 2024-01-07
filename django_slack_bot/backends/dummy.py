@@ -8,25 +8,13 @@ from slack_sdk.web import SlackResponse
 
 from django_slack_bot.models import SlackMessage
 
-from .base import BackendBase, WorkspaceInfo
+from .base import BackendBase
 
 logger = getLogger(__name__)
 
 
 class DummyBackend(BackendBase):
     """An dummy backend that does nothing with message."""
-
-    def get_workspace_info(self) -> WorkspaceInfo:
-        """Returns meaningless, hard-coded info."""
-        return WorkspaceInfo(
-            team={
-                "id": "-",
-                "url": "https://example.com/",
-            },
-            members=[],
-            usergroups=[],
-            channels=[],
-        )
 
     def send_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
         """This backend will not do anything, just like dummy."""

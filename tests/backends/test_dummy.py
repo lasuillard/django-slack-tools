@@ -3,14 +3,12 @@ from __future__ import annotations
 from slack_sdk.web import SlackResponse
 
 from django_slack_bot.backends import DummyBackend
-from django_slack_bot.backends.base import WorkspaceInfo
 from django_slack_bot.models import SlackMessage
 
 
 class TestDummyBackend:
     def test_backend(self) -> None:
         backend = DummyBackend()
-        assert isinstance(backend.get_workspace_info(), WorkspaceInfo)
         assert isinstance(backend.send_message(), SlackMessage)
         assert isinstance(backend._prepare_message(), SlackMessage)
         assert isinstance(backend._send_message(), SlackResponse)

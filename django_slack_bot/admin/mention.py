@@ -3,9 +3,9 @@ from django.contrib import admin
 from django.contrib.admin.filters import ChoicesFieldListFilter, DateFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
 from django_slack_bot.choices import MentionType
 from django_slack_bot.models import SlackMention
+from django_slack_bot.utils.slack import get_workspace_info
 
 
 @admin.register(SlackMention)
@@ -16,7 +16,9 @@ class SlackMentionAdmin(admin.ModelAdmin):
 
     @admin.display(description=_("Mention Name"))
     def _get_mention_name(self, instance: SlackMention) -> str:
-        workspace_info = app_settings.backend.get_workspace_info()
+        workspace_info = get_workspace_info()
+        if workspace_info is None:
+            return ""
 
         if instance.type == MentionType.USER:
             for member in workspace_info.members:
