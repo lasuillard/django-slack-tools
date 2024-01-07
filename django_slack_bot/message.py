@@ -13,7 +13,7 @@ from .models import SlackMessagingPolicy
 logger = getLogger(__name__)
 
 if TYPE_CHECKING:
-    from .models import SlackMessage
+    from .models import SlackMention, SlackMessage
 
 
 # TODO(lasuillard): Add argument `backend` to set messaging backend explicitly,
@@ -113,8 +113,8 @@ def slack_message_via_policy(  # noqa: PLR0913
     messages: list[SlackMessage | None] = []
     for recipient in policy.recipients.all():
         # Auto-generated reserved kwargs
-        mentions = recipient.mentions.values_list("mention", flat=True)
-        mentions_as_str = ", ".join(recipient.mentions.values_list("mention", flat=True))
+        mentions: list[SlackMention] = list(recipient.mentions.all())
+        mentions_as_str = ", ".join(mention.mention for mention in mentions)
 
         # Render and send message
         rendered = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **kwargs)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from django_slack_bot.message import slack_message, slack_message_via_policy
-from django_slack_bot.models import SlackMessage, SlackMessagingPolicy
+from django_slack_bot.models import SlackMention, SlackMessage, SlackMessagingPolicy
 from tests.models._factories import SlackMentionFactory, SlackMessageRecipientFactory, SlackMessagingPolicyFactory
 
 
@@ -25,7 +25,9 @@ def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
-        SlackMessageRecipientFactory(mentions=[SlackMentionFactory(mention="<!here>")]),
+        SlackMessageRecipientFactory(
+            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!here>")],
+        ),
     ]
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-001",
@@ -92,7 +94,7 @@ def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None)
     policy.recipients.add(
         SlackMessageRecipientFactory(
             channel=slack_channel,
-            mentions=[SlackMentionFactory(mention="<!channel>")],
+            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!channel>")],
         ),
     )
 

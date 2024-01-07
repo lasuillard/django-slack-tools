@@ -1,12 +1,9 @@
 """Message recipients model."""
 from __future__ import annotations
 
-from typing import Any
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.choices import MentionType
 from django_slack_bot.utils.model_mixins import TimestampMixin
 
 
@@ -16,6 +13,21 @@ class SlackMentionManager(models.Manager["SlackMention"]):
 
 class SlackMention(TimestampMixin, models.Model):
     """People or group in channels receive messages."""
+
+    class MentionType(models.TextChoices):
+        """Possible mention types."""
+
+        USER = "U", _("User")
+        "User mentions. e.g. `@lasuillard`."
+
+        GROUP = "G", _("Group")
+        "Team mentions. e.g. `@backend`."
+
+        SPECIAL = "S", _("Special")
+        "Special mentions. e.g. `@here`, `@channel`, `@everyone`."
+
+        UNKNOWN = "?", _("Unknown")
+        "Unknown mention type."
 
     type = models.CharField(  # noqa: A003
         verbose_name=_("Type"),
@@ -29,9 +41,9 @@ class SlackMention(TimestampMixin, models.Model):
         help_text=_("Human-friendly mention name."),
         max_length=128,
     )
-    mention = models.CharField(
-        verbose_name=_("Mention"),
-        help_text=_("Internal mention ID for Slack."),
+    mention_id = models.CharField(
+        verbose_name=_("Mention ID"),
+        help_text=_("User or group ID, or raw mention itself."),
         max_length=32,
     )
 
@@ -42,14 +54,19 @@ class SlackMention(TimestampMixin, models.Model):
         verbose_name_plural = _("Mentions")
 
     def __str__(self) -> str:  # noqa: D105
-        return _("{name} ({mention}, {type})").format(
+        return _("{name} ({type}, {mention_id})").format(
             name=self.name,
-            mention=self.mention,
             type=self.get_type_display(),
+            mention_id=self.mention_id,
         )
 
-    def save(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        if not self.type:
-            self.type = MentionType.infer(self.mention)
+    @property
+    def mention(self) -> str:
+        """Mention string for use in messages, e.g. "<@{USER_ID}>"."""
+        if self.type == SlackMention.MentionType.USER:
+            return f"<@{self.mention_id}>"
 
-        return super().save(*args, **kwargs)
+        if self.type == SlackMention.MentionType.GROUP:
+            return f"<!subteam^{self.mention_id}>"
+
+        return self.mention_id
