@@ -44,6 +44,15 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             ),
         )
 
+    readonly_fields = (
+        "id",
+        "_count_recipients",
+        "_blocks_block_kit_builder_url",
+        "_attachments_block_kit_builder_url",
+        "created",
+        "last_modified",
+    )
+
     @admin.display(description=_("Number of Recipients"))
     def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
         return instance.num_recipients
@@ -88,15 +97,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
     # TODO(lasuillard): Display list of template arguments
     # TODO(lasuillard): Display available reserved arguments (mentions, etc.)
-
-    readonly_fields = (
-        "id",
-        "_count_recipients",
-        "_blocks_block_kit_builder_url",
-        "_attachments_block_kit_builder_url",
-        "created",
-        "last_modified",
-    )
 
     # Actions
     actions = ()
