@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-30 12:55+0000\n"
+"POT-Creation-Date: 2024-01-09 13:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,25 +18,128 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: django_slack_bot/admin/mention.py:40 django_slack_bot/admin/message.py:45
-#: django_slack_bot/admin/message_recipient.py:66
-#: django_slack_bot/admin/messaging_policy.py:73
+#: django_slack_bot/admin/mention.py:24
+#, fuzzy
+#| msgid "Mentions"
+msgid "Mention string"
+msgstr "멘션들"
+
+#: django_slack_bot/admin/mention.py:31
+#, fuzzy
+#| msgid "Type of mentions."
+msgid "Update type and name of mentions"
+msgstr "멘션 유형입니다."
+
+#: django_slack_bot/admin/mention.py:57
+#, python-brace-format
+msgid ""
+"Updated {n_success} mentions successfully and there were {n_fail} mentions "
+"failed to update because no matching data."
+msgstr ""
+"{n_success}개의 멘션을 성공적으로 갱신하였으나 일치하는 데이터가 없는 "
+"{n_fail}개의 멘션을 갱신하는 데 실패했습니다."
+
+#: django_slack_bot/admin/mention.py:62
+#, fuzzy, python-brace-format
+#| msgid "Type of mentions."
+msgid "Updated {n} mentions."
+msgstr "멘션 유형입니다."
+
+#: django_slack_bot/admin/mention.py:86 django_slack_bot/admin/message.py:103
+#: django_slack_bot/admin/message_recipient.py:99
+#: django_slack_bot/admin/messaging_policy.py:125
 msgid "Miscellaneous"
 msgstr "기타"
 
-#: django_slack_bot/admin/message_recipient.py:52
+#: django_slack_bot/admin/message.py:29 django_slack_bot/admin/message.py:35
+#: django_slack_bot/models/message.py:57
+msgid "Permalink"
+msgstr "Permalink"
+
+#: django_slack_bot/admin/message.py:33
+msgid "N/A"
+msgstr "N/A"
+
+#: django_slack_bot/admin/message.py:41
+#, fuzzy
+#| msgid "Messages"
+msgid "Clone messages"
+msgstr "메시지들"
+
+#: django_slack_bot/admin/message.py:54
+#, fuzzy, python-format
+#| msgid "Channel name this message sent to."
+msgid "Cloned %s messages."
+msgstr "이 메시지가 전송된 채널 이름입니다."
+
+#: django_slack_bot/admin/message.py:56
+#, fuzzy
+#| msgid "Messages"
+msgid "Send messages"
+msgstr "메시지들"
+
+#: django_slack_bot/admin/message.py:64
+#, python-format
+msgid "Sent %s messages."
+msgstr "%s개의 메시지를 전송했습니다."
+
+#: django_slack_bot/admin/message_recipient.py:42
+msgid "Update recipient' channel names"
+msgstr "수신자 채널 이름 갱신하기"
+
+#: django_slack_bot/admin/message_recipient.py:67
+#, python-brace-format
+msgid ""
+"Updated {n_success} recipients successfully and there were {n_fail} "
+"recipients failed to update because no matching data."
+msgstr ""
+"{n_success}개의 수신자를 성공적으로 갱신하였으나 일치하는 데이터가 없는 "
+"{n_fail}개의 수신자를 갱신하는 데 실패했습니다."
+
+#: django_slack_bot/admin/message_recipient.py:72
+#, fuzzy, python-brace-format
+#| msgid "Message recipients"
+msgid "Updated {n} recipients."
+msgstr "메시지 수신자들"
+
+#: django_slack_bot/admin/message_recipient.py:85
 msgid "Number of Mentions"
 msgstr "멘션 수"
 
-#: django_slack_bot/admin/messaging_policy.py:59
+#: django_slack_bot/admin/messaging_policy.py:56
 msgid "Number of Recipients"
 msgstr "수신자 수"
+
+#: django_slack_bot/admin/messaging_policy.py:61
+msgid "Blocks Preview"
+msgstr "블록 미리보기"
+
+#: django_slack_bot/admin/messaging_policy.py:66
+#: django_slack_bot/admin/messaging_policy.py:80
+msgid "Template is empty, no link available."
+msgstr "템플릿이 비어있어 미리보기가 존재하지 않습니다."
+
+#: django_slack_bot/admin/messaging_policy.py:69
+msgid "Template has no blocks."
+msgstr "템플릿에 블록이 없습니다."
+
+#: django_slack_bot/admin/messaging_policy.py:75
+msgid "Attachments Preview"
+msgstr "부착물 미리보기"
+
+#: django_slack_bot/admin/messaging_policy.py:83
+msgid "Template has no attachments."
+msgstr "템플릿에 부착물이 없습니다."
+
+#: django_slack_bot/admin/messaging_policy.py:119
+msgid "Utility"
+msgstr "유용한 도구"
 
 #: django_slack_bot/apps.py:9
 msgid "Django Slack Bot"
 msgstr "Django Slack Bot"
 
-#: django_slack_bot/backends/slack.py:112
+#: django_slack_bot/backends/slack.py:203
 #, python-brace-format
 msgid ""
 ":warning:  This message was originally sent to channel *{channel}* but "
@@ -45,142 +148,173 @@ msgstr ""
 ":warning:  이 메시지는 본래 *{channel}* 채널로 보내졌지만, 이 채널로 리다이렉"
 "트 되었습니다."
 
-#: django_slack_bot/choices.py:11
+#: django_slack_bot/models/mention.py:20
 msgid "User"
 msgstr "사용자"
 
-#: django_slack_bot/choices.py:14
+#: django_slack_bot/models/mention.py:23
 msgid "Group"
 msgstr "그룹"
 
-#: django_slack_bot/choices.py:17
+#: django_slack_bot/models/mention.py:26
 msgid "Special"
 msgstr "특수"
 
-#: django_slack_bot/choices.py:20
+#: django_slack_bot/models/mention.py:29
 msgid "Unknown"
 msgstr "알 수 없음"
 
-#: django_slack_bot/models/mention.py:21
+#: django_slack_bot/models/mention.py:33
 msgid "Type"
 msgstr "유형"
 
-#: django_slack_bot/models/mention.py:22
+#: django_slack_bot/models/mention.py:34
 msgid "Type of mentions."
 msgstr "멘션 유형입니다."
 
-#: django_slack_bot/models/mention.py:28
+#: django_slack_bot/models/mention.py:40
 msgid "Name"
 msgstr "이름"
 
-#: django_slack_bot/models/mention.py:29
+#: django_slack_bot/models/mention.py:41
 msgid "Human-friendly mention name."
 msgstr "사람이 알아볼 수 있는 멘션 이름입니다."
 
-#: django_slack_bot/models/mention.py:33 django_slack_bot/models/mention.py:41
+#: django_slack_bot/models/mention.py:45
+#, fuzzy
+#| msgid "Mention"
+msgid "Mention ID"
+msgstr "멘션"
+
+#: django_slack_bot/models/mention.py:46
+msgid "User or group ID, or raw mention itself."
+msgstr "사용자 또는 그룹 ID, 혹은 멘션입니다."
+
+#: django_slack_bot/models/mention.py:53
 msgid "Mention"
 msgstr "멘션"
 
-#: django_slack_bot/models/mention.py:34
-msgid "Internal mention ID for Slack."
-msgstr "Slack 내부 멘션 ID입니다."
-
-#: django_slack_bot/models/mention.py:42
-#: django_slack_bot/models/message_recipient.py:33
+#: django_slack_bot/models/mention.py:54
+#: django_slack_bot/models/message_recipient.py:40
 msgid "Mentions"
 msgstr "멘션들"
 
-#: django_slack_bot/models/mention.py:45
-#, python-brace-format
-msgid "{name} ({mention}, {type})"
+#: django_slack_bot/models/mention.py:57
+#, fuzzy, python-brace-format
+#| msgid "{name} ({mention}, {type})"
+msgid "{name} ({type}, {mention_id})"
 msgstr "{name} ({mention}, {type})"
 
-#: django_slack_bot/models/message.py:21
-#: django_slack_bot/models/messaging_policy.py:51
+#: django_slack_bot/models/message.py:22
+#: django_slack_bot/models/messaging_policy.py:56
 msgid "Messaging Policy"
 msgstr "메시지 발송 정책"
 
-#: django_slack_bot/models/message.py:22
+#: django_slack_bot/models/message.py:23
 msgid "Messaging policy for this message."
 msgstr "이 메시지에 사용된 발송 정책입니다."
 
-#: django_slack_bot/models/message.py:28
+#: django_slack_bot/models/message.py:29
 #: django_slack_bot/models/message_recipient.py:26
 msgid "Channel"
 msgstr "채널"
 
-#: django_slack_bot/models/message.py:29
-msgid "Channel name this message sent to."
+#: django_slack_bot/models/message.py:30
+#, fuzzy
+#| msgid "Channel name this message sent to."
+msgid "ID of channel this message sent to."
 msgstr "이 메시지가 전송된 채널 이름입니다."
 
-#: django_slack_bot/models/message.py:34
+#: django_slack_bot/models/message.py:35
+msgid "Header"
+msgstr "헤더"
+
+#: django_slack_bot/models/message.py:37
+msgid ""
+"Slack control arguments. Allowed fields are `mrkdwn`, `parse`, "
+"`reply_broadcast`, `thread_ts`, `unfurl_links`, `unfurl_media`."
+msgstr ""
+"Slack 제어 매개변수입니다. 사용 가능한 필드는 `mrkdwn`, `parse`, "
+"`reply_broadcast`, `thread_ts`, `unfurl_links`, `unfurl_media`입니다."
+
+#: django_slack_bot/models/message.py:43
 msgid "Body"
 msgstr "내용"
 
-#: django_slack_bot/models/message.py:35
-msgid "Message body."
-msgstr "메시지 내용입니다."
+#: django_slack_bot/models/message.py:45
+msgid ""
+"Message body. Allowed fields are `attachments`, `body`, `text`, "
+"`icon_emoji`, `icon_url`, `metadata`, `username`."
+msgstr ""
+"메시지 내용입니다. 사용 가능한 필드는 `attachments`, `body`, `text`, "
+"`icon_emoji`, `icon_url`, `metadata`, `username`입니다."
 
-#: django_slack_bot/models/message.py:38
+#: django_slack_bot/models/message.py:51
 msgid "OK"
 msgstr "OK"
 
-#: django_slack_bot/models/message.py:39
+#: django_slack_bot/models/message.py:52
 msgid "Whether Slack API respond with OK. If never sent, will be `null`."
 msgstr ""
 "Slack API와 통신 중 오류 발생 여부입니다. 발송되지 않았다면, `null`입니다."
 
-#: django_slack_bot/models/message.py:47
+#: django_slack_bot/models/message.py:58
+#, fuzzy
+#| msgid "Messaging policy for this message."
+msgid "Permanent link for this message."
+msgstr "이 메시지에 사용된 발송 정책입니다."
+
+#: django_slack_bot/models/message.py:67
 msgid "Message ID"
 msgstr "메시지 ID"
 
-#: django_slack_bot/models/message.py:48
+#: django_slack_bot/models/message.py:68
 msgid "ID of an Slack message."
 msgstr "Slack 메시지 ID입니다."
 
-#: django_slack_bot/models/message.py:55
+#: django_slack_bot/models/message.py:75
 msgid "Thread ID"
 msgstr "스레드 ID"
 
-#: django_slack_bot/models/message.py:56
+#: django_slack_bot/models/message.py:76
 msgid "ID of current conversation thread."
 msgstr "현재 스레드의 ID입니다."
 
-#: django_slack_bot/models/message.py:64
+#: django_slack_bot/models/message.py:84
 msgid "Request"
 msgstr "요청"
 
-#: django_slack_bot/models/message.py:65
+#: django_slack_bot/models/message.py:85
 msgid "Dump of request content for debugging."
 msgstr "디버깅을 위한 요청 내용 덤프입니다."
 
-#: django_slack_bot/models/message.py:70
+#: django_slack_bot/models/message.py:90
 msgid "Response"
 msgstr "응답"
 
-#: django_slack_bot/models/message.py:71
+#: django_slack_bot/models/message.py:91
 msgid "Dump of response content for debugging."
 msgstr "디버깅을 위한 응답 내용 덤프입니다."
 
-#: django_slack_bot/models/message.py:79
+#: django_slack_bot/models/message.py:99
 msgid "Message"
 msgstr "메시지"
 
-#: django_slack_bot/models/message.py:80
+#: django_slack_bot/models/message.py:100
 msgid "Messages"
 msgstr "메시지들"
 
-#: django_slack_bot/models/message.py:85
+#: django_slack_bot/models/message.py:105
 #, python-brace-format
 msgid "Message ({ts}, OK)"
 msgstr "메시지 ({ts}, 정상)"
 
-#: django_slack_bot/models/message.py:88
+#: django_slack_bot/models/message.py:108
 #, python-brace-format
 msgid "Message ({id}, not OK)"
 msgstr "메시지 ({id}, 오류)"
 
-#: django_slack_bot/models/message.py:90
+#: django_slack_bot/models/message.py:110
 #, python-brace-format
 msgid "Message ({id}, not sent)"
 msgstr "메시지 ({id}, 전송되지 않음)"
@@ -197,68 +331,92 @@ msgstr "이 수신자의 별명입니다."
 msgid "Slack channel ID where messages will be sent."
 msgstr "메시지가 보내질 Slack 채널 ID입니다."
 
-#: django_slack_bot/models/message_recipient.py:34
+#: django_slack_bot/models/message_recipient.py:32
+#, fuzzy
+#| msgid "Channel"
+msgid "Channel name"
+msgstr "채널"
+
+#: django_slack_bot/models/message_recipient.py:33
+msgid "Display name of channel."
+msgstr "채널의 이름입니다."
+
+#: django_slack_bot/models/message_recipient.py:41
 msgid "List of mentions."
 msgstr "멘션 목록입니다."
 
-#: django_slack_bot/models/message_recipient.py:40
+#: django_slack_bot/models/message_recipient.py:48
 msgid "Recipient"
 msgstr "수신자"
 
-#: django_slack_bot/models/message_recipient.py:41
+#: django_slack_bot/models/message_recipient.py:49
 msgid "Recipients"
 msgstr "수신자들"
 
-#: django_slack_bot/models/message_recipient.py:46
+#: django_slack_bot/models/message_recipient.py:54
 #, python-brace-format
 msgid "{alias} ({channel}, {num_mentions} mentions)"
 msgstr "{alias} ({channel}, {num_mentions} mentions)"
 
-#: django_slack_bot/models/messaging_policy.py:24
+#: django_slack_bot/models/messaging_policy.py:22
 msgid "Code"
 msgstr "코드"
 
-#: django_slack_bot/models/messaging_policy.py:25
+#: django_slack_bot/models/messaging_policy.py:23
 msgid "Unique message code for lookup, mostly by human."
 msgstr "이후 (사람이) 참조하기 위한 고유한 메시지 코드입니다."
 
-#: django_slack_bot/models/messaging_policy.py:30
+#: django_slack_bot/models/messaging_policy.py:28
 msgid "Enabled"
 msgstr "활성화됨"
 
-#: django_slack_bot/models/messaging_policy.py:31
+#: django_slack_bot/models/messaging_policy.py:29
 msgid "Turn on or off current messaging policy."
 msgstr "현재 메시지 발송 정책의 활성 여부입니다."
 
-#: django_slack_bot/models/messaging_policy.py:36
+#: django_slack_bot/models/messaging_policy.py:34
 msgid "Message recipients"
 msgstr "메시지 수신자들"
 
-#: django_slack_bot/models/messaging_policy.py:37
+#: django_slack_bot/models/messaging_policy.py:35
 msgid "Those who will receive messages."
 msgstr "메시지를 수신받을 대상들입니다."
 
-#: django_slack_bot/models/messaging_policy.py:40
+#: django_slack_bot/models/messaging_policy.py:38
+msgid "Default header"
+msgstr "기본 헤더"
+
+#: django_slack_bot/models/messaging_policy.py:39
+msgid "Default header values applied to messages on creation."
+msgstr "메시지 생성 시 적용되는 기본 헤더 값입니다."
+
+#: django_slack_bot/models/messaging_policy.py:46
 msgid "Message template object"
 msgstr "메시지 템플릿 객체"
 
-#: django_slack_bot/models/messaging_policy.py:41
+#: django_slack_bot/models/messaging_policy.py:47
 msgid "Dictionary-based template object."
 msgstr "사전형(`dict`) 기반의 템플릿 객체입니다."
 
-#: django_slack_bot/models/messaging_policy.py:52
+#: django_slack_bot/models/messaging_policy.py:57
 msgid "Messaging Policies"
 msgstr "메시지 발송 정책"
 
-#: django_slack_bot/models/messaging_policy.py:57
+#: django_slack_bot/models/messaging_policy.py:62
 #, python-brace-format
 msgid "{code} (enabled, {num_recipients} recipients)"
 msgstr "{code} (활성, {num_recipients} 수신자들)"
 
-#: django_slack_bot/models/messaging_policy.py:62
+#: django_slack_bot/models/messaging_policy.py:67
 #, python-brace-format
 msgid "{code} (disabled, {num_recipients} recipients)"
 msgstr "{code} (비활성, {num_recipients} 수신자들)"
+
+#: django_slack_bot/utils/dict_template.py:35
+#, fuzzy, python-format
+#| msgid "Given object is not a dictionary: %%(value)r"
+msgid "Given object is not a dictionary: %(value)r"
+msgstr "주어진 객체는 사전형이 아닙니다: %%(value)."
 
 #: django_slack_bot/utils/model_mixins.py:10
 msgid "Created"
@@ -276,7 +434,13 @@ msgstr "최종변경일시"
 msgid "When instance modified recently."
 msgstr "마지막으로 객체가 변경된 시각입니다."
 
-#: django_slack_bot/utils/validators.py:17
+#: django_slack_bot/utils/slack/django.py:35
 #, python-format
-msgid "Given object is not a dictionary: %(value)r"
-msgstr "주어진 객체는 사전형이 아닙니다: %(value)."
+msgid "Input validation failed [msg=%(msg)r, input=%(input)r]"
+msgstr "입력값 검증 실패 [msg=%(msg)r, input=%(input)r]"
+
+#~ msgid "Internal mention ID for Slack."
+#~ msgstr "Slack 내부 멘션 ID입니다."
+
+#~ msgid "Message body."
+#~ msgstr "메시지 내용입니다."
