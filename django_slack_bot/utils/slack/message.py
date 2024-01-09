@@ -1,12 +1,9 @@
 """Utils for Slack messaging."""
 from __future__ import annotations
 
-import urllib.parse
 from typing import List, Optional
 
 from pydantic import BaseModel, model_validator
-
-from .workspace import get_workspace_info
 
 
 class MessageHeader(BaseModel):
@@ -44,33 +41,3 @@ class MessageBody(BaseModel):
             raise ValueError(msg)
 
         return self
-
-
-def get_permalink(*, team_url: str | None = None, channel: str, ts: str, parent_ts: str) -> str | None:
-    """Returns permalink to current message.
-
-    Slack app already provides `.chat_getPermalink()` method for this purpose, but as we have
-    all the necessary information, generate one for efficiency.
-
-    Args:
-        team_url: URL of current Slack team, e.g. `"https://awesome.slack.com/"`
-        channel: ID of channel the message sent to.
-        ts: ID of the message.
-        parent_ts: Parent thread message this message replied to.
-
-    Returns:
-        Permalink to the message or `None` if not available.
-    """
-    if not ts:
-        return None
-
-    if team_url is None:
-        workspace_info = get_workspace_info()
-        team_url = "-" if workspace_info is None else workspace_info.team["url"]
-
-    ts = "p{ts}".format(ts=ts.replace(".", ""))
-    path = f"/archives/{channel}/{ts}"
-    if parent_ts:
-        path += f"?thread_ts={parent_ts}&cid={channel}"
-
-    return urllib.parse.urljoin(base=team_url, url=path)

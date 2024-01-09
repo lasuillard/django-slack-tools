@@ -5,6 +5,7 @@ In your Django settings, Django Slack Bot expects something like:
 """
 from __future__ import annotations
 
+from logging import getLogger
 from typing import Any, TypedDict
 
 from django.conf import settings
@@ -12,10 +13,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
 
-from .backends import BackendBase
+from django_slack_bot.backends.base import BackendBase
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
 "Django settings key for this application."
+
+logger = getLogger(__name__)
 
 # TODO(lasuillard): Rewrite with Pydantic
 
@@ -68,7 +71,7 @@ class AppSettings:
         self.backend = messaging_backend(**settings_dict["BACKEND"]["OPTIONS"])
 
     @property
-    def slack_app(self) -> App | None:
+    def slack_app(self) -> App:
         """Registered Slack app or `None`."""
         return self._slack_app
 

@@ -7,8 +7,8 @@ from django.contrib import admin, messages
 from django.contrib.admin.filters import ChoicesFieldListFilter, DateFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMention
-from django_slack_bot.utils.slack import get_workspace_info
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
@@ -94,10 +94,22 @@ class SlackMentionAdmin(admin.ModelAdmin):
 
 def _get_mentionable_items() -> dict[str, _Mentionable]:
     """Returns mapping of ID to mention name for members and usergroups."""
-    workspace_info = get_workspace_info()
-    if workspace_info is None:
+    # Fetch members from Slack
+    # TODO(lasuillard): Need pagination in future
+    response = app_settings.slack_app.client.users_list()
+    if not response.get("ok", False):
         return {}
 
+    members: list[dict] = response.get("members", default=[])
+
+    # Fetch usergroups from Slack
+    response = app_settings.slack_app.client.usergroups_list()
+    if not response.get("ok", False):
+        return {}
+
+    usergroups: list[dict] = response.get("usergroups", default=[])
+
+    # List of mentionable
     items: dict[str, _Mentionable] = {}
 
     # Members mapping
@@ -107,7 +119,7 @@ def _get_mentionable_items() -> dict[str, _Mentionable]:
                 "type": SlackMention.MentionType.USER,
                 "name": member["profile"]["display_name"] or member["profile"]["real_name"],
             }
-            for member in workspace_info.members
+            for member in members
         },
     )
 
@@ -118,7 +130,7 @@ def _get_mentionable_items() -> dict[str, _Mentionable]:
                 "type": SlackMention.MentionType.GROUP,
                 "name": usergroup["name"],
             }
-            for usergroup in workspace_info.usergroups
+            for usergroup in usergroups
         },
     )
 

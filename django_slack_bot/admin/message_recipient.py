@@ -9,8 +9,8 @@ from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
+from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessageRecipient
-from django_slack_bot.utils.slack import get_workspace_info
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -106,8 +106,11 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
 
 
 def _get_channels() -> dict[str, str]:
-    workspace_info = get_workspace_info()
-    if workspace_info is None:
+    # TODO(lasuillard): Need pagination in future
+    response = app_settings.slack_app.client.conversations_list()
+    if not response.get("ok", default=False):
         return {}
 
-    return {channel["id"]: channel["name"] for channel in workspace_info.channels}
+    # TODO(lasuillard): Type stub for response data
+    channels: list[dict] = response.get("channels", default=[])
+    return {channel["id"]: channel["name"] for channel in channels}

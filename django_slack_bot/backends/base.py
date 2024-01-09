@@ -3,12 +3,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, cast, overload
-
-from slack_sdk.errors import SlackApiError
+from typing import TYPE_CHECKING, Any, overload
 
 from django_slack_bot.models import SlackMessage, SlackMessagingPolicy
-from django_slack_bot.utils.slack import get_permalink
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -31,6 +28,7 @@ class BackendBase(ABC):
         raise_exception: bool,
         save_db: bool,
         record_detail: bool,
+        get_permalink: bool = False,
     ) -> SlackMessage:
         ...  # pragma: no cover
 
@@ -45,9 +43,11 @@ class BackendBase(ABC):
         raise_exception: bool,
         save_db: bool,
         record_detail: bool,
+        get_permalink: bool = False,
     ) -> SlackMessage:
         ...  # pragma: no cover
 
+    @abstractmethod
     def send_message(  # noqa: PLR0913
         self,
         message: SlackMessage | None = None,
@@ -59,6 +59,7 @@ class BackendBase(ABC):
         raise_exception: bool,
         save_db: bool,
         record_detail: bool,
+        get_permalink: bool = False,
     ) -> SlackMessage:
         """Send Slack message.
 
@@ -74,50 +75,11 @@ class BackendBase(ABC):
             record_detail: Whether to record API interaction detail, HTTP request and response details.
                 Would take effect only if `save_db` set `True`.
                 Also, existing data will be overwritten (if message has been sent already).
+            get_permalink: Try to get the message permalink via extraneous Slack API calls.
 
         Returns:
             Sent Slack message.
         """
-        if not message:
-            if not (channel and header and body):
-                msg = (
-                    "Call signature mismatch for overload."
-                    " If `message` not provided, `channel`, `header` and `body` all must given."
-                )
-                raise TypeError(msg)
-
-            message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
-
-        # Send Slack message
-        response: SlackResponse
-        try:
-            response = self._send_message(message=message)
-        except SlackApiError as err:
-            if raise_exception:
-                raise
-
-            logger.exception(
-                "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
-            )
-            response = err.response
-
-        # Update message detail
-        ok = response.get("ok")
-        message.ok = ok
-        if ok:
-            # `str` if OK, otherwise `None`
-            message.ts = cast(str, response.get("ts"))
-            message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
-            message.permalink = get_permalink(channel=message.channel, ts=message.ts, parent_ts=message.parent_ts) or ""
-
-        if record_detail:
-            message.request = self._record_request(response)
-            message.response = self._record_response(response)
-
-        if save_db:
-            message.save()
-
-        return message
 
     def _prepare_message(
         self,

@@ -12,7 +12,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_bot.models import SlackMessagingPolicy
-from django_slack_bot.utils.slack import get_block_kit_builder_url, get_workspace_info
+from django_slack_bot.utils.slack import get_block_kit_builder_url
 from django_slack_bot.utils.widgets import JSONWidget
 
 if TYPE_CHECKING:
@@ -61,11 +61,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     @admin.display(description=_("Blocks Preview"))
     def _blocks_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
-        workspace_info = get_workspace_info()
-        if workspace_info is None:
-            return _("N/A")
-
-        team_id = workspace_info.team.get("id", "-")
         template = instance.template
         if not instance.template:
             return _("Template is empty, no link available.")
@@ -73,18 +68,13 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         if "blocks" not in template:
             return _("Template has no blocks.")
 
-        url = get_block_kit_builder_url(team_id=team_id, blocks=template["blocks"])
+        url = get_block_kit_builder_url(blocks=template["blocks"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Render payload partially with reserved arguments
     @admin.display(description=_("Attachments Preview"))
     def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
-        workspace_info = get_workspace_info()
-        if workspace_info is None:
-            return _("N/A")
-
-        team_id = workspace_info.team.get("id", "-")
         template = instance.template
         if not instance.template:
             return _("Template is empty, no link available.")
@@ -92,7 +82,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         if "attachments" not in template:
             return _("Template has no attachments.")
 
-        url = get_block_kit_builder_url(team_id=team_id, attachments=template["attachments"])
+        url = get_block_kit_builder_url(attachments=template["attachments"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Display list of template arguments
