@@ -1,8 +1,7 @@
 import logging
 
 from slack_bolt.context.say import Say
-
-from testproj.config.slack_app import app
+from todo.slack_app import app
 
 logger = logging.getLogger(__name__)
 

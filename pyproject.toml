@@ -10,7 +10,7 @@ packages = [{ include = "django_slack_bot" }]
 [tool.poetry.dependencies]
 python = "^3.8"
 slack-bolt = ">=1,<2"
-django = ">=3.2"
+django = ">=3.2,<4"
 pydantic = ">=2,<3"
 
 [tool.poetry.group.dev.dependencies]
@@ -51,6 +51,7 @@ line-length = 120
 "tests/*" = ["D", "S101", "PLR2004", "SLF001"]
 "testproj/*" = ["D100"]
 "*/migrations/*" = ["RUF012", "D"]
+"examples/*" = ["D100"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
@@ -75,6 +76,7 @@ warn_return_any = true
 show_error_codes = true
 strict_optional = true
 no_implicit_reexport = true
+explicit_package_bases = true
 
 [tool.django-stubs]
 django_settings_module = "testproj.config.settings"
