@@ -12,7 +12,7 @@ class TestSlackMessageRecipient(ModelTestBase):
 
     @pytest.mark.django_db()
     def test_str(self) -> None:
-        instance = self.factory_cls(
+        instance = self.factory_cls.create(
             alias="Robots in the bar",
             channel="#robots-in-the-bar",
             mentions=SlackMentionFactory.create_batch(size=3),
