@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 class TestSlackBackend:
     # TODO(lasuillard): Test `.__init__()` for import string & callable
-    # TODO(lasuillard): Test `.get_workspace_info()`
 
     @pytest.mark.slack()
     @pytest.mark.vcr()

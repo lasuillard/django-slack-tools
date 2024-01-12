@@ -38,8 +38,10 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         verbose_name=_("Default header"),
         help_text=_("Default header values applied to messages on creation."),
         validators=[header_validator],
+        blank=True,
         default=dict,
     )
+    # TODO(#15): Django template would be string
     template = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),

@@ -5,7 +5,6 @@ from django.utils import timezone
 from factory import Faker, LazyAttribute, post_generation
 from factory.django import DjangoModelFactory
 
-from django_slack_bot.choices import MentionType
 from django_slack_bot.models import SlackMention, SlackMessage, SlackMessageRecipient, SlackMessagingPolicy
 
 _fake = faker.Faker()
@@ -15,9 +14,9 @@ class SlackMentionFactory(DjangoModelFactory):
     class Meta:
         model = SlackMention
 
-    type = MentionType.USER  # noqa: A003
+    type = SlackMention.MentionType.USER  # noqa: A003
     name = Faker("name")
-    mention = LazyAttribute(lambda _: f"<@{_fake.pystr(max_chars=12)}>")
+    mention_id = Faker("pystr", max_chars=12)
 
 
 class SlackMessageRecipientFactory(DjangoModelFactory):
@@ -25,7 +24,8 @@ class SlackMessageRecipientFactory(DjangoModelFactory):
         model = SlackMessageRecipient
 
     alias = Faker("name")
-    channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
+    channel = Faker("pystr", max_chars=12)
+    channel_name = LazyAttribute(lambda _: f"#{_fake.pystr()}")
 
     @post_generation
     def mentions(

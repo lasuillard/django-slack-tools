@@ -24,13 +24,11 @@ if TYPE_CHECKING:
 class SlackMessageAdmin(admin.ModelAdmin):
     """Admin for messages."""
 
-    readonly_fields = ("id", "_get_permalink", "created", "last_modified")
+    readonly_fields = ("id", "_link_to_permalink", "created", "last_modified")
 
     @admin.display(description=_("Permalink"))
-    def _get_permalink(self, instance: SlackMessage) -> StrOrPromise:
-        workspace_info = app_settings.backend.get_workspace_info()
-        team_url = workspace_info.team["url"]
-        url = instance.get_permalink(team_url=team_url)
+    def _link_to_permalink(self, instance: SlackMessage) -> StrOrPromise:
+        url = instance.permalink
         if not url:
             return _("N/A")
 
@@ -55,12 +53,13 @@ class SlackMessageAdmin(admin.ModelAdmin):
         n = len(created)
         django.contrib.messages.info(request, _("Cloned %s messages.") % n)
 
-    @admin.action(description=_("Clone and send messages"))
+    @admin.action(description=_("Send messages"))
     def _send_messages(self, request: HttpRequest, queryset: QuerySet[SlackMessage]) -> None:
         backend = app_settings.backend
-        n = queryset.count()
+        n = 0
         for message in queryset:
             backend.send_message(message, raise_exception=False, save_db=True, record_detail=True)
+            n += 1
 
         django.contrib.messages.info(request, _("Sent %s messages.") % n)
 
@@ -68,7 +67,17 @@ class SlackMessageAdmin(admin.ModelAdmin):
     # ------------------------------------------------------------------------
     date_hierarchy = "created"
     search_fields = ("id", "ts", "parent_ts", "policy__code", "channel")
-    list_display = ("id", "ts", "ok", "policy", "channel", "parent_ts", "_get_permalink", "created", "last_modified")
+    list_display = (
+        "id",
+        "ts",
+        "ok",
+        "policy",
+        "channel",
+        "parent_ts",
+        "_link_to_permalink",
+        "created",
+        "last_modified",
+    )
     list_display_links = ("id", "ts")
     list_select_related = ("policy",)
     list_filter = (
@@ -87,7 +96,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "_get_permalink", "header", "body"),
+                "fields": ("policy", "channel", "ok", "ts", "parent_ts", "_link_to_permalink", "header", "body"),
             },
         ),
         (

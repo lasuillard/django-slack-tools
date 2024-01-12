@@ -25,8 +25,15 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
     channel = models.CharField(
         verbose_name=_("Channel"),
         help_text=_("Slack channel ID where messages will be sent."),
-        blank=False,
         max_length=128,
+        blank=False,
+    )
+    channel_name = models.CharField(
+        verbose_name=_("Channel name"),
+        help_text=_("Display name of channel."),
+        max_length=256,
+        blank=True,
+        default="",
     )
     mentions = models.ManyToManyField(
         SlackMention,

@@ -11,7 +11,6 @@ from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
 from django_slack_bot.models import SlackMessagingPolicy
 from django_slack_bot.utils.slack import get_block_kit_builder_url
 from django_slack_bot.utils.widgets import JSONWidget
@@ -45,6 +44,15 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             ),
         )
 
+    readonly_fields = (
+        "id",
+        "_count_recipients",
+        "_blocks_block_kit_builder_url",
+        "_attachments_block_kit_builder_url",
+        "created",
+        "last_modified",
+    )
+
     @admin.display(description=_("Number of Recipients"))
     def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
         return instance.num_recipients
@@ -60,9 +68,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         if "blocks" not in template:
             return _("Template has no blocks.")
 
-        workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info.team["id"]
-        url = get_block_kit_builder_url(team_id=team_id, blocks=template["blocks"])
+        url = get_block_kit_builder_url(blocks=template["blocks"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Render payload partially with reserved arguments
@@ -76,22 +82,11 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         if "attachments" not in template:
             return _("Template has no attachments.")
 
-        workspace_info = app_settings.backend.get_workspace_info()
-        team_id = workspace_info.team["id"]
-        url = get_block_kit_builder_url(team_id=team_id, attachments=template["attachments"])
+        url = get_block_kit_builder_url(attachments=template["attachments"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
     # TODO(lasuillard): Display list of template arguments
     # TODO(lasuillard): Display available reserved arguments (mentions, etc.)
-
-    readonly_fields = (
-        "id",
-        "_count_recipients",
-        "_blocks_block_kit_builder_url",
-        "_attachments_block_kit_builder_url",
-        "created",
-        "last_modified",
-    )
 
     # Actions
     actions = ()
