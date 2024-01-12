@@ -35,6 +35,7 @@
     "mrkdwn",
     "pydantic",
     "Pylance",
+    "subteam",
     "usergroup",
     "usergroups"
   ],

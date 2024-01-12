@@ -4,7 +4,6 @@ from typing import Any
 
 import pytest
 
-from django_slack_bot.choices import MentionType
 from django_slack_bot.models import SlackMention
 
 from ._factories import SlackMentionFactory
@@ -19,19 +18,19 @@ class TestSlackMention(ModelTestBase):
         argnames=["kwargs", "expect"],
         argvalues=[
             [
-                {"type": MentionType.SPECIAL, "name": "Here", "mention": "<!here>"},
-                "Here (<!here>, Special)",
+                {"type": SlackMention.MentionType.SPECIAL, "name": "Here", "mention_id": "<!here>"},
+                "Here (Special, <!here>)",
             ],
             [
-                {"type": MentionType.USER, "name": "lasuillard", "mention": "<@U0000000000>"},
-                "lasuillard (<@U0000000000>, User)",
+                {"type": SlackMention.MentionType.USER, "name": "lasuillard", "mention_id": "U0000000000"},
+                "lasuillard (User, U0000000000)",
             ],
             [
-                {"type": MentionType.GROUP, "name": "Backend", "mention": "<subteam^T0000000000>"},
-                "Backend (<subteam^T0000000000>, Group)",
+                {"type": SlackMention.MentionType.GROUP, "name": "Backend", "mention_id": "T0000000000"},
+                "Backend (Group, T0000000000)",
             ],
         ],
-        ids=["special mention", "user mention", "team mention"],
+        ids=["special", "user", "team"],
     )
     def test_str(self, kwargs: dict[str, Any], expect: str) -> None:
         instance = self.factory_cls.build(**kwargs)

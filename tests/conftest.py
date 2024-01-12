@@ -28,18 +28,26 @@ def vcr_config() -> dict:
         return re.sub(r"[0-9A-Z]{11}", "<REDACTED>", s)
 
     def before_record_request(request: Request) -> Request:
-        request.headers = {}  # No header needed in tests (yet)
-        request.body = scrub_id(request.body.decode())
+        # TODO(lasuillard): Better scrubbing
+        try:
+            request.headers = {}  # No header needed in tests (yet)
+            request.body = scrub_id(request.body.decode())
+        except:  # noqa: S110, E722
+            pass
 
         return request
 
     def before_record_response(response: dict) -> dict:
-        response["headers"] = {}  # No header needed in tests (yet)
+        # TODO(lasuillard): Better scrubbing
+        try:
+            response["headers"] = {}  # No header needed in tests (yet)
 
-        # Filter response data
-        body: dict = json.loads(response["body"]["string"])
-        body["message"]["bot_profile"] = {}
-        response["body"]["string"] = scrub_id(json.dumps(body)).encode()
+            # Filter response data
+            body: dict = json.loads(response["body"]["string"])
+            body["message"]["bot_profile"] = {}
+            response["body"]["string"] = scrub_id(json.dumps(body)).encode()
+        except:  # noqa: S110, E722
+            pass
 
         return response
 

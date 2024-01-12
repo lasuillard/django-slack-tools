@@ -2,24 +2,21 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
-from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from pydantic import ValidationError
 from slack_bolt import App
+from slack_sdk.errors import SlackApiError
 
-from django_slack_bot.utils.cache import generate_cache_key
-
-from .base import BackendBase, WorkspaceInfo
+from .base import BackendBase
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_bot.models import SlackMessage
-    from django_slack_bot.utils.slack import MessageBody
+    from django_slack_bot.models import SlackMessage, SlackMessagingPolicy
+    from django_slack_bot.utils.slack import MessageBody, MessageHeader
 
 
 logger = getLogger(__name__)
@@ -32,7 +29,6 @@ class SlackBackend(BackendBase):
         self,
         *,
         slack_app: App | Callable[[], App] | str,
-        workspace_cache_timeout: int = 60 * 60,
         remove_auth_header: bool = True,
     ) -> None:
         """Initialize backend.
@@ -55,35 +51,105 @@ class SlackBackend(BackendBase):
             raise ImproperlyConfigured(msg)
 
         self._slack_app = slack_app
-        self._workspace_cache_timeout = workspace_cache_timeout
         self._remove_auth_header = remove_auth_header
 
-    # TODO(lasuillard): Increase the warm-up performance by calling API in parallel
-    def get_workspace_info(self) -> WorkspaceInfo:  # noqa: D102
-        cache_key = generate_cache_key(self.get_workspace_info.__name__)
-        if cached := cache.get(cache_key):
-            try:
-                return WorkspaceInfo.model_validate(cached)
-            except ValidationError:
-                cache.delete(cache_key)
-                logger.exception("Failed to validate cached workspace info. Cache has been invalidated.")
+    def send_message(  # noqa: PLR0913
+        self,
+        message: SlackMessage | None = None,
+        *,
+        policy: SlackMessagingPolicy | None = None,
+        channel: str | None = None,
+        header: MessageHeader | None = None,
+        body: MessageBody | None = None,
+        raise_exception: bool,
+        save_db: bool,
+        record_detail: bool,
+        get_permalink: bool = False,
+    ) -> SlackMessage:
+        """Send Slack message.
 
-        team: dict = self._slack_app.client.team_info().get("team", default={})
+        Args:
+            message: Externally prepared message.
+                If not given, make one using `channel`, `header` and `body` parameters.
+            policy: Messaging policy to create message with.
+            channel: Channel to send message.
+            header: Message header that controls how message will sent.
+            body: Message body describing content of the message.
+            raise_exception: Whether to re-raise caught exception while sending messages.
+            save_db: Whether to save Slack message changes.
+            record_detail: Whether to record API interaction detail, HTTP request and response details.
+                Would take effect only if `save_db` set `True`.
+                Also, existing data will be overwritten (if message has been sent already).
+            get_permalink: Try to get the message permalink via extraneous Slack API calls.
 
-        # TODO(lasuillard): For large workspace (users > 200?) it should handle pagination in future
-        #                   but not considering it for now
-        members: list[dict] = self._slack_app.client.users_list().get("members", default=[])
-        usergroups: list[dict] = self._slack_app.client.usergroups_list().get("usergroups", default=[])
-        channels: list[dict] = self._slack_app.client.conversations_list().get("channels", default=[])
+        Returns:
+            Sent Slack message.
+        """
+        if not message:
+            if not (channel and header and body):
+                msg = (
+                    "Call signature mismatch for overload."
+                    " If `message` not provided, `channel`, `header` and `body` all must given."
+                )
+                raise TypeError(msg)
 
-        info = WorkspaceInfo(
-            team=team,
-            members=members,
-            usergroups=usergroups,
-            channels=channels,
-        )
-        cache.set(key=cache_key, value=info.model_dump(), timeout=self._workspace_cache_timeout)
-        return info
+            message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
+
+        # Send Slack message
+        response: SlackResponse
+        try:
+            response = self._send_message(message=message)
+        except SlackApiError as err:
+            if raise_exception:
+                raise
+
+            logger.exception(
+                "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
+            )
+            response = err.response
+
+        # Update message detail
+        ok = response.get("ok")
+        message.ok = ok
+        if ok:
+            # `str` if OK, otherwise `None`
+            message.ts = cast(str, response.get("ts"))
+            message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
+            if get_permalink:
+                message.permalink = self._get_permalink(
+                    channel=message.channel,
+                    message_ts=message.ts,
+                    raise_exception=raise_exception,
+                )
+
+        if record_detail:
+            message.request = self._record_request(response)
+            message.response = self._record_response(response)
+            # TODO(#41): Record an exception in future
+
+        if save_db:
+            message.save()
+
+        return message
+
+    def _get_permalink(self, *, channel: str, message_ts: str, raise_exception: bool = False) -> str:
+        """Get a permalink for given message identifier."""
+        try:
+            _permalink_resp = self._slack_app.client.chat_getPermalink(
+                channel=channel,
+                message_ts=message_ts,
+            )
+        except SlackApiError:
+            if raise_exception:
+                raise
+
+            logger.exception(
+                "Error occurred while sending retrieving message's permalink,"
+                " but ignored as `raise_exception` not set.",
+            )
+            return ""
+
+        return _permalink_resp.get("permalink", default="")
 
     def _send_message(self, *, message: SlackMessage) -> SlackResponse:
         return self._slack_app.client.chat_postMessage(channel=message.channel, **message.header, **message.body)

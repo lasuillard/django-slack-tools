@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.filters import DateFieldListFilter
 from django.db.models import Count
 from django.db.models.query import QuerySet
@@ -14,7 +14,6 @@ from django_slack_bot.models import SlackMessageRecipient
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
-    from django_stubs_ext import StrOrPromise
 
     class SlackMessageRecipientWithAnnotates(SlackMessageRecipient):  # noqa: D101
         num_mentions: int
@@ -35,27 +34,49 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
             ),
         )
 
-    @admin.display(description=_("Channel Name"))
-    def _get_channel_name(self, instance: SlackMessageRecipient) -> StrOrPromise:
-        workspace_info = app_settings.backend.get_workspace_info()
-        for channel in workspace_info.channels:
-            if channel["id"] == instance.channel:
-                return "#{channel}".format(channel=channel["name"])
-
-        # In cases of channel not exist, bot is not in channel, DM between user and bot, etc.
-        return _("?")
-
-    readonly_fields = ("id", "_get_channel_name", "created", "last_modified")
+    readonly_fields = ("id", "created", "last_modified")
 
     # Actions
-    actions = ()
+    actions = ("_update_channel_names",)
+
+    @admin.action(description=_("Update recipient' channel names"))
+    def _update_channel_names(self, request: HttpRequest, queryset: QuerySet[SlackMessageRecipient]) -> None:
+        """Admin action to update selected recipients' channel names using workspace info."""
+        channels = _get_channels()
+
+        # Temporary changes
+        changes: list[SlackMessageRecipient] = []
+        failures: list[SlackMessageRecipient] = []
+        for recipient in queryset:
+            match = channels.get(recipient.channel)
+            if match is None:
+                failures.append(recipient)
+                continue
+
+            recipient.channel_name = f"#{match}"
+            changes.append(recipient)
+
+        # Bulk update in single query
+        n_success = SlackMessageRecipient.objects.bulk_update(changes, fields=("channel_name",))
+
+        # Reporting
+        if failures:
+            messages.warning(
+                request,
+                _(
+                    "Updated {n_success} recipients successfully"
+                    " and there were {n_fail} recipients failed to update because no matching data.",
+                ).format(n_success=n_success, n_fail=len(failures)),
+            )
+        else:
+            messages.info(request, _("Updated {n} recipients.").format(n=n_success))
 
     # Changelist
     # ------------------------------------------------------------------------
     date_hierarchy = "last_modified"
-    search_fields = ("alias", "channel", "mentions__mention")
-    list_display = ("id", "alias", "channel", "_get_channel_name", "_num_mentions", "created", "last_modified")
-    list_display_links = ("id", "alias")
+    search_fields = ("alias", "channel_name", "channel", "mentions__mention")
+    list_display = ("id", "alias", "channel_name", "_num_mentions", "created", "last_modified")
+    list_display_links = ("id", "alias", "channel_name")
     list_filter = (
         ("created", DateFieldListFilter),
         ("last_modified", DateFieldListFilter),
@@ -71,7 +92,7 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("alias", "channel", "_get_channel_name", "mentions"),
+                "fields": ("alias", "channel", "channel_name", "mentions"),
             },
         ),
         (
@@ -82,3 +103,14 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+def _get_channels() -> dict[str, str]:
+    # TODO(lasuillard): Need pagination in future
+    response = app_settings.slack_app.client.conversations_list()
+    if not response.get("ok", default=False):
+        return {}
+
+    # TODO(lasuillard): Type stub for response data
+    channels: list[dict] = response.get("channels", default=[])
+    return {channel["id"]: channel["name"] for channel in channels}
