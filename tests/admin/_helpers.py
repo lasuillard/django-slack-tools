@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from django.urls import reverse
@@ -18,8 +18,6 @@ class ModelAdminTestBase:
     admin_cls: type[ModelAdmin]
     model_cls: type[Model]
     factory_cls: type[DjangoModelFactory]
-
-    pytestmark: ClassVar = [pytest.mark.django_db()]
 
     @classmethod
     def _reverse(
