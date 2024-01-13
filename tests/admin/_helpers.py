@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from django.contrib.messages import get_messages
 from django.urls import reverse
 
 if TYPE_CHECKING:
     from typing import Literal
 
     from django.contrib.admin import ModelAdmin
+    from django.core.handlers.wsgi import WSGIRequest
     from django.db.models import Model
     from django.test.client import Client
     from factory.django import DjangoModelFactory
@@ -33,6 +35,14 @@ class ModelAdminTestBase:
         app_label = cls.model_cls._meta.app_label
         model_name = cls.model_cls._meta.model_name
         return reverse(f"admin:{app_label}_{model_name}_{view}", *args, **kwargs)
+
+    @classmethod
+    def _get_messages(
+        cls,
+        wsgi_request: WSGIRequest,
+    ) -> list[str]:
+        """Helper method to get all messages."""
+        return [str(m) for m in get_messages(wsgi_request)]
 
     # NOTE: Below tests do some simple sanity checks only, extra test details should be provided by inherited classes
 
