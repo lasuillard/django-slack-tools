@@ -4,9 +4,12 @@ from typing import TYPE_CHECKING, Iterable
 from unittest import mock
 
 import pytest
+from slack_bolt import App
 
 from django_slack_bot.admin import SlackMentionAdmin
+from django_slack_bot.admin.mention import _get_mentionable_items
 from django_slack_bot.models import SlackMention
+from tests._factories import SlackResponseFactory
 from tests.models._factories import SlackMentionFactory
 
 from ._helpers import ModelAdminTestBase
@@ -124,4 +127,40 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
         ]
 
 
-# TODO(lasuillard): Test `_get_mentionable_items()`
+def test_get_mentionable_items() -> None:
+    with mock.patch.object(App, "client") as m:
+        m.users_list.return_value = SlackResponseFactory(
+            data={
+                "ok": True,
+                "members": [
+                    {"id": "USER001", "profile": {"display_name": "Cake", "real_name": ""}},
+                    {"id": "USER002", "profile": {"display_name": "", "real_name": "Carrot"}},
+                ],
+            },
+        )
+        m.usergroups_list.return_value = SlackResponseFactory(
+            data={
+                "ok": True,
+                "usergroups": [{"id": "GROUP01", "name": "Food"}, {"id": "GROUP02", "name": "Drink"}],
+            },
+        )
+        mentionable_items = _get_mentionable_items()
+
+    assert mentionable_items == {
+        "USER001": {
+            "type": SlackMention.MentionType.USER,
+            "name": "Cake",
+        },
+        "USER002": {
+            "type": SlackMention.MentionType.USER,
+            "name": "Carrot",
+        },
+        "GROUP01": {
+            "type": SlackMention.MentionType.GROUP,
+            "name": "Food",
+        },
+        "GROUP02": {
+            "type": SlackMention.MentionType.GROUP,
+            "name": "Drink",
+        },
+    }
