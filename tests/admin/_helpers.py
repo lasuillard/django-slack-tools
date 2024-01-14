@@ -21,9 +21,8 @@ class ModelAdminTestBase:
     model_cls: type[Model]
     factory_cls: type[DjangoModelFactory]
 
-    @classmethod
     def _reverse(
-        cls,
+        self,
         view: Literal["changelist", "change", "delete", "history", "add"],
         *args: Any,
         **kwargs: Any,
@@ -32,13 +31,12 @@ class ModelAdminTestBase:
 
         Any additional arguments will be passed to `django.urls.reverse()`.
         """
-        app_label = cls.model_cls._meta.app_label
-        model_name = cls.model_cls._meta.model_name
+        app_label = self.model_cls._meta.app_label
+        model_name = self.model_cls._meta.model_name
         return reverse(f"admin:{app_label}_{model_name}_{view}", *args, **kwargs)
 
-    @classmethod
     def _get_messages(
-        cls,
+        self,
         wsgi_request: WSGIRequest,
     ) -> list[str]:
         """Helper method to get all messages."""
