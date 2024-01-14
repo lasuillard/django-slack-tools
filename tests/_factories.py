@@ -6,7 +6,9 @@ class SlackResponseFactory(Factory):
     client = None
     http_verb = "POST"
     api_url = ""
-    req_args: dict = {}  # noqa: RUF012
+    req_args: dict = {  # noqa: RUF012
+        "headers": {},
+    }
     data: dict = {  # noqa: RUF012
         "ok": True,
     }

@@ -156,7 +156,7 @@ class SlackBackend(BackendBase):
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
         if self._remove_auth_header:
-            response.req_args["headers"].pop("Authorization")
+            response.req_args["headers"].pop("Authorization", None)
 
         return response.req_args
 

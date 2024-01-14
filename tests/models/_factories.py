@@ -47,8 +47,8 @@ class SlackMessageFactory(DjangoModelFactory):
     policy = None
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
     header: dict = {}  # noqa: RUF012
-    body = LazyAttribute(lambda o: {"channel": o.channel, "text": _fake.paragraph()})
-    ok = True
+    body = LazyAttribute(lambda _: {"text": _fake.paragraph()})
+    ok = None
     ts = LazyAttribute(
         # BUG: Sometimes the digit is shorter (e.g. 1702792470.9649)
         lambda _: str(timezone.now().timestamp()),
