@@ -85,6 +85,8 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
         with mock.patch("django_slack_bot.admin.mention._get_mentionable_items", return_value=_mentionable_items):
             response = self._update_mentions(client=admin_client, ids=ids)
 
+        assert response.status_code == 302
+
         # Check message
         messages = self._get_messages(response.wsgi_request)
         assert messages == [
@@ -112,6 +114,8 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
         # Perform action
         with mock.patch("django_slack_bot.admin.mention._get_mentionable_items", return_value=_mentionable_items):
             response = self._update_mentions(client=admin_client, ids=ids)
+
+        assert response.status_code == 302
 
         # Check message
         messages = self._get_messages(response.wsgi_request)
