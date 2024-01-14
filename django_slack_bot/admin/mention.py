@@ -47,7 +47,8 @@ class SlackMentionAdmin(admin.ModelAdmin):
             changes.append(mention)
 
         # Make changes in bulk
-        n_success = SlackMention.objects.bulk_update(changes, fields=("type", "name"))
+        SlackMention.objects.bulk_update(changes, fields=("type", "name"))
+        n_success = len(changes)
 
         # Report back to admin
         if failures:
