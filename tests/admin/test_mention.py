@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Iterable
 from unittest import mock
 
 import pytest
-from slack_bolt import App
 
 from django_slack_bot.admin import SlackMentionAdmin
 from django_slack_bot.admin.mention import _get_mentionable_items
@@ -132,7 +131,7 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
 
 
 def test_get_mentionable_items() -> None:
-    with mock.patch.object(App, "client") as m:
+    with mock.patch("slack_bolt.App.client") as m:
         m.users_list.return_value = SlackResponseFactory(
             data={
                 "ok": True,
