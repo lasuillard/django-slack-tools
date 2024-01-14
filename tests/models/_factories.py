@@ -14,7 +14,7 @@ class SlackMentionFactory(DjangoModelFactory):
     class Meta:
         model = SlackMention
 
-    type = SlackMention.MentionType.UNKNOWN  # noqa: A003
+    type = SlackMention.MentionType.UNKNOWN
     name = Faker("name")
     mention_id = Faker("pystr", max_chars=12)
 
