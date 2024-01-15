@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from slack_bolt import App
 
 from django_slack_bot.app_settings import AppSettings
-from django_slack_bot.backends import BackendBase
+from django_slack_bot.slack_messages.backends import BackendBase
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
@@ -20,21 +20,21 @@ config_fixtures: dict[str, ConfigDict] = {
     "dummy backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.backends.DummyBackend",
+            "NAME": "django_slack_bot.slack_messages.backends.DummyBackend",
             "OPTIONS": {},
         },
     },
     "logging backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.backends.LoggingBackend",
+            "NAME": "django_slack_bot.slack_messages.backends.LoggingBackend",
             "OPTIONS": {},
         },
     },
     "slack backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.backends.SlackBackend",
+            "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
             "OPTIONS": {
                 "slack_app": "tests.test_app_settings.get_slack_app",
             },
@@ -43,7 +43,7 @@ config_fixtures: dict[str, ConfigDict] = {
     "slack redirect backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.backends.SlackRedirectBackend",
+            "NAME": "django_slack_bot.slack_messages.backends.SlackRedirectBackend",
             "OPTIONS": {
                 "slack_app": "tests.test_app_settings.get_slack_app",
                 "redirect_channel": "some-redirect-channel",
@@ -82,7 +82,7 @@ class TestAppSettings:
     def test_raises_if_backend_is_not_subclass_of_base_class(self) -> None:
         with pytest.raises(
             ImproperlyConfigured,
-            match="Provided backend is not a subclass of `django_slack_bot.backends.base.BackendBase` class.",
+            match="Provided backend is not a subclass of `django_slack_bot.slack_messages.backends.base.BackendBase` class.",  # noqa: E501
         ):
             AppSettings(
                 {
