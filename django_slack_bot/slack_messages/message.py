@@ -66,7 +66,7 @@ def slack_message_via_policy(  # noqa: PLR0913
     record_detail: bool = False,
     lazy: bool = False,
     get_permalink: bool = False,
-    **kwargs: Any | None,
+    context: dict[str, Any] | None = None,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 
@@ -83,7 +83,7 @@ def slack_message_via_policy(  # noqa: PLR0913
             Use it with caution because request headers might contain API token.
         lazy: Decide whether try create policy with disabled, if not exists.
         get_permalink: Try to get the message permalink via extraneous Slack API calls.
-        kwargs: Arbitrary keyword arguments passed to policy template.
+        context: Dictionary to pass to template for rendering.
 
     Returns:
         Sent message instance or `None`.
@@ -100,10 +100,11 @@ def slack_message_via_policy(  # noqa: PLR0913
             policy = SlackMessagingPolicy.objects.get(code=policy)
 
     header = MessageHeader.model_validate(header or {})
+    context = context or {}
 
     # Prepare template
     template = policy.template
-    overridden_reserved = {"mentions", "mentions_as_str"} & set(kwargs.keys())
+    overridden_reserved = {"mentions", "mentions_as_str"} & set(context.keys())
     if overridden_reserved:
         logger.warning(
             "Template keyword argument(s) %s reserved for passing mentions, but already exists."
@@ -117,8 +118,12 @@ def slack_message_via_policy(  # noqa: PLR0913
         mentions: list[SlackMention] = list(recipient.mentions.all())
         mentions_as_str = ", ".join(mention.mention for mention in mentions)
 
+        # Prepare rendering arguments
+        kwargs = {"mentions": mentions, "mentions_as_str": mentions_as_str}
+        kwargs.update(context)
+
         # Render and send message
-        rendered = render(template, mentions=mentions, mentions_as_str=mentions_as_str, **kwargs)
+        rendered = render(template, **kwargs)
         body = MessageBody.model_validate(rendered)
         message = app_settings.backend.send_message(
             policy=policy,
