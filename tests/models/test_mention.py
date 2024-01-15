@@ -35,3 +35,25 @@ class TestSlackMention(ModelTestBase):
     def test_str(self, kwargs: dict[str, Any], expect: str) -> None:
         instance = self.factory_cls.build(**kwargs)
         assert str(instance) == expect
+
+    @pytest.mark.parametrize(
+        argnames=["kwargs", "expect"],
+        argvalues=[
+            [
+                {"type": SlackMention.MentionType.SPECIAL, "name": "Here", "mention_id": "<!here>"},
+                "<!here>",
+            ],
+            [
+                {"type": SlackMention.MentionType.USER, "name": "lasuillard", "mention_id": "U0000000000"},
+                "<@U0000000000>",
+            ],
+            [
+                {"type": SlackMention.MentionType.GROUP, "name": "Backend", "mention_id": "T0000000000"},
+                "<!subteam^T0000000000>",
+            ],
+        ],
+        ids=["special", "user", "team"],
+    )
+    def test_mention(self, kwargs: dict[str, Any], expect: str) -> None:
+        instance = self.factory_cls.build(**kwargs)
+        assert instance.mention == expect

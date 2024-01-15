@@ -5,7 +5,7 @@ import json
 import urllib.parse
 
 
-def get_block_kit_builder_url(*, team_id: str = "", blocks: dict | None = None, attachments: dict | None = None) -> str:
+def get_block_kit_builder_url(*, team_id: str = "", blocks: list | None = None, attachments: list | None = None) -> str:
     """Returns URL to Slack Block Kit Builder.
 
     Args:

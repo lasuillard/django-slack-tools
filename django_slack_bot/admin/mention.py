@@ -47,7 +47,8 @@ class SlackMentionAdmin(admin.ModelAdmin):
             changes.append(mention)
 
         # Make changes in bulk
-        n_success = SlackMention.objects.bulk_update(changes, fields=("type", "name"))
+        SlackMention.objects.bulk_update(changes, fields=("type", "name"))
+        n_success = len(changes)
 
         # Report back to admin
         if failures:
@@ -94,23 +95,15 @@ class SlackMentionAdmin(admin.ModelAdmin):
 
 def _get_mentionable_items() -> dict[str, _Mentionable]:
     """Returns mapping of ID to mention name for members and usergroups."""
-    # Fetch members from Slack
-    # TODO(lasuillard): Need pagination in future
-    response = app_settings.slack_app.client.users_list()
-    if not response.get("ok", False):
-        return {}
-
-    members: list[dict] = response.get("members", default=[])
-
-    # Fetch usergroups from Slack
-    response = app_settings.slack_app.client.usergroups_list()
-    if not response.get("ok", False):
-        return {}
-
-    usergroups: list[dict] = response.get("usergroups", default=[])
+    slack_app = app_settings.slack_app
 
     # List of mentionable
     items: dict[str, _Mentionable] = {}
+
+    # Fetch members from Slack
+    # TODO(lasuillard): Need pagination in future
+    response = slack_app.client.users_list()
+    members: list[dict] = response.get("members", default=[])
 
     # Members mapping
     items.update(
@@ -122,6 +115,10 @@ def _get_mentionable_items() -> dict[str, _Mentionable]:
             for member in members
         },
     )
+
+    # Fetch usergroups from Slack
+    response = slack_app.client.usergroups_list()
+    usergroups: list[dict] = response.get("usergroups", default=[])
 
     # Usergroups mapping
     items.update(

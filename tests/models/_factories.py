@@ -14,7 +14,7 @@ class SlackMentionFactory(DjangoModelFactory):
     class Meta:
         model = SlackMention
 
-    type = SlackMention.MentionType.USER  # noqa: A003
+    type = SlackMention.MentionType.UNKNOWN
     name = Faker("name")
     mention_id = Faker("pystr", max_chars=12)
 
@@ -47,8 +47,8 @@ class SlackMessageFactory(DjangoModelFactory):
     policy = None
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
     header: dict = {}  # noqa: RUF012
-    body = LazyAttribute(lambda o: {"channel": o.channel, "text": _fake.paragraph()})
-    ok = True
+    body = LazyAttribute(lambda _: {"text": _fake.paragraph()})
+    ok = None
     ts = LazyAttribute(
         # BUG: Sometimes the digit is shorter (e.g. 1702792470.9649)
         lambda _: str(timezone.now().timestamp()),
@@ -85,6 +85,12 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
                     "type": "mrkdwn",
                     "text": "Hello, World!: {mentions}",
                 },
+            },
+        ],
+        "attachments": [
+            {
+                "color": "#f2c744",
+                "blocks": [{"type": "section", "text": {"type": "mrkdwn", "text": "Hello, World!: {mentions}"}}],
             },
         ],
     }

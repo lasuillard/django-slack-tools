@@ -52,6 +52,7 @@ def vcr_config() -> dict:
         return response
 
     return {
+        "allowed_hosts": ["localhost"],
         "before_record_request": before_record_request,
         "before_record_response": before_record_response,
     }

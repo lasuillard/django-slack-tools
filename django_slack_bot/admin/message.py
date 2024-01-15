@@ -51,17 +51,35 @@ class SlackMessageAdmin(admin.ModelAdmin):
 
         created = SlackMessage.objects.bulk_create(messages)
         n = len(created)
-        django.contrib.messages.info(request, _("Cloned %s messages.") % n)
+        django.contrib.messages.info(request, _("Cloned {n} messages.").format(n=n))
 
     @admin.action(description=_("Send messages"))
     def _send_messages(self, request: HttpRequest, queryset: QuerySet[SlackMessage]) -> None:
         backend = app_settings.backend
-        n = 0
+
+        # Send selected messages
+        n_success = 0
+        n_failure = 0
         for message in queryset:
             backend.send_message(message, raise_exception=False, save_db=True, record_detail=True)
-            n += 1
+            if message.ok:
+                n_success += 1
+            else:
+                n_failure += 1
 
-        django.contrib.messages.info(request, _("Sent %s messages.") % n)
+        # Notify result to user
+        n = n_success + n_failure
+        if n_failure:
+            django.contrib.messages.info(
+                request,
+                _("Tried to send {n} messages, {n_success} succeeded and {n_failure} failed.").format(
+                    n=n,
+                    n_success=n_success,
+                    n_failure=n_failure,
+                ),
+            )
+        else:
+            django.contrib.messages.info(request, _("Sent {n} messages.").format(n=n))
 
     # Changelist
     # ------------------------------------------------------------------------

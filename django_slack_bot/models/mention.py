@@ -29,7 +29,7 @@ class SlackMention(TimestampMixin, models.Model):
         UNKNOWN = "?", _("Unknown")
         "Unknown mention type."
 
-    type = models.CharField(  # noqa: A003
+    type = models.CharField(
         verbose_name=_("Type"),
         help_text=_("Type of mentions."),
         max_length=1,

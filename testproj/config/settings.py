@@ -172,7 +172,9 @@ SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-po
 DJANGO_SLACK_BOT = {
     "SLACK_APP": "testproj.config.slack_app.app",
     "BACKEND": {
-        "NAME": "django_slack_bot.backends.LoggingBackend",
-        "OPTIONS": {},
+        "NAME": "django_slack_bot.backends.SlackBackend",
+        "OPTIONS": {
+            "slack_app": "testproj.config.slack_app.app",  # TODO(lasuillard): Default from SLACK_APP
+        },
     },
 }

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 import pytest
+from django.contrib.messages import get_messages
 from django.urls import reverse
 
 if TYPE_CHECKING:
     from typing import Literal
 
     from django.contrib.admin import ModelAdmin
+    from django.core.handlers.wsgi import WSGIRequest
     from django.db.models import Model
     from django.test.client import Client
     from factory.django import DjangoModelFactory
@@ -19,22 +21,26 @@ class ModelAdminTestBase:
     model_cls: type[Model]
     factory_cls: type[DjangoModelFactory]
 
-    pytestmark: ClassVar = [pytest.mark.django_db()]
-
-    @classmethod
     def _reverse(
-        cls,
+        self,
         view: Literal["changelist", "change", "delete", "history", "add"],
         *args: Any,
         **kwargs: Any,
     ) -> str:
-        """Helper method returns reverse URL For admin view. e.g. `"/admin/sjango_slack_bot/slackmessage/add"`.
+        """Helper method returns reverse URL For admin view. e.g. `"/admin/django_slack_bot/slackmessage/add"`.
 
         Any additional arguments will be passed to `django.urls.reverse()`.
         """
-        app_label = cls.model_cls._meta.app_label
-        model_name = cls.model_cls._meta.model_name
+        app_label = self.model_cls._meta.app_label
+        model_name = self.model_cls._meta.model_name
         return reverse(f"admin:{app_label}_{model_name}_{view}", *args, **kwargs)
+
+    def _get_messages(
+        self,
+        wsgi_request: WSGIRequest,
+    ) -> list[str]:
+        """Helper method to get all messages."""
+        return [str(m) for m in get_messages(wsgi_request)]
 
     # NOTE: Below tests do some simple sanity checks only, extra test details should be provided by inherited classes
 
