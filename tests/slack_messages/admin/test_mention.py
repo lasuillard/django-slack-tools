@@ -9,9 +9,8 @@ from django_slack_bot.slack_messages.admin import SlackMentionAdmin
 from django_slack_bot.slack_messages.admin.mention import _get_mentionable_items
 from django_slack_bot.slack_messages.models import SlackMention
 from tests._factories import SlackResponseFactory
+from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMentionFactory
-
-from ._helpers import ModelAdminTestBase
 
 if TYPE_CHECKING:
     from django.test import Client

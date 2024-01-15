@@ -1,9 +1,9 @@
 import pytest
 
 from django_slack_bot.slack_messages.models import SlackMessagingPolicy
+from tests._helpers import ModelTestBase
 
 from ._factories import SlackMessageRecipientFactory, SlackMessagingPolicyFactory
-from ._helpers import ModelTestBase
 
 
 class TestSlackMessagingPolicy(ModelTestBase):

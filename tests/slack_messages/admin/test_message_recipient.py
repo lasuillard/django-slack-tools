@@ -9,9 +9,8 @@ from django_slack_bot.slack_messages.admin import SlackMessageRecipientAdmin
 from django_slack_bot.slack_messages.admin.message_recipient import _get_channels
 from django_slack_bot.slack_messages.models import SlackMessageRecipient
 from tests._factories import SlackResponseFactory
+from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessageRecipientFactory
-
-from ._helpers import ModelAdminTestBase
 
 if TYPE_CHECKING:
     from django.test import Client

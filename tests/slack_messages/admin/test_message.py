@@ -9,9 +9,8 @@ from slack_sdk.errors import SlackApiError
 from django_slack_bot.slack_messages.admin import SlackMessageAdmin
 from django_slack_bot.slack_messages.models import SlackMessage
 from tests._factories import SlackResponseFactory
+from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessageFactory
-
-from ._helpers import ModelAdminTestBase
 
 if TYPE_CHECKING:
     from django.test import Client

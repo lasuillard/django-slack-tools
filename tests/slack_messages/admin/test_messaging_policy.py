@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from django_slack_bot.slack_messages.admin import SlackMessagingPolicyAdmin
 from django_slack_bot.slack_messages.models import SlackMessagingPolicy
+from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessagingPolicyFactory
-
-from ._helpers import ModelAdminTestBase
 
 
 class TestSlackMessagingPolicyAdmin(ModelAdminTestBase):
