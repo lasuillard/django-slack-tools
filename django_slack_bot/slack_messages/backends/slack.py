@@ -95,40 +95,41 @@ class SlackBackend(BackendBase):
 
             message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
 
-        # Send Slack message
-        response: SlackResponse
         try:
-            response = self._send_message(message=message)
-        except SlackApiError as err:
-            if raise_exception:
-                raise
+            # Send Slack message
+            response: SlackResponse
+            try:
+                response = self._send_message(message=message)
+            except SlackApiError as err:
+                if raise_exception:
+                    raise
 
-            logger.exception(
-                "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
-            )
-            response = err.response
-
-        # Update message detail
-        ok = response.get("ok")
-        message.ok = ok
-        if ok:
-            # `str` if OK, otherwise `None`
-            message.ts = cast(str, response.get("ts"))
-            message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
-            if get_permalink:
-                message.permalink = self._get_permalink(
-                    channel=message.channel,
-                    message_ts=message.ts,
-                    raise_exception=raise_exception,
+                logger.exception(
+                    "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
                 )
+                response = err.response
 
-        if record_detail:
-            message.request = self._record_request(response)
-            message.response = self._record_response(response)
-            # TODO(#41): Record an exception in future
+            # Update message detail
+            ok = response.get("ok")
+            message.ok = ok
+            if ok:
+                # `str` if OK, otherwise `None`
+                message.ts = cast(str, response.get("ts"))
+                message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
+                if get_permalink:
+                    message.permalink = self._get_permalink(
+                        channel=message.channel,
+                        message_ts=message.ts,
+                        raise_exception=raise_exception,
+                    )
 
-        if save_db:
-            message.save()
+            if record_detail:
+                message.request = self._record_request(response)
+                message.response = self._record_response(response)
+                # TODO(#41): Record an exception in future
+        finally:
+            if save_db:
+                message.save()
 
         return message
 
