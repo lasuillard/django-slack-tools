@@ -57,7 +57,8 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
             changes.append(recipient)
 
         # Bulk update in single query
-        n_success = SlackMessageRecipient.objects.bulk_update(changes, fields=("channel_name",))
+        SlackMessageRecipient.objects.bulk_update(changes, fields=("channel_name",))
+        n_success = len(changes)
 
         # Reporting
         if failures:
