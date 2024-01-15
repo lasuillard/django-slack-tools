@@ -16,10 +16,6 @@ if TYPE_CHECKING:
     from .models import SlackMention, SlackMessage
 
 
-# TODO(lasuillard): Add argument `backend` to set messaging backend explicitly,
-#                   defaulting to app settings' backend if not set
-
-
 def slack_message(  # noqa: PLR0913
     body: str | MessageBody | dict[str, Any],
     *,

@@ -41,7 +41,6 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         blank=True,
         default=dict,
     )
-    # TODO(#15): Django template would be string
     template = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),

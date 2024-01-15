@@ -174,7 +174,7 @@ DJANGO_SLACK_BOT = {
     "BACKEND": {
         "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
         "OPTIONS": {
-            "slack_app": "testproj.config.slack_app.app",  # TODO(lasuillard): Default from SLACK_APP
+            "slack_app": "testproj.config.slack_app.app",
         },
     },
 }

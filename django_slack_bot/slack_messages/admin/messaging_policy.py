@@ -57,7 +57,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     def _count_recipients(self, instance: SlackMessagingPolicyWithAnnotates) -> int:
         return instance.num_recipients
 
-    # TODO(lasuillard): Render payload partially with reserved arguments
     @admin.display(description=_("Blocks Preview"))
     def _blocks_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
@@ -71,7 +70,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         url = get_block_kit_builder_url(blocks=template["blocks"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
 
-    # TODO(lasuillard): Render payload partially with reserved arguments
     @admin.display(description=_("Attachments Preview"))
     def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
@@ -84,9 +82,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
         url = get_block_kit_builder_url(attachments=template["attachments"])
         return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
-
-    # TODO(lasuillard): Display list of template arguments
-    # TODO(lasuillard): Display available reserved arguments (mentions, etc.)
 
     # Actions
     actions = ()

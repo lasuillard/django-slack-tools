@@ -20,8 +20,6 @@ APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
 
 logger = getLogger(__name__)
 
-# TODO(lasuillard): Rewrite with Pydantic
-
 
 class AppSettings:
     """Application settings."""

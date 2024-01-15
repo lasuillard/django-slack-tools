@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
-# TODO(#10): Celery backend to send messages
-
 
 class BackendBase(ABC):
     """Abstract base class for messaging backends."""

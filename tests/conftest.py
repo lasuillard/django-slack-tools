@@ -25,7 +25,6 @@ def vcr_config() -> dict:
         return re.sub(r"[0-9A-Z]{11}", "<REDACTED>", s)
 
     def before_record_request(request: Request) -> Request:
-        # TODO(lasuillard): Better scrubbing
         try:
             request.headers = {}  # No header needed in tests (yet)
             request.body = scrub_id(request.body.decode())
@@ -35,7 +34,6 @@ def vcr_config() -> dict:
         return request
 
     def before_record_response(response: dict) -> dict:
-        # TODO(lasuillard): Better scrubbing
         try:
             response["headers"] = {}  # No header needed in tests (yet)
 
@@ -53,9 +51,6 @@ def vcr_config() -> dict:
         "before_record_request": before_record_request,
         "before_record_response": before_record_response,
     }
-
-
-# TODO(lasuillard): Test settings quite dirty and not straightforward; need refactor
 
 
 @pytest.fixture(scope="session")

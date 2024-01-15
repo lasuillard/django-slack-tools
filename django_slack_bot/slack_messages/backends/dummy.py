@@ -23,7 +23,6 @@ class DummyBackend(BackendBase):
     def _prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
         return SlackMessage()
 
-    # TODO(lasuillard): Construct dummy `SlackResponse` instance and return it
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse:  # noqa: ARG002
         return SlackResponse(
             client=None,
