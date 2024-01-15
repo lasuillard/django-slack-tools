@@ -6,8 +6,6 @@ from django_slack_bot.message import slack_message, slack_message_via_policy
 from django_slack_bot.models import SlackMention, SlackMessage, SlackMessagingPolicy
 from tests.models._factories import SlackMentionFactory, SlackMessageRecipientFactory, SlackMessagingPolicyFactory
 
-# TODO(lasuillard): Replace VCR to response mock (better maintenance & control)
-
 
 @pytest.mark.slack()
 @pytest.mark.vcr()

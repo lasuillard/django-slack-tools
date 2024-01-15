@@ -108,9 +108,5 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
 def _get_channels() -> dict[str, str]:
     # TODO(lasuillard): Need pagination in future
     response = app_settings.slack_app.client.conversations_list()
-    if not response.get("ok", default=False):
-        return {}
-
-    # TODO(lasuillard): Type stub for response data
     channels: list[dict] = response.get("channels", default=[])
     return {channel["id"]: channel["name"] for channel in channels}

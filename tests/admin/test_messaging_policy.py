@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django_slack_bot.admin import SlackMessagingPolicyAdmin
 from django_slack_bot.models import SlackMessagingPolicy
 from tests.models._factories import SlackMessagingPolicyFactory

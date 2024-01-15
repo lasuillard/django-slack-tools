@@ -87,5 +87,11 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
                 },
             },
         ],
+        "attachments": [
+            {
+                "color": "#f2c744",
+                "blocks": [{"type": "section", "text": {"type": "mrkdwn", "text": "Hello, World!: {mentions}"}}],
+            },
+        ],
     }
     header_defaults: dict = {}  # noqa: RUF012
