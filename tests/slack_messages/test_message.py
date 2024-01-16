@@ -33,9 +33,22 @@ def test_slack_message() -> None:
     assert msg.exception == ""
 
 
-# TODO(lasuillard): Test record detail (request, response and exception)
+@pytest.mark.django_db()
 def test_slack_message_record_detail() -> None:
-    pass
+    with mock.patch("slack_bolt.App.client") as m:
+        m.chat_postMessage.return_value = SlackMessageResponseFactory()
+        msg = slack_message("Hello, World!", channel="whatever-channel", record_detail=True)
+
+    assert isinstance(msg, SlackMessage)
+    assert SlackMessage.objects.filter(id=msg.id).exists()
+    assert msg.channel == "whatever-channel"
+    assert msg.body["text"] == "Hello, World!"
+    assert msg.ts
+    assert msg.parent_ts == ""
+    assert msg.ok
+    assert isinstance(msg.request, dict)
+    assert isinstance(msg.response, dict)
+    assert msg.exception == ""
 
 
 @pytest.mark.django_db()
@@ -64,7 +77,7 @@ def test_slack_message_via_policy() -> None:
     )
     with mock.patch("slack_bolt.App.client") as m:
         m.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
-        messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
+        messages = slack_message_via_policy(policy, greet="Nice to meet you")
 
     assert len(messages) == 3
     assert all(isinstance(msg, SlackMessage) for msg in messages)
