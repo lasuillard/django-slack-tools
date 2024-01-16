@@ -72,9 +72,20 @@ def test_slack_message_via_policy() -> None:
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
 
 
-# TODO(lasuillard): If policy not enabled, no message should sent (act as dummy)
+@pytest.mark.django_db()
 def test_slack_message_via_policy_policy_not_enabled() -> None:
-    pass
+    policy = SlackMessagingPolicyFactory(
+        code="TEST-PO-002",
+        enabled=False,
+        recipients=[
+            SlackMessageRecipientFactory(),
+        ],
+    )
+    with mock.patch("slack_bolt.App.client") as m:
+        messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
+        m.chat_postMessage.assert_not_called()
+
+    assert messages == []
 
 
 @pytest.mark.django_db()

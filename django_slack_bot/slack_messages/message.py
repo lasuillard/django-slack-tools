@@ -99,6 +99,9 @@ def slack_message_via_policy(  # noqa: PLR0913
         else:
             policy = SlackMessagingPolicy.objects.get(code=policy)
 
+    if not policy.enabled:
+        return []
+
     header = MessageHeader.model_validate(header or {})
 
     # Prepare template
