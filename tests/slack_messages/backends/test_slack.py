@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-import pytest
+from unittest import mock
 
 from django_slack_bot.slack_messages.backends import SlackBackend, SlackRedirectBackend
 from django_slack_bot.slack_messages.models import SlackMessage
 from django_slack_bot.utils.slack import MessageBody, MessageHeader
+from tests.slack_messages._factories import SlackMessageResponseFactory
 
 if TYPE_CHECKING:
     from slack_bolt import App
@@ -15,18 +15,19 @@ if TYPE_CHECKING:
 class TestSlackBackend:
     # TODO(lasuillard): Test `.__init__()` for import string & callable
 
-    @pytest.mark.slack()
-    @pytest.mark.vcr()
-    def test_send_message(self, slack_app: App, slack_channel: str) -> None:
+    def test_send_message(self, slack_app: App) -> None:
         backend = SlackBackend(slack_app=slack_app)
-        msg = backend.send_message(
-            channel=slack_channel,
-            header=MessageHeader(),
-            body=MessageBody(text="Hello, World!"),
-            raise_exception=True,
-            save_db=False,
-            record_detail=True,
-        )
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackMessageResponseFactory()
+            msg = backend.send_message(
+                channel="test-channel",
+                header=MessageHeader(),
+                body=MessageBody(text="Hello, World!"),
+                raise_exception=True,
+                save_db=False,
+                record_detail=True,
+            )
+
         assert isinstance(msg, SlackMessage)
         assert "Authorization" not in msg.request["headers"]
 
@@ -37,18 +38,19 @@ class TestSlackBackend:
 
 
 class TestSlackRedirectBackend:
-    @pytest.mark.slack()
-    @pytest.mark.vcr()
-    def test_send_message(self, slack_app: App, slack_channel: str) -> None:
-        backend = SlackRedirectBackend(slack_app=slack_app, redirect_channel=slack_channel)
-        msg = backend.send_message(
-            channel="whatever-this-channel",
-            header=MessageHeader(),
-            body=MessageBody(text="Hello, World!"),
-            raise_exception=True,
-            save_db=False,
-            record_detail=True,
-        )
+    def test_send_message(self, slack_app: App) -> None:
+        backend = SlackRedirectBackend(slack_app=slack_app, redirect_channel="test-redirect-channel")
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackMessageResponseFactory()
+            msg = backend.send_message(
+                channel="whatever-this-channel",
+                header=MessageHeader(),
+                body=MessageBody(text="Hello, World!"),
+                raise_exception=True,
+                save_db=False,
+                record_detail=True,
+            )
+
         assert isinstance(msg, SlackMessage)
 
     # TODO(lasuillard): Test `.prepare_message()`

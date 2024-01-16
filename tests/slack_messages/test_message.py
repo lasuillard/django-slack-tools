@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from unittest import mock
+
 import pytest
 
 from django_slack_bot.slack_messages.message import slack_message, slack_message_via_policy
@@ -10,22 +12,34 @@ from tests.slack_messages.models._factories import (
     SlackMessagingPolicyFactory,
 )
 
+from ._factories import SlackMessageResponseFactory
 
-@pytest.mark.slack()
-@pytest.mark.vcr()
+
 @pytest.mark.django_db()
-def test_slack_message(redirect_slack: None) -> None:  # noqa: ARG001
-    msg = slack_message("Hello, World!", channel="whatever-channel")
+def test_slack_message() -> None:
+    with mock.patch("slack_bolt.App.client") as m:
+        m.chat_postMessage.return_value = SlackMessageResponseFactory()
+        msg = slack_message("Hello, World!", channel="whatever-channel")
+
     assert isinstance(msg, SlackMessage)
-    msg_from_db = SlackMessage.objects.get(id=msg.id)
-    assert msg_from_db.body["text"] == "Hello, World!"
-    assert msg_from_db.ok
+    assert SlackMessage.objects.filter(id=msg.id).exists()
+    assert msg.channel == "whatever-channel"
+    assert msg.body["text"] == "Hello, World!"
+    assert msg.ts
+    assert msg.parent_ts == ""
+    assert msg.ok
+    assert msg.request is None
+    assert msg.response is None
+    assert msg.exception == ""
 
 
-@pytest.mark.slack()
-@pytest.mark.vcr()
+# TODO(lasuillard): Test record detail (request, response and exception)
+def test_slack_message_record_detail() -> None:
+    pass
+
+
 @pytest.mark.django_db()
-def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
+def test_slack_message_via_policy() -> None:
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
@@ -48,28 +62,31 @@ def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
         },
         recipients=recipients,
     )
+    with mock.patch("slack_bolt.App.client") as m:
+        m.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+        messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
 
-    messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
     assert len(messages) == 3
     assert all(isinstance(msg, SlackMessage) for msg in messages)
-
     ids = [msg.id for msg in messages]  # type: ignore[union-attr]
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
 
 
 # TODO(lasuillard): If policy not enabled, no message should sent (act as dummy)
+def test_slack_message_via_policy_policy_not_enabled() -> None:
+    pass
 
 
-@pytest.mark.slack()
-@pytest.mark.vcr()
 @pytest.mark.django_db()
-def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None) -> None:  # noqa: ARG001
+def test_slack_message_via_policy_lazy() -> None:
     # Policy not exist at first
     code = "TEST-PO-LAZY-001"
     assert not SlackMessagingPolicy.objects.filter(code=code).exists()
 
     # Make call with lazy mode
-    messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+    with mock.patch("slack_bolt.App.client") as m:
+        messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+        m.chat_postMessage.assert_not_called()
 
     # Ensure policy has been created
     policy = SlackMessagingPolicy.objects.get(code=code)
@@ -97,18 +114,21 @@ def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None)
     policy.save()
     policy.recipients.add(
         SlackMessageRecipientFactory(
-            channel=slack_channel,
+            channel="whatever-channel",
             mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!channel>")],
         ),
     )
 
     # Re-send message
-    messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+    with mock.patch("slack_bolt.App.client") as m:
+        m.chat_postMessage.return_value = SlackMessageResponseFactory()
+        messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+
     assert len(messages) == 1
     message = messages.pop()
     assert isinstance(message, SlackMessage)
     assert message.policy == policy
-    assert message.channel == slack_channel
+    assert message.channel == "whatever-channel"
     assert message.body["blocks"] == [
         {
             "type": "section",
