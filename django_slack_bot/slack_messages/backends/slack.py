@@ -1,6 +1,7 @@
 """Slack backends actually interact with Slack API to do something."""
 from __future__ import annotations
 
+import traceback
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Callable, cast
 
@@ -53,7 +54,8 @@ class SlackBackend(BackendBase):
         self._slack_app = slack_app
         self._remove_auth_header = remove_auth_header
 
-    def send_message(  # noqa: PLR0913
+    # TODO(lasuillard): Certainly need some refactoring here, too complex
+    def send_message(  # noqa: PLR0913, C901, PLR0912
         self,
         message: SlackMessage | None = None,
         *,
@@ -110,7 +112,7 @@ class SlackBackend(BackendBase):
                 response = err.response
 
             # Update message detail
-            ok = response.get("ok")
+            ok: bool | None = response.get("ok")
             message.ok = ok
             if ok:
                 # `str` if OK, otherwise `None`
@@ -126,7 +128,12 @@ class SlackBackend(BackendBase):
             if record_detail:
                 message.request = self._record_request(response)
                 message.response = self._record_response(response)
-                # TODO(#41): Record an exception in future
+        except:
+            if record_detail:
+                message.exception = traceback.format_exc()
+
+            # Don't omit raise with flag `raise_exception` here
+            raise
         finally:
             if save_db:
                 message.save()
