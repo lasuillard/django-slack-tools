@@ -49,7 +49,7 @@ def test_slack_message_via_policy(redirect_slack: None) -> None:  # noqa: ARG001
         recipients=recipients,
     )
 
-    messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
+    messages = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
     assert len(messages) == 3
     assert all(isinstance(msg, SlackMessage) for msg in messages)
 
@@ -69,7 +69,7 @@ def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None)
     assert not SlackMessagingPolicy.objects.filter(code=code).exists()
 
     # Make call with lazy mode
-    messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
 
     # Ensure policy has been created
     policy = SlackMessagingPolicy.objects.get(code=code)
@@ -103,7 +103,7 @@ def test_slack_message_via_policy_lazy(slack_channel: str, redirect_slack: None)
     )
 
     # Re-send message
-    messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
     assert len(messages) == 1
     message = messages.pop()
     assert isinstance(message, SlackMessage)
