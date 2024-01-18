@@ -102,6 +102,19 @@ def test_slack_message_via_policy_policy_not_enabled() -> None:
 
 
 @pytest.mark.django_db()
+def test_slack_message_via_policy_context_shadowing_defaults() -> None:
+    """Test template kwargs being shadowed by user provided context."""
+    policy = SlackMessagingPolicyFactory(code="TEST", recipients=[])
+    with mock.patch("slack_bolt.App.client") as m:
+        # As there is no recipient, no message will be sent
+        # It's just OK no exception being thrown
+        messages = slack_message_via_policy(policy.code, context={"mentions_as_str": "💣"})
+        m.chat_postMessage.assert_not_called()
+
+    assert messages == []
+
+
+@pytest.mark.django_db()
 def test_slack_message_via_policy_lazy() -> None:
     # Policy not exist at first
     code = "TEST-PO-LAZY-001"
