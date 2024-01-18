@@ -14,8 +14,9 @@ from tests.slack_messages.models._factories import (
 
 from ._factories import SlackMessageResponseFactory
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db()
+
 def test_slack_message() -> None:
     with mock.patch("slack_bolt.App.client") as m:
         m.chat_postMessage.return_value = SlackMessageResponseFactory()
@@ -23,35 +24,19 @@ def test_slack_message() -> None:
 
     assert isinstance(msg, SlackMessage)
     assert SlackMessage.objects.filter(id=msg.id).exists()
+    assert msg.policy is None
     assert msg.channel == "whatever-channel"
+    assert msg.header == {}
     assert msg.body["text"] == "Hello, World!"
+    assert msg.ok
+    assert msg.permalink == ""
     assert msg.ts
     assert msg.parent_ts == ""
-    assert msg.ok
-    assert msg.request is None
-    assert msg.response is None
-    assert msg.exception == ""
-
-
-@pytest.mark.django_db()
-def test_slack_message_record_detail() -> None:
-    with mock.patch("slack_bolt.App.client") as m:
-        m.chat_postMessage.return_value = SlackMessageResponseFactory()
-        msg = slack_message("Hello, World!", channel="whatever-channel", record_detail=True)
-
-    assert isinstance(msg, SlackMessage)
-    assert SlackMessage.objects.filter(id=msg.id).exists()
-    assert msg.channel == "whatever-channel"
-    assert msg.body["text"] == "Hello, World!"
-    assert msg.ts
-    assert msg.parent_ts == ""
-    assert msg.ok
     assert isinstance(msg.request, dict)
     assert isinstance(msg.response, dict)
     assert msg.exception == ""
 
 
-@pytest.mark.django_db()
 def test_slack_message_via_policy() -> None:
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
@@ -85,7 +70,6 @@ def test_slack_message_via_policy() -> None:
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
 
 
-@pytest.mark.django_db()
 def test_slack_message_via_policy_policy_not_enabled() -> None:
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-002",
@@ -101,7 +85,6 @@ def test_slack_message_via_policy_policy_not_enabled() -> None:
     assert messages == []
 
 
-@pytest.mark.django_db()
 def test_slack_message_via_policy_context_shadowing_defaults() -> None:
     """Test template kwargs being shadowed by user provided context."""
     policy = SlackMessagingPolicyFactory(code="TEST", recipients=[])
@@ -114,7 +97,6 @@ def test_slack_message_via_policy_context_shadowing_defaults() -> None:
     assert messages == []
 
 
-@pytest.mark.django_db()
 def test_slack_message_via_policy_lazy() -> None:
     # Policy not exist at first
     code = "TEST-PO-LAZY-001"

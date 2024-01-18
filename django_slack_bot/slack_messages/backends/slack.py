@@ -54,8 +54,7 @@ class SlackBackend(BackendBase):
         self._slack_app = slack_app
         self._remove_auth_header = remove_auth_header
 
-    # TODO(lasuillard): Certainly need some refactoring here, too complex
-    def send_message(  # noqa: PLR0913, C901, PLR0912
+    def send_message(  # noqa: PLR0913
         self,
         message: SlackMessage | None = None,
         *,
@@ -64,8 +63,6 @@ class SlackBackend(BackendBase):
         header: MessageHeader | None = None,
         body: MessageBody | None = None,
         raise_exception: bool,
-        save_db: bool,
-        record_detail: bool,
         get_permalink: bool = False,
     ) -> SlackMessage:
         """Send Slack message.
@@ -78,10 +75,6 @@ class SlackBackend(BackendBase):
             header: Message header that controls how message will sent.
             body: Message body describing content of the message.
             raise_exception: Whether to re-raise caught exception while sending messages.
-            save_db: Whether to save Slack message changes.
-            record_detail: Whether to record API interaction detail, HTTP request and response details.
-                Would take effect only if `save_db` set `True`.
-                Also, existing data will be overwritten (if message has been sent already).
             get_permalink: Try to get the message permalink via extraneous Slack API calls.
 
         Returns:
@@ -125,18 +118,15 @@ class SlackBackend(BackendBase):
                         raise_exception=raise_exception,
                     )
 
-            if record_detail:
-                message.request = self._record_request(response)
-                message.response = self._record_response(response)
+            message.request = self._record_request(response)
+            message.response = self._record_response(response)
         except:
-            if record_detail:
-                message.exception = traceback.format_exc()
+            message.exception = traceback.format_exc()
 
             # Don't omit raise with flag `raise_exception` here
             raise
         finally:
-            if save_db:
-                message.save()
+            message.save()
 
         return message
 

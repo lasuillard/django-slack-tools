@@ -61,7 +61,7 @@ class SlackMessageAdmin(admin.ModelAdmin):
         n_success = 0
         n_failure = 0
         for message in queryset:
-            backend.send_message(message, raise_exception=False, save_db=True, record_detail=True)
+            backend.send_message(message, raise_exception=False)
             if message.ok:
                 n_success += 1
             else:

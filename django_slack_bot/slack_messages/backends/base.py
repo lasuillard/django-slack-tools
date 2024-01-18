@@ -24,8 +24,6 @@ class BackendBase(ABC):
         message: SlackMessage,
         *,
         raise_exception: bool,
-        save_db: bool,
-        record_detail: bool,
         get_permalink: bool = False,
     ) -> SlackMessage:
         ...  # pragma: no cover
@@ -39,8 +37,6 @@ class BackendBase(ABC):
         header: MessageHeader,
         body: MessageBody,
         raise_exception: bool,
-        save_db: bool,
-        record_detail: bool,
         get_permalink: bool = False,
     ) -> SlackMessage:
         ...  # pragma: no cover
@@ -55,8 +51,6 @@ class BackendBase(ABC):
         header: MessageHeader | None = None,
         body: MessageBody | None = None,
         raise_exception: bool,
-        save_db: bool,
-        record_detail: bool,
         get_permalink: bool = False,
     ) -> SlackMessage:
         """Send Slack message.
@@ -69,10 +63,6 @@ class BackendBase(ABC):
             header: Message header that controls how message will sent.
             body: Message body describing content of the message.
             raise_exception: Whether to re-raise caught exception while sending messages.
-            save_db: Whether to save Slack message changes.
-            record_detail: Whether to record API interaction detail, HTTP request and response details.
-                Would take effect only if `save_db` set `True`.
-                Also, existing data will be overwritten (if message has been sent already).
             get_permalink: Try to get the message permalink via extraneous Slack API calls.
 
         Returns:
