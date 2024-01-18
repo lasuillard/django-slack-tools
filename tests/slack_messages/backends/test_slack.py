@@ -3,9 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest import mock
 
+import pytest
+from slack_sdk.errors import SlackApiError
+
 from django_slack_bot.slack_messages.backends import SlackBackend, SlackRedirectBackend
 from django_slack_bot.slack_messages.models import SlackMessage
 from django_slack_bot.utils.slack import MessageBody, MessageHeader
+from tests._factories import SlackResponseFactory
 from tests.slack_messages._factories import SlackMessageResponseFactory
 
 if TYPE_CHECKING:
@@ -15,8 +19,12 @@ if TYPE_CHECKING:
 class TestSlackBackend:
     # TODO(lasuillard): Test `.__init__()` for import string & callable
 
-    def test_send_message(self, slack_app: App) -> None:
-        backend = SlackBackend(slack_app=slack_app)
+    @pytest.fixture(scope="class")
+    def backend(self, slack_app: App) -> SlackBackend:
+        return SlackBackend(slack_app=slack_app)
+
+    def test_send_message(self, backend: SlackBackend) -> None:
+        """Test sending message."""
         with mock.patch("slack_bolt.App.client") as m:
             m.chat_postMessage.return_value = SlackMessageResponseFactory()
             msg = backend.send_message(
@@ -31,10 +39,81 @@ class TestSlackBackend:
         assert isinstance(msg, SlackMessage)
         assert "Authorization" not in msg.request["headers"]
 
-    # TODO(lasuillard): Test `.send_message()` for prepared messages (overload signatures)
-    # TODO(lasuillard): Test `.send_message()` on error response
-    # TODO(lasuillard): Test `._record_request()`
-    # TODO(lasuillard): Test `._record_response()`
+    def test_send_message_required_params_if_no_prepared_message(self, backend: SlackBackend) -> None:
+        """Test when sending message without prepared message, all required params must be given."""
+        kwargs = {
+            "channel": "test-channel",
+            "header": MessageHeader(),
+            "body": MessageBody(text="Hello, World!"),
+        }
+        for key in kwargs:
+            kwargs_copy = kwargs.copy()
+            del kwargs_copy[key]
+            with pytest.raises(
+                TypeError,
+                match=(
+                    "Call signature mismatch for overload."
+                    " If `message` not provided, `channel`, `header` and `body` all must given."
+                ),
+            ):
+                backend.send_message(
+                    **kwargs_copy,  # type: ignore[arg-type]
+                    raise_exception=True,
+                    save_db=False,
+                    record_detail=True,
+                )
+
+    def test_send_message_prepared_message(self, backend: SlackBackend) -> None:
+        """Test sending prepared message."""
+        prepared_msg = SlackMessage(channel="test-channel", header={}, body={})
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackMessageResponseFactory()
+            msg = backend.send_message(message=prepared_msg, raise_exception=True, save_db=False, record_detail=False)
+
+        assert isinstance(msg, SlackMessage)
+
+    def test_send_message_error_response(self, backend: SlackBackend) -> None:
+        """Test `raise_exception` flag."""
+        prepared_msg = SlackMessage(channel="test-channel", header={}, body={})
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.side_effect = SlackApiError(
+                "Something went wrong",
+                response=SlackResponseFactory(data={"ok": False}),
+            )
+            # Re-raises exception
+            with pytest.raises(SlackApiError):
+                backend.send_message(message=prepared_msg, raise_exception=True, save_db=False, record_detail=False)
+
+            # Won't raise
+            backend.send_message(message=prepared_msg, raise_exception=False, save_db=False, record_detail=False)
+
+    @pytest.mark.django_db()
+    def test_send_message_record_detail(self, backend: SlackBackend) -> None:
+        """Test `record_detail` flag."""
+        prepared_msg = SlackMessage(channel="test-channel", header={}, body={})
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackResponseFactory(data={"ok": False})
+            msg = backend.send_message(message=prepared_msg, raise_exception=True, save_db=True, record_detail=True)
+
+        assert isinstance(msg, SlackMessage)
+        assert msg.request
+        assert msg.response
+
+    @pytest.mark.django_db()
+    def test_send_message_record_detail_exception(self, backend: SlackBackend) -> None:
+        """Test `record_detail` flag for exception."""
+        prepared_msg = SlackMessage(channel="test-channel", header={}, body={})
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.side_effect = SlackApiError(
+                "Something went wrong",
+                response=SlackResponseFactory(data={"ok": False}),
+            )
+            with pytest.raises(SlackApiError):
+                backend.send_message(message=prepared_msg, raise_exception=True, save_db=True, record_detail=True)
+
+        msg = SlackMessage.objects.first()
+        assert isinstance(msg, SlackMessage)
+        assert msg.exception
 
 
 class TestSlackRedirectBackend:

@@ -160,7 +160,9 @@ class SlackBackend(BackendBase):
         return _permalink_resp.get("permalink", default="")
 
     def _send_message(self, *, message: SlackMessage) -> SlackResponse:
-        return self._slack_app.client.chat_postMessage(channel=message.channel, **message.header, **message.body)
+        header = message.header or {}
+        body = message.body or {}
+        return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
         if self._remove_auth_header:
