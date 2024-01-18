@@ -77,7 +77,7 @@ def test_slack_message_via_policy() -> None:
     )
     with mock.patch("slack_bolt.App.client") as m:
         m.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
-        messages = slack_message_via_policy(policy, greet="Nice to meet you")
+        messages = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
 
     assert len(messages) == 3
     assert all(isinstance(msg, SlackMessage) for msg in messages)
@@ -95,7 +95,7 @@ def test_slack_message_via_policy_policy_not_enabled() -> None:
         ],
     )
     with mock.patch("slack_bolt.App.client") as m:
-        messages = slack_message_via_policy(policy.code, greet="Nice to meet you")
+        messages = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
         m.chat_postMessage.assert_not_called()
 
     assert messages == []
@@ -109,7 +109,7 @@ def test_slack_message_via_policy_lazy() -> None:
 
     # Make call with lazy mode
     with mock.patch("slack_bolt.App.client") as m:
-        messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+        messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
         m.chat_postMessage.assert_not_called()
 
     # Ensure policy has been created
@@ -146,7 +146,7 @@ def test_slack_message_via_policy_lazy() -> None:
     # Re-send message
     with mock.patch("slack_bolt.App.client") as m:
         m.chat_postMessage.return_value = SlackMessageResponseFactory()
-        messages = slack_message_via_policy(code, lazy=True, message="Nice to meet you")
+        messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
 
     assert len(messages) == 1
     message = messages.pop()
