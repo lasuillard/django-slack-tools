@@ -21,7 +21,7 @@ class TestSlackBackend:
 
     pytestmark = pytest.mark.django_db()
 
-    @pytest.fixture(scope="class")
+    @pytest.fixture()
     def backend(self, slack_app: App) -> SlackBackend:
         return SlackBackend(slack_app=slack_app)
 
@@ -88,14 +88,46 @@ class TestSlackBackend:
             # Won't raise
             backend.send_message(message=prepared_msg, raise_exception=False)
 
-    # TODO(lasuillard): Test permalink
+    def test_send_message_permalink(self, backend: SlackBackend) -> None:
+        """Test permalink."""
+        prepared_msg = SlackMessage(channel="test-channel", header={}, body={})
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackMessageResponseFactory()
+            m.chat_getPermalink.return_value = SlackResponseFactory(data={"ok": True, "permalink": "https://..."})
+            msg = backend.send_message(message=prepared_msg, raise_exception=False, get_permalink=True)
+
+        assert isinstance(msg, SlackMessage)
+        assert msg.permalink == "https://..."
+
+    def test_get_permalink(self, backend: SlackBackend) -> None:
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_getPermalink.return_value = SlackResponseFactory(data={"ok": True, "permalink": "https://..."})
+            permalink = backend._get_permalink(channel="test-channel", message_ts="0000.0000", raise_exception=True)
+
+        assert permalink == "https://..."
+
+        # If error, returns empty string
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_getPermalink.side_effect = SlackApiError("Something went wrong", response=None)
+            permalink = backend._get_permalink(channel="test-channel", message_ts="0000.0000", raise_exception=False)
+
+        assert permalink == ""
+
+        # Re-raise exception if flag set
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_getPermalink.side_effect = SlackApiError("Something went wrong", response=None)
+            with pytest.raises(SlackApiError):
+                backend._get_permalink(channel="test-channel", message_ts="0000.0000", raise_exception=True)
 
 
 class TestSlackRedirectBackend:
     pytestmark = pytest.mark.django_db()
 
-    def test_send_message(self, slack_app: App) -> None:
-        backend = SlackRedirectBackend(slack_app=slack_app, redirect_channel="test-redirect-channel")
+    @pytest.fixture()
+    def backend(self, slack_app: App) -> SlackRedirectBackend:
+        return SlackRedirectBackend(slack_app=slack_app, redirect_channel="test-redirect-channel")
+
+    def test_send_message(self, backend: SlackRedirectBackend) -> None:
         with mock.patch("slack_bolt.App.client") as m:
             m.chat_postMessage.return_value = SlackMessageResponseFactory()
             msg = backend.send_message(
@@ -107,5 +139,54 @@ class TestSlackRedirectBackend:
 
         assert isinstance(msg, SlackMessage)
 
-    # TODO(lasuillard): Test `.prepare_message()`
-    # TODO(lasuillard): Test `._make_inform_attachment()`
+    def test_send_message_no_redirect(self, backend: SlackRedirectBackend) -> None:
+        backend.inform_redirect = False
+        with mock.patch("slack_bolt.App.client") as m:
+            m.chat_postMessage.return_value = SlackMessageResponseFactory()
+            msg = backend.send_message(
+                channel="whatever-this-channel",
+                header=MessageHeader(),
+                body=MessageBody(text="Hello, World!"),
+                raise_exception=True,
+            )
+
+        assert msg.body == {
+            "text": "Hello, World!",
+            "attachments": None,
+            "blocks": None,
+            "icon_emoji": None,
+            "icon_url": None,
+            "metadata": None,
+            "username": None,
+        }
+
+    def test_prepare_message(self, backend: SlackRedirectBackend) -> None:
+        prepared_msg = backend._prepare_message(
+            channel="test-original-channel",
+            header=MessageHeader(),
+            body=MessageBody(
+                attachments=[{"text": "Django Slack Bot"}],
+            ),
+        )
+        assert prepared_msg.body == {
+            "text": None,
+            "attachments": [
+                {
+                    "color": "#eb4034",
+                    "text": ":warning:  This message was originally sent to channel *test-original-channel* but redirected here.",  # noqa: E501
+                },
+                {"text": "Django Slack Bot"},
+            ],
+            "blocks": None,
+            "icon_emoji": None,
+            "icon_url": None,
+            "metadata": None,
+            "username": None,
+        }
+
+    def test_make_inform_attachment(self, backend: SlackRedirectBackend) -> None:
+        attachment = backend._make_inform_attachment(original_channel="test-original-channel")
+        assert attachment == {
+            "color": "#eb4034",
+            "text": ":warning:  This message was originally sent to channel *test-original-channel* but redirected here.",  # noqa: E501
+        }
