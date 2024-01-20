@@ -1,4 +1,5 @@
-from factory import Factory
+from factory import Factory, SubFactory
+from slack_sdk.errors import SlackApiError
 from slack_sdk.web import SlackResponse
 
 
@@ -17,3 +18,11 @@ class SlackResponseFactory(Factory):
 
     class Meta:
         model = SlackResponse
+
+
+class SlackApiErrorFactory(Factory):
+    message = "Something went wrong"
+    response = SubFactory(SlackResponseFactory, data={"ok": False})
+
+    class Meta:
+        model = SlackApiError

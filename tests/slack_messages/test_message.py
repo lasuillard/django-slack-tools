@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from unittest import mock
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -14,13 +14,15 @@ from tests.slack_messages.models._factories import (
 
 from ._factories import SlackMessageResponseFactory
 
+if TYPE_CHECKING:
+    from unittest.mock import Mock
+
 pytestmark = pytest.mark.django_db
 
 
-def test_slack_message() -> None:
-    with mock.patch("slack_bolt.App.client") as m:
-        m.chat_postMessage.return_value = SlackMessageResponseFactory()
-        msg = slack_message("Hello, World!", channel="whatever-channel")
+def test_slack_message(mock_slack_client: Mock) -> None:
+    mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
+    msg = slack_message("Hello, World!", channel="whatever-channel")
 
     assert isinstance(msg, SlackMessage)
     assert SlackMessage.objects.filter(id=msg.id).exists()
@@ -37,7 +39,7 @@ def test_slack_message() -> None:
     assert msg.exception == ""
 
 
-def test_slack_message_via_policy() -> None:
+def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
@@ -60,9 +62,8 @@ def test_slack_message_via_policy() -> None:
         },
         recipients=recipients,
     )
-    with mock.patch("slack_bolt.App.client") as m:
-        m.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
-        messages = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
+    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+    messages = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
 
     assert len(messages) == 3
     assert all(isinstance(msg, SlackMessage) for msg in messages)
@@ -70,7 +71,7 @@ def test_slack_message_via_policy() -> None:
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
 
 
-def test_slack_message_via_policy_policy_not_enabled() -> None:
+def test_slack_message_via_policy_policy_not_enabled(mock_slack_client: Mock) -> None:
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-002",
         enabled=False,
@@ -78,34 +79,32 @@ def test_slack_message_via_policy_policy_not_enabled() -> None:
             SlackMessageRecipientFactory(),
         ],
     )
-    with mock.patch("slack_bolt.App.client") as m:
-        messages = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
-        m.chat_postMessage.assert_not_called()
+    messages = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
+    mock_slack_client.chat_postMessage.assert_not_called()
 
     assert messages == []
 
 
-def test_slack_message_via_policy_context_shadowing_defaults() -> None:
+def test_slack_message_via_policy_context_shadowing_defaults(mock_slack_client: Mock) -> None:
     """Test template kwargs being shadowed by user provided context."""
     policy = SlackMessagingPolicyFactory(code="TEST", recipients=[])
-    with mock.patch("slack_bolt.App.client") as m:
-        # As there is no recipient, no message will be sent
-        # It's just OK no exception being thrown
-        messages = slack_message_via_policy(policy.code, context={"mentions_as_str": "💣"})
-        m.chat_postMessage.assert_not_called()
+
+    # As there is no recipient, no message will be sent
+    # It's just OK no exception being thrown
+    messages = slack_message_via_policy(policy.code, context={"mentions_as_str": "💣"})
+    mock_slack_client.chat_postMessage.assert_not_called()
 
     assert messages == []
 
 
-def test_slack_message_via_policy_lazy() -> None:
+def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
     # Policy not exist at first
     code = "TEST-PO-LAZY-001"
     assert not SlackMessagingPolicy.objects.filter(code=code).exists()
 
     # Make call with lazy mode
-    with mock.patch("slack_bolt.App.client") as m:
-        messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
-        m.chat_postMessage.assert_not_called()
+    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
+    mock_slack_client.chat_postMessage.assert_not_called()
 
     # Ensure policy has been created
     policy = SlackMessagingPolicy.objects.get(code=code)
@@ -139,9 +138,8 @@ def test_slack_message_via_policy_lazy() -> None:
     )
 
     # Re-send message
-    with mock.patch("slack_bolt.App.client") as m:
-        m.chat_postMessage.return_value = SlackMessageResponseFactory()
-        messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
+    mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
+    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
 
     assert len(messages) == 1
     message = messages.pop()

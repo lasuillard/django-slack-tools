@@ -106,17 +106,16 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
         ]
 
 
-def test_get_channels() -> None:
-    with mock.patch("slack_bolt.App.client") as m:
-        m.conversations_list.return_value = SlackResponseFactory(
-            data={
-                "ok": True,
-                "channels": [
-                    {"id": "CHANNEL001", "name": "channel-001"},
-                    {"id": "CHANNEL002", "name": "channel-002"},
-                ],
-            },
-        )
-        channels = _get_channels()
+def test_get_channels(mock_slack_client: mock.Mock) -> None:
+    mock_slack_client.conversations_list.return_value = SlackResponseFactory(
+        data={
+            "ok": True,
+            "channels": [
+                {"id": "CHANNEL001", "name": "channel-001"},
+                {"id": "CHANNEL002", "name": "channel-002"},
+            ],
+        },
+    )
+    channels = _get_channels()
 
     assert channels == {"CHANNEL001": "channel-001", "CHANNEL002": "channel-002"}

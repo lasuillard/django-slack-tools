@@ -137,24 +137,23 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
         ]
 
 
-def test_get_mentionable_items() -> None:
-    with mock.patch("slack_bolt.App.client") as m:
-        m.users_list.return_value = SlackResponseFactory(
-            data={
-                "ok": True,
-                "members": [
-                    {"id": "USER001", "profile": {"display_name": "Cake", "real_name": ""}},
-                    {"id": "USER002", "profile": {"display_name": "", "real_name": "Carrot"}},
-                ],
-            },
-        )
-        m.usergroups_list.return_value = SlackResponseFactory(
-            data={
-                "ok": True,
-                "usergroups": [{"id": "GROUP01", "name": "Food"}, {"id": "GROUP02", "name": "Drink"}],
-            },
-        )
-        mentionable_items = _get_mentionable_items()
+def test_get_mentionable_items(mock_slack_client: mock.Mock) -> None:
+    mock_slack_client.users_list.return_value = SlackResponseFactory(
+        data={
+            "ok": True,
+            "members": [
+                {"id": "USER001", "profile": {"display_name": "Cake", "real_name": ""}},
+                {"id": "USER002", "profile": {"display_name": "", "real_name": "Carrot"}},
+            ],
+        },
+    )
+    mock_slack_client.usergroups_list.return_value = SlackResponseFactory(
+        data={
+            "ok": True,
+            "usergroups": [{"id": "GROUP01", "name": "Food"}, {"id": "GROUP02", "name": "Drink"}],
+        },
+    )
+    mentionable_items = _get_mentionable_items()
 
     assert mentionable_items == {
         "USER001": {

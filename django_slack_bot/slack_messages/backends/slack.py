@@ -30,16 +30,11 @@ class SlackBackend(BackendBase):
         self,
         *,
         slack_app: App | Callable[[], App] | str,
-        remove_auth_header: bool = True,
     ) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
-            workspace_cache_timeout: Cache timeout for workspace information, in seconds.
-                Defaults to an hour.
-            remove_auth_header: Whether to remove auth header from request headers on recording.
-                Enabled by default.
         """
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
@@ -52,7 +47,6 @@ class SlackBackend(BackendBase):
             raise ImproperlyConfigured(msg)
 
         self._slack_app = slack_app
-        self._remove_auth_header = remove_auth_header
 
     def send_message(  # noqa: PLR0913
         self,
@@ -155,8 +149,8 @@ class SlackBackend(BackendBase):
         return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        if self._remove_auth_header:
-            response.req_args["headers"].pop("Authorization", None)
+        # Remove auth header (token) from request before recording
+        response.req_args.get("headers", {}).pop("Authorization", None)
 
         return response.req_args
 

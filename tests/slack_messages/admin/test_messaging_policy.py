@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
+
 from django_slack_bot.slack_messages.admin import SlackMessagingPolicyAdmin
 from django_slack_bot.slack_messages.models import SlackMessagingPolicy
 from tests._helpers import ModelAdminTestBase
@@ -16,24 +18,24 @@ class TestSlackMessagingPolicyAdmin(ModelAdminTestBase):
     model_cls = SlackMessagingPolicy
     factory_cls = SlackMessagingPolicyFactory
 
-    def test_change(self, admin_client: Client) -> None:
-        objs = [
-            self.factory_cls.create(
-                template={"blocks": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}]},
-            ),
-            self.factory_cls.create(
-                template={"attachments": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}]},
-            ),
-            self.factory_cls.create(
-                template={
+    @pytest.mark.parametrize(
+        argnames="kwargs",
+        argvalues=[
+            {"template": {"blocks": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}]}},
+            {"template": {"attachments": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}]}},
+            {
+                "template": {
                     "blocks": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}],
                     "attachments": [{"type": "section", "text": {"type": "plain_text", "text": "Hello"}}],
                 },
-            ),
-        ]
-        for obj in objs:
-            url = self._reverse("change", kwargs={"object_id": obj.id})
+            },
+        ],
+        ids=["blocks only", "attachments only", "both blocks and attachments"],
+    )
+    def test_change(self, admin_client: Client, kwargs: dict) -> None:
+        obj = self.factory_cls.create(**kwargs)
+        url = self._reverse("change", kwargs={"object_id": obj.id})
 
-            # Test visit
-            response = admin_client.get(url)
-            assert response.status_code == 200
+        # Test visit
+        response = admin_client.get(url)
+        assert response.status_code == 200
