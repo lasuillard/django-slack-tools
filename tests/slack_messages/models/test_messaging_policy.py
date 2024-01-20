@@ -1,5 +1,3 @@
-import pytest
-
 from django_slack_bot.slack_messages.models import SlackMessagingPolicy
 from tests._helpers import ModelTestBase
 
@@ -10,7 +8,6 @@ class TestSlackMessagingPolicy(ModelTestBase):
     model_cls = SlackMessagingPolicy
     factory_cls = SlackMessagingPolicyFactory
 
-    @pytest.mark.django_db()  # Exit with max recursion error w/o this
     def test_str(self) -> None:
         # Enabled with recipients
         recipients = SlackMessageRecipientFactory.create_batch(size=3)

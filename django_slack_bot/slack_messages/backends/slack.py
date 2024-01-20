@@ -1,6 +1,7 @@
 """Slack backends actually interact with Slack API to do something."""
 from __future__ import annotations
 
+import traceback
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Callable, cast
 
@@ -29,16 +30,11 @@ class SlackBackend(BackendBase):
         self,
         *,
         slack_app: App | Callable[[], App] | str,
-        remove_auth_header: bool = True,
     ) -> None:
         """Initialize backend.
 
         Args:
             slack_app: Slack app instance or import string.
-            workspace_cache_timeout: Cache timeout for workspace information, in seconds.
-                Defaults to an hour.
-            remove_auth_header: Whether to remove auth header from request headers on recording.
-                Enabled by default.
         """
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
@@ -51,7 +47,6 @@ class SlackBackend(BackendBase):
             raise ImproperlyConfigured(msg)
 
         self._slack_app = slack_app
-        self._remove_auth_header = remove_auth_header
 
     def send_message(  # noqa: PLR0913
         self,
@@ -62,8 +57,6 @@ class SlackBackend(BackendBase):
         header: MessageHeader | None = None,
         body: MessageBody | None = None,
         raise_exception: bool,
-        save_db: bool,
-        record_detail: bool,
         get_permalink: bool = False,
     ) -> SlackMessage:
         """Send Slack message.
@@ -76,10 +69,6 @@ class SlackBackend(BackendBase):
             header: Message header that controls how message will sent.
             body: Message body describing content of the message.
             raise_exception: Whether to re-raise caught exception while sending messages.
-            save_db: Whether to save Slack message changes.
-            record_detail: Whether to record API interaction detail, HTTP request and response details.
-                Would take effect only if `save_db` set `True`.
-                Also, existing data will be overwritten (if message has been sent already).
             get_permalink: Try to get the message permalink via extraneous Slack API calls.
 
         Returns:
@@ -95,39 +84,42 @@ class SlackBackend(BackendBase):
 
             message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
 
-        # Send Slack message
-        response: SlackResponse
         try:
-            response = self._send_message(message=message)
-        except SlackApiError as err:
-            if raise_exception:
-                raise
+            # Send Slack message
+            response: SlackResponse
+            try:
+                response = self._send_message(message=message)
+            except SlackApiError as err:
+                if raise_exception:
+                    raise
 
-            logger.exception(
-                "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
-            )
-            response = err.response
-
-        # Update message detail
-        ok = response.get("ok")
-        message.ok = ok
-        if ok:
-            # `str` if OK, otherwise `None`
-            message.ts = cast(str, response.get("ts"))
-            message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
-            if get_permalink:
-                message.permalink = self._get_permalink(
-                    channel=message.channel,
-                    message_ts=message.ts,
-                    raise_exception=raise_exception,
+                logger.exception(
+                    "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
                 )
+                response = err.response
 
-        if record_detail:
+            # Update message detail
+            ok: bool | None = response.get("ok")
+            message.ok = ok
+            if ok:
+                # `str` if OK, otherwise `None`
+                message.ts = cast(str, response.get("ts"))
+                message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
+                if get_permalink:
+                    message.permalink = self._get_permalink(
+                        channel=message.channel,
+                        message_ts=message.ts,
+                        raise_exception=raise_exception,
+                    )
+
             message.request = self._record_request(response)
             message.response = self._record_response(response)
-            # TODO(#41): Record an exception in future
+        except:
+            message.exception = traceback.format_exc()
 
-        if save_db:
+            # Don't omit raise with flag `raise_exception` here
+            raise
+        finally:
             message.save()
 
         return message
@@ -152,11 +144,13 @@ class SlackBackend(BackendBase):
         return _permalink_resp.get("permalink", default="")
 
     def _send_message(self, *, message: SlackMessage) -> SlackResponse:
-        return self._slack_app.client.chat_postMessage(channel=message.channel, **message.header, **message.body)
+        header = message.header or {}
+        body = message.body or {}
+        return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        if self._remove_auth_header:
-            response.req_args["headers"].pop("Authorization", None)
+        # Remove auth header (token) from request before recording
+        response.req_args.get("headers", {}).pop("Authorization", None)
 
         return response.req_args
 

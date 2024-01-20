@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django_slack_bot.utils.dict_template import dict_template_validator, render
 
 
+# TODO(lasuillard): Test with more complex template
+# TODO(lasuillard): Test with lacking or abundant placeholders
 def test_render() -> None:
     tpl = {
         "blocks": [

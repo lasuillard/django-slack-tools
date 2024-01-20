@@ -92,6 +92,11 @@ class SlackMessage(TimestampMixin, models.Model):
         null=True,
         blank=True,
     )
+    exception = models.TextField(
+        verbose_name=_("Exception"),
+        help_text=_("Exception message if any."),
+        blank=True,
+    )
 
     objects: SlackMessageManager = SlackMessageManager()
 

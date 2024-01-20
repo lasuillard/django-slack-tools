@@ -6,7 +6,6 @@ from django_slack_bot.utils.slack import body_validator, header_validator
 
 def test_header_validator() -> None:
     header_validator({})
-
     with pytest.raises(ValidationError):
         header_validator(
             {
@@ -21,6 +20,5 @@ def test_body_validator() -> None:
             "text": "Hello, World!",
         },
     )
-
     with pytest.raises(ValidationError):
         body_validator({})
