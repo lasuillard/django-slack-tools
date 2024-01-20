@@ -33,7 +33,7 @@ def _convert_errors(exc: pydantic.ValidationError) -> ValidationError:
     errors = [
         ValidationError(
             _("Input validation failed [msg=%(msg)r, input=%(input)r]"),
-            code=", ".join(map(str, err["loc"])),  # TODO(lasuillard): Better error code
+            code=", ".join(map(str, err["loc"])),
             params={
                 "msg": err["msg"],
                 "input": err["input"],

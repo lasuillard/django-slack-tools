@@ -13,14 +13,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
 
-from django_slack_bot.backends.base import BackendBase
+from django_slack_bot.slack_messages.backends.base import BackendBase
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
 "Django settings key for this application."
 
 logger = getLogger(__name__)
-
-# TODO(lasuillard): Rewrite with Pydantic
 
 
 class AppSettings:

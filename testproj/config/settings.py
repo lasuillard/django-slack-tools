@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "debug_toolbar",
-    "django_slack_bot",
+    "django_slack_bot.slack_messages",
 ]
 
 MIDDLEWARE = [
@@ -172,7 +172,9 @@ SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-po
 DJANGO_SLACK_BOT = {
     "SLACK_APP": "testproj.config.slack_app.app",
     "BACKEND": {
-        "NAME": "django_slack_bot.backends.LoggingBackend",
-        "OPTIONS": {},
+        "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
+        "OPTIONS": {
+            "slack_app": "testproj.config.slack_app.app",
+        },
     },
 }
