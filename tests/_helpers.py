@@ -21,6 +21,8 @@ class ModelAdminTestBase:
     model_cls: type[Model]
     factory_cls: type[DjangoModelFactory]
 
+    pytestmark = pytest.mark.django_db()
+
     def _reverse(
         self,
         view: Literal["changelist", "change", "delete", "history", "add"],
@@ -44,7 +46,6 @@ class ModelAdminTestBase:
 
     # NOTE: Below tests do some simple sanity checks only, extra test details should be provided by inherited classes
 
-    @pytest.mark.django_db()
     def test_changelist(self, admin_client: Client) -> None:
         self.factory_cls.create_batch(size=3)
         url = self._reverse("changelist")
@@ -53,7 +54,6 @@ class ModelAdminTestBase:
         response = admin_client.get(url)
         assert response.status_code == 200
 
-    @pytest.mark.django_db()
     def test_change(self, admin_client: Client) -> None:
         obj = self.factory_cls.create()
         url = self._reverse("change", kwargs={"object_id": obj.id})
@@ -62,7 +62,6 @@ class ModelAdminTestBase:
         response = admin_client.get(url)
         assert response.status_code == 200
 
-    @pytest.mark.django_db()
     def test_delete(self, admin_client: Client) -> None:
         obj = self.factory_cls.create()
         url = self._reverse("delete", kwargs={"object_id": obj.id})
@@ -75,7 +74,6 @@ class ModelAdminTestBase:
         response = admin_client.delete(url)
         assert response.status_code == 200
 
-    @pytest.mark.django_db()
     def test_history(self, admin_client: Client) -> None:
         obj = self.factory_cls.create()
         url = self._reverse("history", kwargs={"object_id": obj.id})
@@ -84,7 +82,6 @@ class ModelAdminTestBase:
         response = admin_client.get(url)
         assert response.status_code == 200
 
-    @pytest.mark.django_db()
     def test_add(self, admin_client: Client) -> None:
         url = self._reverse("add")
 
@@ -97,8 +94,9 @@ class ModelTestBase:
     model_cls: type[Model]
     factory_cls: type[DjangoModelFactory]
 
+    pytestmark = pytest.mark.django_db()
+
     # NOTE: Below tests do some simple sanity checks only, extra test details should be provided by inherited classes
-    @pytest.mark.django_db()
     def test_instance_creation(self) -> None:
         obj = self.factory_cls.create()
         assert isinstance(obj, self.model_cls)

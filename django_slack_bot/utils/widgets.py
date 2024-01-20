@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 from logging import getLogger
-from typing import Any
 
 from django.forms import widgets
 
@@ -16,7 +15,7 @@ class JSONWidget(widgets.Textarea):
 
     indent = 2
 
-    def format_value(self, value: Any) -> str | None:  # noqa: D102
+    def format_value(self, value: str) -> str | None:  # noqa: D102
         try:
             value = json.dumps(json.loads(value), indent=self.indent)
             lines = value.split("\n")

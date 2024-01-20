@@ -28,6 +28,8 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
     model_cls = SlackMessageRecipient
     factory_cls = SlackMessageRecipientFactory
 
+    pytestmark = pytest.mark.django_db()
+
     def _update_channel_names(
         self,
         *,
@@ -42,7 +44,6 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
             },
         )
 
-    @pytest.mark.django_db()
     def test_update_channel_names(self, admin_client: Client) -> None:
         # These recipients should update
         recipients_to_update = [
@@ -71,7 +72,6 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
             {"channel": "CHANNEL002", "channel_name": "#channel-002"},
         ]
 
-    @pytest.mark.django_db()
     def test_update_channel_names_no_match_for_some(self, admin_client: Client) -> None:
         # These recipients should update
         recipients_to_update = [

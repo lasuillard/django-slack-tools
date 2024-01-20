@@ -22,6 +22,8 @@ class TestSlackMessageAdmin(ModelAdminTestBase):
     model_cls = SlackMessage
     factory_cls = SlackMessageFactory
 
+    pytestmark = pytest.mark.django_db()
+
     def _clone_messages(
         self,
         *,
@@ -50,13 +52,11 @@ class TestSlackMessageAdmin(ModelAdminTestBase):
             },
         )
 
-    @pytest.mark.django_db()
     def test_changelist(self, admin_client: Client) -> None:
         # Test permalink field
         self.factory_cls.create(permalink="https://example.com")
         return super().test_changelist(admin_client)
 
-    @pytest.mark.django_db()
     def test_clone_messages(self, admin_client: Client) -> None:
         # These messages should clone
         messages_to_clone = self.factory_cls.create_batch(size=3)
@@ -73,7 +73,6 @@ class TestSlackMessageAdmin(ModelAdminTestBase):
         # Check messages are cloned
         assert SlackMessage.objects.count() == 6
 
-    @pytest.mark.django_db()
     def test_send_messages(self, admin_client: Client) -> None:
         # These messages should send
         messages_to_send = self.factory_cls.create_batch(size=3)
@@ -94,7 +93,6 @@ class TestSlackMessageAdmin(ModelAdminTestBase):
         assert SlackMessage.objects.count() == 3
         assert SlackMessage.objects.filter(ok=True).count() == 3
 
-    @pytest.mark.django_db()
     def test_send_messages_partial_failure(self, admin_client: Client) -> None:
         # These messages should send
         messages_to_send = self.factory_cls.create_batch(size=3)

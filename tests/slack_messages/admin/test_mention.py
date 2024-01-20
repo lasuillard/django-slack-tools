@@ -28,6 +28,8 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
     model_cls = SlackMention
     factory_cls = SlackMentionFactory
 
+    pytestmark = pytest.mark.django_db()
+
     def _update_mentions(
         self,
         *,
@@ -42,7 +44,6 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
             },
         )
 
-    @pytest.mark.django_db()
     def test_update_mentions(self, admin_client: Client) -> None:
         # These mentions should update
         mentions_to_update = [
@@ -71,7 +72,6 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
             {"type": SlackMention.MentionType.GROUP, "name": "Food"},
         ]
 
-    @pytest.mark.django_db()
     def test_update_mentions_no_match_for_some(self, admin_client: Client) -> None:
         # These mentions should update
         mentions_to_update = [
@@ -106,7 +106,6 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
             {"type": SlackMention.MentionType.UNKNOWN, "name": "Olive"},
         ]
 
-    @pytest.mark.django_db()
     def test_update_mentions_no_match(self, admin_client: Client) -> None:
         # These mentions should update
         mentions_to_update = [

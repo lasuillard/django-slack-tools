@@ -1,5 +1,3 @@
-import pytest
-
 from django_slack_bot.slack_messages.models import SlackMessageRecipient
 from tests._helpers import ModelTestBase
 
@@ -10,7 +8,6 @@ class TestSlackMessageRecipient(ModelTestBase):
     model_cls = SlackMessageRecipient
     factory_cls = SlackMessageRecipientFactory
 
-    @pytest.mark.django_db()
     def test_str(self) -> None:
         instance = self.factory_cls.create(
             alias="Robots in the bar",
