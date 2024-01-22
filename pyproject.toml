@@ -43,7 +43,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 target-version = "py38"
 select = ["ALL"]
-ignore = ["ANN101", "ANN401", "TD003", "FIX002", "ANN102"]
+ignore = ["ANN101", "ANN401", "TD003", "FIX002", "ANN102", "D105"]
 line-length = 120
 
 [tool.ruff.extend-per-file-ignores]
@@ -51,7 +51,7 @@ line-length = 120
 "tests/*" = ["D", "S101", "PLR2004", "SLF001"]
 "testproj/*" = ["D100"]
 "*/migrations/*" = ["RUF012", "D"]
-"examples/*" = ["D100"]
+"examples/*" = ["D100", "D101"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
