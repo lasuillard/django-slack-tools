@@ -3,7 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-kv)x7pa__5ls#_zi*-hgi-mi@&&v7*ebtg3vmfvlxg*a###*ug"  # noqa: S105
+SECRET_KEY = (
+    "django-insecure-kv)x7pa__5ls#_zi*-hgi-mi@&&v7*ebtg3vmfvlxg*a###*ug"  # noqa: S105
+)
 
 DEBUG = True
 
@@ -18,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_slack_bot.slack_messages",
     "todo_app",
 ]
 
@@ -107,13 +110,35 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{asctime} {levelname:<9s} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+        "propagate": True,
+    },
+}
+
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
 SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
 
 DJANGO_SLACK_BOT = {
     "SLACK_APP": "todo.slack_app.app",
     "BACKEND": {
-        "NAME": "django_slack_bot.backends.SlackBackend",
+        "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
         "OPTIONS": {
             "slack_app": "todo.slack_app.app",
         },
