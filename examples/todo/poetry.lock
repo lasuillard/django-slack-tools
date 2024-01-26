@@ -97,7 +97,7 @@ slack-bolt = ">=1,<2"
 [package.source]
 type = "git"
 url = "https://github.com/lasuillard/django-slack-bot.git"
-reference = "4da8e0c"
+reference = "main"
 resolved_reference = "4da8e0c3fbd9f70d4444a478a7da6940d9f95b1d"
 
 [[package]]
@@ -309,4 +309,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "8fe073f7801bf3ccfe468042d12dcd582495c94ac915b4d8a02d8bfa403d7dd8"
+content-hash = "c256b2f2d5f75c5849bea0bffe17270507c7f576dd6c988151c90e2f11de41cb"

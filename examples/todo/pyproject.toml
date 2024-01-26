@@ -9,7 +9,7 @@ classifiers = ["Private :: Do not Upload"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-django-slack-bot = { git = "https://github.com/lasuillard/django-slack-bot.git", rev = "4da8e0c" } # FIXME(lasuillard): No release yet
+django-slack-bot = { git = "https://github.com/lasuillard/django-slack-bot.git", branch = "main" }
 
 [build-system]
 requires = ["poetry-core"]
