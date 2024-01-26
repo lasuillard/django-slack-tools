@@ -36,5 +36,27 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
+          files: dist/*
 
-      # TODO(#13): Publish to PyPI
+      - name: Upload release distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dists
+          path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs:
+      - release
+    permissions:
+      id-token: write
+    steps:
+      - name: Retrieve release distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: release-dists
+          path: dist/
+
+      - name: Publish release distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
