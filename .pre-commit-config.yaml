@@ -33,7 +33,7 @@ repos:
         name: Format with Black
         language: system
         types: [python]
-        entry: poetry run black
+        entry: poetry run black --config ./pyproject.toml
 
       - id: mypy
         name: Type check with Mypy

@@ -204,9 +204,7 @@ def mark_todo_completed(
 def handle_submission_mark_todo_completed(ack: Ack, body: dict) -> None:
     """Handle submission of a new To Do."""
     ack()
-    id_ = body["view"]["state"]["values"]["choice"]["static_select-action"][
-        "selected_option"
-    ]["value"]
+    id_ = body["view"]["state"]["values"]["choice"]["static_select-action"]["selected_option"]["value"]
     todo = Todo.objects.get(id=id_)  # type: ignore[attr-defined]
     todo.completed = True
     todo.save()
