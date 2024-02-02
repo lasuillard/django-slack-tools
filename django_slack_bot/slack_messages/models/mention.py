@@ -1,4 +1,5 @@
 """Message recipients model."""
+
 from __future__ import annotations
 
 from django.db import models
@@ -62,7 +63,7 @@ class SlackMention(TimestampMixin, models.Model):
 
     @property
     def mention(self) -> str:
-        """Mention string for use in messages, e.g. "<@{USER_ID}>"."""
+        """Mention string for use in messages, e.g. `"<@{USER_ID}>"`."""
         if self.type == SlackMention.MentionType.USER:
             return f"<@{self.mention_id}>"
 

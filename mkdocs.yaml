@@ -10,11 +10,26 @@ plugins:
       handlers:
         python:
           options:
-            show_submodules: true
+            show_submodules: false
   - search
 nav:
   - Introduction: index.md
-  - Features: features.md
-  - Tutorials: tutorials.md
-  - Release Notes: release-notes.md
-  - API References: api-references.md
+  - Tutorials:
+    - Quick Start: tutorials/quick-start.md
+    - Advanced: tutorials/advanced.md
+  - API References:
+    - Slack Messages:
+      - Models: api-references/slack-messages/models.md
+      - Messaging Backends: api-references/slack-messages/messaging-backends.md
+      - Sending Messages: api-references/slack-messages/sending-messages.md
+markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

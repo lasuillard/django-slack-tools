@@ -26,6 +26,8 @@ And more in future roadmap...
 
 - [ ] Django template support
 
+- [ ] New Django apps and helpers for Slack features such as modals, event subscription, etc.
+
 Currently it is focused on messaging features. In future, hoping to bring more helpful features across Slack Bot ecosystem, such as event subscriptions, modals, bot interactions, etc.
 
 ## 🚀 Installation

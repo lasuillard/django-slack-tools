@@ -37,6 +37,10 @@ run:  ## Run development server
 		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: run
 
+serve-docs:  ## Serve dev documents
+	poetry run mkdocs serve --dev-addr 0.0.0.0:8000
+.PHONY: serve-docs
+
 
 # =============================================================================
 # CI
