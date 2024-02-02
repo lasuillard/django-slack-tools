@@ -6,6 +6,7 @@ authors = ["Yuchan Lee <lasuillard@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "django_slack_tools" }]
+homepage = "https://github.com/lasuillard/django-slack-tools"
 
 [tool.poetry.dependencies]
 python = "^3.8"
