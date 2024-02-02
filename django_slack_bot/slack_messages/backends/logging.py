@@ -1,4 +1,5 @@
 """Logging backend that do logging otherwise nothing."""
+
 from __future__ import annotations
 
 from logging import getLogger

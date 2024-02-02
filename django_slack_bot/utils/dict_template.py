@@ -1,4 +1,5 @@
 """Utils for dictionary-based templates."""
+
 from __future__ import annotations
 
 from typing import Any, TypeVar
