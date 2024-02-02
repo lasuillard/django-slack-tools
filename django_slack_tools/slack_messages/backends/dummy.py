@@ -7,7 +7,7 @@ from typing import Any
 
 from slack_sdk.web import SlackResponse
 
-from django_slack_bot.slack_messages.models import SlackMessage
+from django_slack_tools.slack_messages.models import SlackMessage
 
 from .base import BackendBase
 

@@ -5,7 +5,7 @@ from django.utils import timezone
 from factory import Faker, LazyAttribute, post_generation
 from factory.django import DjangoModelFactory
 
-from django_slack_bot.slack_messages.models import (
+from django_slack_tools.slack_messages.models import (
     SlackMention,
     SlackMessage,
     SlackMessageRecipient,

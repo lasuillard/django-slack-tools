@@ -5,9 +5,9 @@ from unittest import mock
 
 import pytest
 
-from django_slack_bot.slack_messages.admin import SlackMentionAdmin
-from django_slack_bot.slack_messages.admin.mention import _get_mentionable_items
-from django_slack_bot.slack_messages.models import SlackMention
+from django_slack_tools.slack_messages.admin import SlackMentionAdmin
+from django_slack_tools.slack_messages.admin.mention import _get_mentionable_items
+from django_slack_tools.slack_messages.models import SlackMention
 from tests._factories import SlackResponseFactory
 from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMentionFactory
@@ -55,7 +55,7 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
 
         # Perform action
         with mock.patch(
-            "django_slack_bot.slack_messages.admin.mention._get_mentionable_items",
+            "django_slack_tools.slack_messages.admin.mention._get_mentionable_items",
             return_value=_mentionable_items,
         ):
             response = self._update_mentions(client=admin_client, ids=ids)
@@ -84,7 +84,7 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
 
         # Perform action
         with mock.patch(
-            "django_slack_bot.slack_messages.admin.mention._get_mentionable_items",
+            "django_slack_tools.slack_messages.admin.mention._get_mentionable_items",
             return_value=_mentionable_items,
         ):
             response = self._update_mentions(client=admin_client, ids=ids)
@@ -116,7 +116,7 @@ class TestSlackMentionAdmin(ModelAdminTestBase):
 
         # Perform action
         with mock.patch(
-            "django_slack_bot.slack_messages.admin.mention._get_mentionable_items",
+            "django_slack_tools.slack_messages.admin.mention._get_mentionable_items",
             return_value=_mentionable_items,
         ):
             response = self._update_mentions(client=admin_client, ids=ids)

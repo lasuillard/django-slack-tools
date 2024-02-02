@@ -1,6 +1,6 @@
 import pytest
 
-from django_slack_bot.utils.slack import get_block_kit_builder_url
+from django_slack_tools.utils.slack import get_block_kit_builder_url
 
 
 def test_get_block_kit_builder_url() -> None:

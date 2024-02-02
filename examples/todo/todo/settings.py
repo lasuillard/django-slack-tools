@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_slack_bot.slack_messages",
+    "django_slack_tools.slack_messages",
     "todo_app",
 ]
 
@@ -133,10 +133,10 @@ LOGGING = {
 SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
 SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
 
-DJANGO_SLACK_BOT = {
+DJANGO_SLACK_TOOLS = {
     "SLACK_APP": "todo.slack_app.app",
     "BACKEND": {
-        "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
+        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
         "OPTIONS": {
             "slack_app": "todo.slack_app.app",
         },

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Iterable
 import pytest
 from django.db import models
 
-from django_slack_bot.slack_messages.admin import SlackMessageAdmin
-from django_slack_bot.slack_messages.models import SlackMessage
+from django_slack_tools.slack_messages.admin import SlackMessageAdmin
+from django_slack_tools.slack_messages.models import SlackMessage
 from tests._factories import SlackApiErrorFactory, SlackResponseFactory
 from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessageFactory

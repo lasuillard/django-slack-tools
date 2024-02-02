@@ -6,12 +6,12 @@ from abc import ABC, abstractmethod
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, overload
 
-from django_slack_bot.slack_messages.models import SlackMessage, SlackMessagingPolicy
+from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_bot.utils.slack import MessageBody, MessageHeader
+    from django_slack_tools.utils.slack import MessageBody, MessageHeader
 
 logger = getLogger(__name__)
 

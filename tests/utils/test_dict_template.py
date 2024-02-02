@@ -1,7 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from django_slack_bot.utils.dict_template import dict_template_validator, render
+from django_slack_tools.utils.dict_template import dict_template_validator, render
 
 
 # TODO(lasuillard): Test with more complex template

@@ -29,7 +29,7 @@ class ModelAdminTestBase:
         *args: Any,
         **kwargs: Any,
     ) -> str:
-        """Helper method returns reverse URL For admin view. e.g. `"/admin/django_slack_bot/slackmessage/add"`.
+        """Helper method returns reverse URL For admin view. e.g. `"/admin/django_slack_tools/slackmessage/add"`.
 
         Any additional arguments will be passed to `django.urls.reverse()`.
         """

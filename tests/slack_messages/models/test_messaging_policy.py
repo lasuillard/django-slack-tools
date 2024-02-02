@@ -1,4 +1,4 @@
-from django_slack_bot.slack_messages.models import SlackMessagingPolicy
+from django_slack_tools.slack_messages.models import SlackMessagingPolicy
 from tests._helpers import ModelTestBase
 
 from ._factories import SlackMessageRecipientFactory, SlackMessagingPolicyFactory

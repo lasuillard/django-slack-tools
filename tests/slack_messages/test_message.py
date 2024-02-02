@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from django_slack_bot.slack_messages.message import slack_message, slack_message_via_policy
-from django_slack_bot.slack_messages.models import SlackMention, SlackMessage, SlackMessagingPolicy
+from django_slack_tools.slack_messages.message import slack_message, slack_message_via_policy
+from django_slack_tools.slack_messages.models import SlackMention, SlackMessage, SlackMessagingPolicy
 from tests.slack_messages.models._factories import (
     SlackMentionFactory,
     SlackMessageRecipientFactory,

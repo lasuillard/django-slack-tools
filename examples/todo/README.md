@@ -1,6 +1,6 @@
 # Example To Do app
 
-Simple To Do bot example with Django Slack Bot.
+Simple To Do bot example with Django Slack Tools.
 
 ## Features
 

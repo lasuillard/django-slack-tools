@@ -1,6 +1,6 @@
-site_name: django-slack-bot
-repo_url: https://github.com/lasuillard/django-slack-bot
-repo_name: lasuillard/django-slack-bot
+site_name: django-slack-tools
+repo_url: https://github.com/lasuillard/django-slack-tools
+repo_name: lasuillard/django-slack-tools
 theme:
   name: material
   icon:

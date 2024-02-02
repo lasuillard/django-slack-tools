@@ -4,8 +4,8 @@ services:
   workspace:
     build:
       args:
-        WORKSPACE: /workspaces/django-slack-bot
+        WORKSPACE: /workspaces/django-slack-tools
     volumes:
-      - .:/workspaces/django-slack-bot
+      - .:/workspaces/django-slack-tools
     healthcheck:
       disable: true

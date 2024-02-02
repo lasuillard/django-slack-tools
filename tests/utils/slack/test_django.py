@@ -1,7 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from django_slack_bot.utils.slack import body_validator, header_validator
+from django_slack_tools.utils.slack import body_validator, header_validator
 
 
 def test_header_validator() -> None:
