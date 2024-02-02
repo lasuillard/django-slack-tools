@@ -1,4 +1,5 @@
 """Slack messaging backends."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -25,8 +26,7 @@ class BackendBase(ABC):
         *,
         raise_exception: bool,
         get_permalink: bool = False,
-    ) -> SlackMessage:
-        ...  # pragma: no cover
+    ) -> SlackMessage: ...  # pragma: no cover
 
     @overload
     def send_message(
@@ -38,8 +38,7 @@ class BackendBase(ABC):
         body: MessageBody,
         raise_exception: bool,
         get_permalink: bool = False,
-    ) -> SlackMessage:
-        ...  # pragma: no cover
+    ) -> SlackMessage: ...  # pragma: no cover
 
     @abstractmethod
     def send_message(  # noqa: PLR0913

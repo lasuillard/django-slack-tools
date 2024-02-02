@@ -14,10 +14,10 @@ django = ">=3.2,<5"
 pydantic = ">=2,<3"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.11.0"
+black = "^24.1.1"
 coverage = "^7.3.2"
 mypy = "^1.7.1"
-pytest = "^7.4.3"
+pytest = "^8.0.0"
 pytest-cov = "^4.1.0"
 pytest-sugar = "^0.9.7"
 ruff = "^0.1.7"
@@ -43,7 +43,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 target-version = "py38"
 select = ["ALL"]
-ignore = ["ANN101", "ANN401", "TD003", "FIX002", "ANN102"]
+ignore = ["ANN101", "ANN401", "TD003", "FIX002", "ANN102", "D105"]
 line-length = 120
 
 [tool.ruff.extend-per-file-ignores]
@@ -51,6 +51,7 @@ line-length = 120
 "tests/*" = ["D", "S101", "PLR2004", "SLF001"]
 "testproj/*" = ["D100"]
 "*/migrations/*" = ["RUF012", "D"]
+"examples/*" = ["D100", "D101"]
 
 [tool.ruff.pydocstyle]
 convention = "google"
@@ -75,6 +76,7 @@ warn_return_any = true
 show_error_codes = true
 strict_optional = true
 no_implicit_reexport = true
+explicit_package_bases = true
 
 [tool.django-stubs]
 django_settings_module = "testproj.config.settings"

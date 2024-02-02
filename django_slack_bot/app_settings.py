@@ -3,6 +3,7 @@
 In your Django settings, Django Slack Bot expects something like:
 
 """
+
 from __future__ import annotations
 
 from logging import getLogger

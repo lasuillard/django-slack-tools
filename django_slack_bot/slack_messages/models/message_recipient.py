@@ -1,4 +1,5 @@
 """Message recipients model."""
+
 from __future__ import annotations
 
 from django.db import models
@@ -48,7 +49,7 @@ class SlackMessageRecipient(TimestampMixin, models.Model):
         verbose_name = _("Recipient")
         verbose_name_plural = _("Recipients")
 
-    def __str__(self) -> str:  # noqa: D105
+    def __str__(self) -> str:
         num_mentions = self.mentions.count()
 
         return _("{alias} ({channel}, {num_mentions} mentions)").format(

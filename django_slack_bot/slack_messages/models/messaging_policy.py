@@ -1,4 +1,5 @@
 """Messaging policy model."""
+
 from __future__ import annotations
 
 from django.db import models
@@ -55,7 +56,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         verbose_name = _("Messaging Policy")
         verbose_name_plural = _("Messaging Policies")
 
-    def __str__(self) -> str:  # noqa: D105
+    def __str__(self) -> str:
         num_recipients = self.recipients.all().count()
         if self.enabled:
             return _("{code} (enabled, {num_recipients} recipients)").format(

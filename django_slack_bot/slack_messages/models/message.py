@@ -1,4 +1,5 @@
 """Message model."""
+
 from __future__ import annotations
 
 from django.db import models
@@ -105,7 +106,7 @@ class SlackMessage(TimestampMixin, models.Model):
         verbose_name_plural = _("Messages")
         ordering = ("-created",)
 
-    def __str__(self) -> str:  # noqa: D105
+    def __str__(self) -> str:
         if self.ok is True:
             return _("Message ({ts}, OK)").format(id=self.id, ts=self.ts)
 

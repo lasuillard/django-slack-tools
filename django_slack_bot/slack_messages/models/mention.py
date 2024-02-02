@@ -54,7 +54,7 @@ class SlackMention(TimestampMixin, models.Model):
         verbose_name = _("Mention")
         verbose_name_plural = _("Mentions")
 
-    def __str__(self) -> str:  # noqa: D105
+    def __str__(self) -> str:
         return _("{name} ({type}, {mention_id})").format(
             name=self.name,
             type=self.get_type_display(),
