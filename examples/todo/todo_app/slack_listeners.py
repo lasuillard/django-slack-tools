@@ -65,7 +65,7 @@ def update_home_tab(client: WebClient, event: dict) -> None:
                     "type": "header",
                     "text": {
                         "type": "plain_text",
-                        "text": "Welcome to Django Slack Bot :tada:",
+                        "text": "Welcome to Django Slack Tools :tada:",
                     },
                 },
                 {"type": "divider"},

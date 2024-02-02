@@ -5,7 +5,7 @@ from __future__ import annotations
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.utils.model_mixins import TimestampMixin
+from django_slack_tools.utils.model_mixins import TimestampMixin
 
 
 class SlackMentionManager(models.Manager["SlackMention"]):

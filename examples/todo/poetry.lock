@@ -81,7 +81,7 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-slack-bot"
+name = "django-slack-tools"
 version = "0.1.0"
 description = "Slack bot with Django."
 optional = false
@@ -96,7 +96,7 @@ slack-bolt = ">=1,<2"
 
 [package.source]
 type = "git"
-url = "https://github.com/lasuillard/django-slack-bot.git"
+url = "https://github.com/lasuillard/django-slack-tools.git"
 reference = "main"
 resolved_reference = "4da8e0c3fbd9f70d4444a478a7da6940d9f95b1d"
 

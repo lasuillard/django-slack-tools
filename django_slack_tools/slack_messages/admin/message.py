@@ -10,9 +10,9 @@ from django.db import models
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
-from django_slack_bot.slack_messages.models import SlackMessage
-from django_slack_bot.utils.widgets import JSONWidget
+from django_slack_tools.app_settings import app_settings
+from django_slack_tools.slack_messages.models import SlackMessage
+from django_slack_tools.utils.widgets import JSONWidget
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet

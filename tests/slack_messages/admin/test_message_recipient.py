@@ -5,9 +5,9 @@ from unittest import mock
 
 import pytest
 
-from django_slack_bot.slack_messages.admin import SlackMessageRecipientAdmin
-from django_slack_bot.slack_messages.admin.message_recipient import _get_channels
-from django_slack_bot.slack_messages.models import SlackMessageRecipient
+from django_slack_tools.slack_messages.admin import SlackMessageRecipientAdmin
+from django_slack_tools.slack_messages.admin.message_recipient import _get_channels
+from django_slack_tools.slack_messages.models import SlackMessageRecipient
 from tests._factories import SlackResponseFactory
 from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessageRecipientFactory
@@ -54,7 +54,7 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
 
         # Perform action
         with mock.patch(
-            "django_slack_bot.slack_messages.admin.message_recipient._get_channels",
+            "django_slack_tools.slack_messages.admin.message_recipient._get_channels",
             return_value=_channels,
         ):
             response = self._update_channel_names(client=admin_client, ids=ids)
@@ -84,7 +84,7 @@ class TestSlackMessageRecipientAdmin(ModelAdminTestBase):
 
         # Perform action
         with mock.patch(
-            "django_slack_bot.slack_messages.admin.message_recipient._get_channels",
+            "django_slack_tools.slack_messages.admin.message_recipient._get_channels",
             return_value=_channels,
         ):
             response = self._update_channel_names(client=admin_client, ids=ids)

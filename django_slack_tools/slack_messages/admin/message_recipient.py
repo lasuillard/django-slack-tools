@@ -9,8 +9,8 @@ from django.db.models import Count
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
-from django_slack_bot.slack_messages.models import SlackMessageRecipient
+from django_slack_tools.app_settings import app_settings
+from django_slack_tools.slack_messages.models import SlackMessageRecipient
 
 if TYPE_CHECKING:
     from django.http import HttpRequest

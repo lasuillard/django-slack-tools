@@ -6,13 +6,13 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 from slack_bolt import App
 
-from django_slack_bot.app_settings import AppSettings
-from django_slack_bot.slack_messages.backends import BackendBase
+from django_slack_tools.app_settings import AppSettings
+from django_slack_tools.slack_messages.backends import BackendBase
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
 
-    from django_slack_bot.app_settings import ConfigDict
+    from django_slack_tools.app_settings import ConfigDict
 
 
 # Config fixtures to run in parametrize (map of test id to config dictionary)
@@ -20,21 +20,21 @@ config_fixtures: dict[str, ConfigDict] = {
     "dummy backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.slack_messages.backends.DummyBackend",
+            "NAME": "django_slack_tools.slack_messages.backends.DummyBackend",
             "OPTIONS": {},
         },
     },
     "logging backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.slack_messages.backends.LoggingBackend",
+            "NAME": "django_slack_tools.slack_messages.backends.LoggingBackend",
             "OPTIONS": {},
         },
     },
     "slack backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.slack_messages.backends.SlackBackend",
+            "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
             "OPTIONS": {
                 "slack_app": "tests.test_app_settings.get_slack_app",
             },
@@ -43,7 +43,7 @@ config_fixtures: dict[str, ConfigDict] = {
     "slack redirect backend": {
         "SLACK_APP": "tests.test_app_settings.get_slack_app",
         "BACKEND": {
-            "NAME": "django_slack_bot.slack_messages.backends.SlackRedirectBackend",
+            "NAME": "django_slack_tools.slack_messages.backends.SlackRedirectBackend",
             "OPTIONS": {
                 "slack_app": "tests.test_app_settings.get_slack_app",
                 "redirect_channel": "some-redirect-channel",
@@ -71,18 +71,18 @@ class TestAppSettings:
 
     @settings_dict_parametrizer
     def test_django_config(self, settings: SettingsWrapper, settings_dict: ConfigDict) -> None:
-        settings.DJANGO_SLACK_BOT = None
+        settings.DJANGO_SLACK_TOOLS = None
         with pytest.raises(ImproperlyConfigured, match=r"^Neither `.+` provided or `.+` settings found"):
             AppSettings()
 
-        settings.DJANGO_SLACK_BOT = settings_dict
+        settings.DJANGO_SLACK_TOOLS = settings_dict
         app_settings = AppSettings()
         self._assert_app_settings(app_settings)
 
     def test_raises_if_backend_is_not_subclass_of_base_class(self) -> None:
         with pytest.raises(
             ImproperlyConfigured,
-            match="Provided backend is not a subclass of `django_slack_bot.slack_messages.backends.base.BackendBase` class.",  # noqa: E501
+            match="Provided backend is not a subclass of `django_slack_tools.slack_messages.backends.base.BackendBase` class.",  # noqa: E501
         ):
             AppSettings(
                 {

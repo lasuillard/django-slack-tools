@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 import pytest
 from slack_sdk.errors import SlackApiError
 
-from django_slack_bot.slack_messages.backends import SlackBackend, SlackRedirectBackend
-from django_slack_bot.slack_messages.models import SlackMessage
-from django_slack_bot.utils.slack import MessageBody, MessageHeader
+from django_slack_tools.slack_messages.backends import SlackBackend, SlackRedirectBackend
+from django_slack_tools.slack_messages.models import SlackMessage
+from django_slack_tools.utils.slack import MessageBody, MessageHeader
 from tests._factories import SlackApiErrorFactory, SlackResponseFactory
 from tests.slack_messages._factories import SlackMessageResponseFactory
 
@@ -154,7 +154,7 @@ class TestSlackRedirectBackend:
             channel="test-original-channel",
             header=MessageHeader(),
             body=MessageBody(
-                attachments=[{"text": "Django Slack Bot"}],
+                attachments=[{"text": "Django Slack Tools"}],
             ),
         )
         assert prepared_msg.body == {
@@ -164,7 +164,7 @@ class TestSlackRedirectBackend:
                     "color": "#eb4034",
                     "text": ":warning:  This message was originally sent to channel *test-original-channel* but redirected here.",  # noqa: E501
                 },
-                {"text": "Django Slack Bot"},
+                {"text": "Django Slack Tools"},
             ],
             "blocks": None,
             "icon_emoji": None,

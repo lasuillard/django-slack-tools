@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "django-slack-bot"
+name = "django-slack-tools"
 version = "0.1.0"
-description = "Slack bot with Django."
+description = "Little helpers working with Slack bot 🤖 in Django."
 authors = ["Yuchan Lee <lasuillard@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "django_slack_bot" }]
+packages = [{ include = "django_slack_tools" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -99,7 +99,7 @@ testpaths = ["tests"]
 markers = ["slack: Tests working with Slack."]
 
 [tool.coverage.run]
-include = ["django_slack_bot/*"]
+include = ["django_slack_tools/*"]
 omit = ["*/migrations/*", "*tests*"]
 branch = true
 plugins = ["django_coverage_plugin"]

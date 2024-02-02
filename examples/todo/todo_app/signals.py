@@ -5,7 +5,7 @@ from typing import Any
 from django.db.models import signals
 from django.dispatch import receiver
 
-from django_slack_bot.slack_messages.message import slack_message_via_policy
+from django_slack_tools.slack_messages.message import slack_message_via_policy
 
 from .models import Todo
 

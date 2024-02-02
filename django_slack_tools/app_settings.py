@@ -1,8 +1,4 @@
-"""Application settings.
-
-In your Django settings, Django Slack Bot expects something like:
-
-"""
+"""Application settings."""
 
 from __future__ import annotations
 
@@ -14,9 +10,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
 
-from django_slack_bot.slack_messages.backends.base import BackendBase
+from django_slack_tools.slack_messages.backends.base import BackendBase
 
-APP_SETTINGS_KEY = "DJANGO_SLACK_BOT"
+APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 "Django settings key for this application."
 
 logger = getLogger(__name__)
@@ -41,7 +37,7 @@ class AppSettings:
             settings_dict = getattr(settings, APP_SETTINGS_KEY, None)
 
         if settings_dict is None:
-            msg = "Neither `settings_dict` provided or `DJANGO_SLACK_BOT` settings found in Django settings."
+            msg = "Neither `settings_dict` provided or `django_slack_tools` settings found in Django settings."
             raise ImproperlyConfigured(msg)
 
         # Slack app

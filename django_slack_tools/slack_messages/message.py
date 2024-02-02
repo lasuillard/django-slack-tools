@@ -5,9 +5,9 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING, Any
 
-from django_slack_bot.app_settings import app_settings
-from django_slack_bot.utils.dict_template import render
-from django_slack_bot.utils.slack import MessageBody, MessageHeader
+from django_slack_tools.app_settings import app_settings
+from django_slack_tools.utils.dict_template import render
+from django_slack_tools.utils.slack import MessageBody, MessageHeader
 
 from .models import SlackMessagingPolicy
 

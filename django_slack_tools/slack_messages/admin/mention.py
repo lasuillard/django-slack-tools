@@ -7,8 +7,8 @@ from django.contrib import admin, messages
 from django.contrib.admin.filters import ChoicesFieldListFilter, DateFieldListFilter
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_bot.app_settings import app_settings
-from django_slack_bot.slack_messages.models import SlackMention
+from django_slack_tools.app_settings import app_settings
+from django_slack_tools.slack_messages.models import SlackMention
 
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet

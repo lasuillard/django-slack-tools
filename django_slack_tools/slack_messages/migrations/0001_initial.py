@@ -3,8 +3,8 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import django_slack_bot.utils.dict_template
-import django_slack_bot.utils.slack.django
+import django_slack_tools.utils.dict_template
+import django_slack_tools.utils.slack.django
 
 
 class Migration(migrations.Migration):
@@ -153,7 +153,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         default=dict,
                         help_text="Default header values applied to messages on creation.",
-                        validators=[django_slack_bot.utils.slack.django.header_validator],
+                        validators=[django_slack_tools.utils.slack.django.header_validator],
                         verbose_name="Default header",
                     ),
                 ),
@@ -163,7 +163,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         help_text="Dictionary-based template object.",
                         null=True,
-                        validators=[django_slack_bot.utils.dict_template.dict_template_validator],
+                        validators=[django_slack_tools.utils.dict_template.dict_template_validator],
                         verbose_name="Message template object",
                     ),
                 ),
@@ -209,7 +209,7 @@ class Migration(migrations.Migration):
                     "header",
                     models.JSONField(
                         help_text="Slack control arguments. Allowed fields are `mrkdwn`, `parse`, `reply_broadcast`, `thread_ts`, `unfurl_links`, `unfurl_media`.",  # noqa: E501
-                        validators=[django_slack_bot.utils.slack.django.header_validator],
+                        validators=[django_slack_tools.utils.slack.django.header_validator],
                         verbose_name="Header",
                     ),
                 ),
@@ -217,7 +217,7 @@ class Migration(migrations.Migration):
                     "body",
                     models.JSONField(
                         help_text="Message body. Allowed fields are `attachments`, `body`, `text`, `icon_emoji`, `icon_url`, `metadata`, `username`.",  # noqa: E501
-                        validators=[django_slack_bot.utils.slack.django.body_validator],
+                        validators=[django_slack_tools.utils.slack.django.body_validator],
                         verbose_name="Body",
                     ),
                 ),

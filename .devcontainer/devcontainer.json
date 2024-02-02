@@ -1,5 +1,5 @@
 {
-  "name": "lasuillard/django-slack-bot",
+  "name": "lasuillard/django-slack-tools",
   "dockerComposeFile": [
     "../docker-compose.yaml",
     "./docker-compose.override.yaml"
@@ -16,7 +16,7 @@
   "postStartCommand": "./.devcontainer/postStartCommand.sh",
   "postAttachCommand": "./.devcontainer/postAttachCommand.sh",
   "shutdownAction": "stopCompose",
-  "workspaceFolder": "/workspaces/django-slack-bot",
+  "workspaceFolder": "/workspaces/django-slack-tools",
   "customizations": {
     "vscode": {
       "extensions": [
