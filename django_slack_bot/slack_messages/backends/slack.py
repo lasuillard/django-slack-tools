@@ -1,4 +1,5 @@
 """Slack backends actually interact with Slack API to do something."""
+
 from __future__ import annotations
 
 import traceback

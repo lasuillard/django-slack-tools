@@ -1,4 +1,5 @@
 """Dummy backend doing nothing."""
+
 from __future__ import annotations
 
 from logging import getLogger
@@ -34,8 +35,6 @@ class DummyBackend(BackendBase):
             status_code=200,
         )
 
-    def _record_request(self, *args: Any, **kwargs: Any) -> Any:
-        ...
+    def _record_request(self, *args: Any, **kwargs: Any) -> Any: ...
 
-    def _record_response(self, *args: Any, **kwargs: Any) -> Any:
-        ...
+    def _record_response(self, *args: Any, **kwargs: Any) -> Any: ...

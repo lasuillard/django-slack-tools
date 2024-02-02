@@ -1,4 +1,5 @@
 """Handy APIs for sending Slack messages."""
+
 from __future__ import annotations
 
 from logging import getLogger
