@@ -14,19 +14,14 @@ This project aims to implementing helpful features making Slack bot and providin
 Key features are:
 
 - [x] Reusable Django app for Slack messaging with various messaging backends for different environments
-
 - [x] Database-backed Slack messaging policies with simple dictionary-based template
-
 - [x] Message histories
-
 - [x] Built-in admin for management working with Slack workspace
 
 And more in future roadmap...
 
 - [ ] Celery support for messaging backends, management and shortcut tasks, etc.
-
 - [ ] Django template support
-
 - [ ] New Django apps and helpers for Slack features such as modals, event subscription, etc.
 
 Currently it is focused on messaging features. In future, hoping to bring more helpful features across Slack Bot ecosystem, such as event subscriptions, modals, bot interactions, etc.
