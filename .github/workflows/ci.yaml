@@ -88,7 +88,7 @@ jobs:
         run: poetry run pytest
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           PYTHON: ${{ matrix.python-version }}
           DJANGO: ${{ matrix.django-version }}
