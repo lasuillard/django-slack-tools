@@ -23,13 +23,12 @@ help: Makefile  ## Show help
 # =============================================================================
 # Common
 # =============================================================================
-install:  ## Install the app locally
+install:  ## Install deps
 	poetry install --no-root
 .PHONY: install
 
 init:  ## Initialize project repository
-	pre-commit autoupdate
-	pre-commit install --install-hooks --hook-type pre-commit --hook-type commit-msg
+	pre-commit install
 .PHONY: init
 
 run:  ## Run development server
@@ -38,7 +37,8 @@ run:  ## Run development server
 .PHONY: run
 
 serve-docs:  ## Serve dev documents
-	poetry run mkdocs serve --dev-addr 0.0.0.0:8000
+	poetry run mkdocs serve \
+		--dev-addr $$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: serve-docs
 
 
