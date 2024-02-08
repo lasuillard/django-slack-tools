@@ -31,6 +31,11 @@ init:  ## Initialize project repository
 	pre-commit install
 .PHONY: init
 
+update:  ## Update deps and tools
+	poetry update
+	pre-commit autoupdate
+.PHONY: update
+
 run:  ## Run development server
 	poetry run python manage.py runserver \
 		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
