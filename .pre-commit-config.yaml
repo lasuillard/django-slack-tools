@@ -52,3 +52,4 @@ repos:
 
 ci:
   autoupdate_schedule:  quarterly
+  autofix_prs: false
