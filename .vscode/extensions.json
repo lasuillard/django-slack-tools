@@ -9,13 +9,11 @@
     "tamasfe.even-better-toml",
     "streetsidesoftware.code-spell-checker",
     "EditorConfig.EditorConfig",
-    "ms-python.black-formatter",
     "VisualStudioExptTeam.vscodeintellicode",
     "charliermarsh.ruff",
     "ms-python.mypy-type-checker",
     "njpwerner.autodocstring",
     "ms-toolsai.jupyter",
-    "github.vscode-pull-request-github",
-    "github.vscode-github-actions"
+    "ms-python.debugpy"
   ]
 }

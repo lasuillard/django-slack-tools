@@ -4,7 +4,7 @@
     {
       // Launch Django application server
       "name": "Python: Run Django app",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "cwd":"${workspaceFolder}/testproj",
       "program":"manage.py",

@@ -1,3 +1,0 @@
-# ngrok configuration file used inside container for convenience.
-version: 2
-web_addr: 0.0.0.0:4040
