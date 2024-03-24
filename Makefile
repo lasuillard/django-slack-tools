@@ -28,7 +28,7 @@ install:  ## Install deps
 .PHONY: install
 
 init:  ## Initialize project repository
-	pre-commit install
+	pre-commit install --install-hooks
 .PHONY: init
 
 update:  ## Update deps and tools
@@ -50,23 +50,17 @@ serve-docs:  ## Serve dev documents
 # =============================================================================
 # CI
 # =============================================================================
-ci: lint scan test  ## Run CI tasks
+ci: lint test  ## Run CI tasks
 .PHONY: ci
 
 format:  ## Run autoformatters
 	poetry run ruff check --fix .
-	poetry run black .
 .PHONY: format
 
 lint:  ## Run all linters
 	poetry run ruff check .
-	poetry run black --check .
 	poetry run mypy --show-error-codes --pretty .
 .PHONY: lint
-
-scan:  ## Run all scans
-	checkov --quiet --directory .
-.PHONY: scan
 
 test:  ## Run tests
 	poetry run pytest

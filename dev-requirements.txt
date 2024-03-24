@@ -1,3 +1,0 @@
-checkov
-dotenv-cli
-pre-commit

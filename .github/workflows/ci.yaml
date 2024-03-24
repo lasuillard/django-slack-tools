@@ -2,17 +2,11 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - ".devcontainer/**"
-      - ".vscode/**"
+    branches: [main]
+
   pull_request:
-    branches:
-      - main
-    paths-ignore:
-      - ".devcontainer/**"
-      - ".vscode/**"
+    branches: [main]
+
   workflow_dispatch:
 
 permissions: read-all
@@ -38,14 +32,12 @@ jobs:
       - name: Install pip deps
         run: poetry install
 
-      - name: Check code formatting
-        run: poetry run black --check .
+      - uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: pytest
 
-      - name: Lint code
-        run: poetry run ruff check .
-
-      - name: Run type checks
-        run: poetry run mypy --show-error-codes --pretty .
+      - uses: pre-commit-ci/lite-action@v1.0.2
+        if: always()
 
   test:
     name: Test (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
