@@ -25,11 +25,8 @@ help: Makefile  ## Show help
 # =============================================================================
 install:  ## Install deps
 	poetry install --no-root
-.PHONY: install
-
-init:  ## Initialize project repository
 	pre-commit install --install-hooks
-.PHONY: init
+.PHONY: install
 
 update:  ## Update deps and tools
 	poetry update

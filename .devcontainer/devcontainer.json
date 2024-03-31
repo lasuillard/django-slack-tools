@@ -9,8 +9,6 @@
     }
   },
   "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
-  "postAttachCommand": "./.devcontainer/postAttachCommand.sh",
-  "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
   "customizations": {
     "vscode": {
       "extensions": [
