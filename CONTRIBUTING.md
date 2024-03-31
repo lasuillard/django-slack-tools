@@ -12,7 +12,7 @@ This project repository has configured development container. Get a quick start 
 
 ### 🖊️ Format and lint codes
 
-We use [Black](https://github.com/psf/black) and [Ruff](https://github.com/astral-sh/ruff) to format codes and check types using [mypy](https://mypy-lang.org/). Format codes with:
+We use [Ruff](https://github.com/astral-sh/ruff) to format codes and check types using [mypy](https://mypy-lang.org/). Format codes with:
 
 ```bash
 $ make format
