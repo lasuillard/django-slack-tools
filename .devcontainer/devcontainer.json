@@ -9,6 +9,7 @@
     }
   },
   "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
+	"postAttachCommand": "pre-commit install",
   "customizations": {
     "vscode": {
       "extensions": [
