@@ -78,17 +78,17 @@ django_settings_module = "testproj.config.settings"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--numprocesses=auto",
-    "--strict-markers",
-    "--doctest-modules",
-    "--ds=testproj.config.settings",
-    "--reuse-db",
-    "--cov",
-    "--cov-report=term",
-    "--cov-report=xml",
-    "--show-capture=no",
-    "--junitxml=report.xml",
-    "--block-network",
+	"--numprocesses=auto",
+	"--strict-markers",
+	"--doctest-modules",
+	"--ds=testproj.config.settings",
+	"--reuse-db",
+	"--cov",
+	"--cov-report=term",
+	"--cov-report=xml",
+	"--show-capture=no",
+	"--junitxml=report.xml",
+	"--block-network",
 ]
 testpaths = ["tests"]
 markers = ["slack: Tests working with Slack."]
