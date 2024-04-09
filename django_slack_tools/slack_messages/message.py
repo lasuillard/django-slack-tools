@@ -49,6 +49,7 @@ def slack_message(
         get_permalink=get_permalink,
     )
 
+RESERVED_CONTEXT_KWARGS = frozenset({"mentions", "mentions_as_str"})
 DEFAULT_POLICY_CODE = "DEFAULT"
 
 def slack_message_via_policy(  # noqa: PLR0913
@@ -98,7 +99,7 @@ def slack_message_via_policy(  # noqa: PLR0913
 
     # Prepare template
     template = policy.template
-    overridden_reserved = {"mentions", "mentions_as_str"} & set(context.keys())
+    overridden_reserved = RESERVED_CONTEXT_KWARGS & set(context.keys())
     if overridden_reserved:
         logger.warning(
             "Template keyword argument(s) %s reserved for passing mentions, but already exists."
