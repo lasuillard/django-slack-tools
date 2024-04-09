@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from logging import getLogger
+import logging
 from typing import TYPE_CHECKING, Any
 
 from django_slack_tools.app_settings import app_settings
@@ -11,7 +11,7 @@ from django_slack_tools.utils.slack import MessageBody, MessageHeader
 
 from .models import SlackMessagingPolicy
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from .models import SlackMention, SlackMessage
@@ -63,8 +63,8 @@ def slack_message_via_policy(  # noqa: PLR0913
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 
-    Mentions for each recipient will be passed to template as keyword `{mentions}`.
-    Template should include it to use mentions.
+    Mentions for each recipient will be passed to template as keyword `{mentions}` or `{mentions_as_str}`
+    which is form of comma-separated list. Template should include it to use mentions.
 
     Args:
         policy: Messaging policy code or policy instance.
@@ -92,6 +92,7 @@ def slack_message_via_policy(  # noqa: PLR0913
             policy = SlackMessagingPolicy.objects.get(code=policy)
 
     if not policy.enabled:
+        logger.warning("Trying to send messages but policy %s is not enabled.", policy.code)
         return []
 
     header = MessageHeader.model_validate(header or {})
@@ -109,17 +110,25 @@ def slack_message_via_policy(  # noqa: PLR0913
 
     messages: list[SlackMessage | None] = []
     for recipient in policy.recipients.all():
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Sending message to recipient %s", recipient)
+
         # Auto-generated reserved kwargs
         mentions: list[SlackMention] = list(recipient.mentions.all())
         mentions_as_str = ", ".join(mention.mention for mention in mentions)
 
         # Prepare rendering arguments
         kwargs = {"mentions": mentions, "mentions_as_str": mentions_as_str}
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Context kwargs prepared as: %r", kwargs)
+
         kwargs.update(context)
 
-        # Render and send message
+        # Render template and parse as body
         rendered = render(template, **kwargs)
         body = MessageBody.model_validate(rendered)
+
+        # Send message
         message = app_settings.backend.send_message(
             policy=policy,
             channel=recipient.channel,

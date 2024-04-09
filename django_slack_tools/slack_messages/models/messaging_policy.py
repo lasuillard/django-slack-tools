@@ -49,6 +49,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         null=True,
         blank=True,
     )
+
     # Type is too obvious but due to limits...
     objects: SlackMessagingPolicyManager = SlackMessagingPolicyManager()
 
