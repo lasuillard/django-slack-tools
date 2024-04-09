@@ -49,9 +49,10 @@ def slack_message(
         get_permalink=get_permalink,
     )
 
+DEFAULT_POLICY_CODE = "DEFAULT"
 
 def slack_message_via_policy(  # noqa: PLR0913
-    policy: str | SlackMessagingPolicy,
+    policy: str | SlackMessagingPolicy | None = None,
     *,
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
@@ -78,6 +79,9 @@ def slack_message_via_policy(  # noqa: PLR0913
     Raises:
         SlackMessagingPolicy.DoesNotExist: Policy for given code does not exists.
     """
+    if not policy:
+        policy = DEFAULT_POLICY_CODE
+
     if isinstance(policy, str):
         if lazy:
             policy, created = SlackMessagingPolicy.objects.get_or_create(code=policy, defaults={"enabled": False})
