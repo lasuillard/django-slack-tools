@@ -32,6 +32,6 @@
     }
   },
   "containerEnv": {
-    "PYTHONPATH": "${env:PYTHONPATH}:${workspaceFolder}"
+    "PYTHONPATH": "${containerWorkspaceFolder}"
   }
 }
