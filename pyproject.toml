@@ -30,7 +30,7 @@ factory-boy = "^3.3.0"
 django-extensions = "^3.2.3"
 django-debug-toolbar = "^4.2.0"
 mkdocs = "^1.5.3"
-mkdocstrings = { extras = ["python"], version = "^0.24.0" }
+mkdocstrings = { extras = ["python"], version = ">=0.24,<0.26" }
 mkdocs-material = "^9.5.3"
 pytest-xdist = "^3.5.0"
 
