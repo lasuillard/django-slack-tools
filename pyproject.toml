@@ -25,12 +25,10 @@ django-coverage-plugin = "^3.1.0"
 pytest-django = "^4.7.0"
 django-stubs = { extras = ["compatible-mypy"], version = "^4.2.7" }
 ipykernel = "^6.27.1"
-celery = "^5.3.6"
 faker = ">=22,<25"
 factory-boy = "^3.3.0"
 django-extensions = "^3.2.3"
 django-debug-toolbar = "^4.2.0"
-pytest-recording = "^0.13.1"
 mkdocs = "^1.5.3"
 mkdocstrings = { extras = ["python"], version = "^0.24.0" }
 mkdocs-material = "^9.5.3"
@@ -78,17 +76,16 @@ django_settings_module = "testproj.config.settings"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--numprocesses=auto",
-    "--strict-markers",
-    "--doctest-modules",
-    "--ds=testproj.config.settings",
-    "--reuse-db",
-    "--cov",
-    "--cov-report=term",
-    "--cov-report=xml",
-    "--show-capture=no",
-    "--junitxml=report.xml",
-    "--block-network",
+	"--numprocesses=auto",
+	"--strict-markers",
+	"--doctest-modules",
+	"--ds=testproj.config.settings",
+	"--reuse-db",
+	"--cov",
+	"--cov-report=term",
+	"--cov-report=xml",
+	"--show-capture=no",
+	"--junitxml=report.xml",
 ]
 testpaths = ["tests"]
 markers = ["slack: Tests working with Slack."]

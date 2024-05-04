@@ -9,7 +9,7 @@
     }
   },
   "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
-	"postAttachCommand": "pre-commit install",
+  "postAttachCommand": "pre-commit install",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -30,5 +30,8 @@
         "ms-python.debugpy"
       ]
     }
+  },
+  "containerEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}"
   }
 }
