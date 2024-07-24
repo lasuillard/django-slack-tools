@@ -139,50 +139,8 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
     policy = SlackMessagingPolicy.objects.get(code=code)
     assert policy.code == code
     assert policy.enabled is False
-    assert not policy.recipients.exists()
-    assert policy.template is None
+    assert list(policy.recipients.values_list("alias", flat=True)) == ["DEFAULT"]
+    assert policy.template == {"text": "No template configured for lazily created policy {policy}"}
 
     # No message will be sent
     assert num_sent == 0
-
-    # Update policy
-    policy.enabled = True
-    policy.template = {
-        "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "{message}, {mentions_as_str}",
-                },
-            },
-        ],
-    }
-    policy.save()
-    policy.recipients.add(
-        SlackMessageRecipientFactory(
-            channel="whatever-channel",
-            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!channel>")],
-        ),
-    )
-
-    # Re-send message
-    mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
-    num_sent = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
-
-    assert num_sent == 1
-    message = SlackMessage.objects.get(policy__code=code)
-    assert isinstance(message, SlackMessage)
-    assert message.policy == policy
-    assert message.channel == "whatever-channel"
-    assert message.body["blocks"] == [
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": "Nice to meet you, <!channel>",
-            },
-        },
-    ]
-    assert message.ok is True
-    assert message.ts

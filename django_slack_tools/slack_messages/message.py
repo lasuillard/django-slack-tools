@@ -6,6 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django_slack_tools.app_settings import app_settings
+from django_slack_tools.slack_messages.models.message_recipient import SlackMessageRecipient
 from django_slack_tools.utils.slack import MessageBody, MessageHeader
 
 from .models import SlackMessagingPolicy
@@ -79,7 +80,18 @@ def slack_message_via_policy(  # noqa: PLR0913
     """
     if isinstance(policy, str):
         if lazy:
-            policy, created = SlackMessagingPolicy.objects.get_or_create(code=policy, defaults={"enabled": False})
+            policy, created = SlackMessagingPolicy.objects.get_or_create(
+                code=policy,
+                defaults={
+                    "enabled": False,
+                    "template": app_settings.default_template,
+                },
+            )
+
+            # Add default recipient for created policy
+            recipient = SlackMessageRecipient.objects.get(alias=app_settings.default_recipient)
+            policy.recipients.add(recipient)
+
             if created:
                 logger.warning("Policy for code %r created because `lazy` is set.", policy)
         else:

@@ -19,6 +19,7 @@ APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 logger = getLogger(__name__)
 
 
+# TODO(lasuillard): Configuration getting dirty, need refactoring
 class AppSettings:
     """Application settings."""
 
@@ -66,7 +67,15 @@ class AppSettings:
         # Initialize with provided options
         self.backend = messaging_backend(**settings_dict["BACKEND"]["OPTIONS"])
 
-        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE") or "DEFAULT"
+        # Message delivery default
+        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE", "DEFAULT")
+
+        # Lazy policy defaults
+        self.default_template = settings_dict.get(
+            "DEFAULT_POLICY_CODE",
+            {"text": "No template configured for lazily created policy {policy}"},
+        )
+        self.default_recipient = settings_dict.get("DEFAULT_RECIPIENT", "DEFAULT")
 
     @property
     def slack_app(self) -> App:
@@ -87,7 +96,13 @@ class ConfigDict(TypedDict):
     "Nested backend config."
 
     DEFAULT_POLICY_CODE: NotRequired[str]
-    "Default Policy code."
+    "Default policy code used when sending messages via policy with no policy specified."
+
+    DEFAULT_TEMPLATE: NotRequired[Any]
+    "Default template for lazy policy."
+
+    DEFAULT_RECIPIENT: NotRequired[str]
+    "Default recipient alias for lazy policy."
 
 
 class BackendConfig(TypedDict):
