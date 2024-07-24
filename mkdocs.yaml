@@ -16,7 +16,6 @@ nav:
   - Introduction: index.md
   - Tutorials:
     - Quick Start: tutorials/quick-start.md
-    - Advanced: tutorials/advanced.md
   - API References:
     - Slack Messages:
       - Models: api-references/slack-messages/models.md
