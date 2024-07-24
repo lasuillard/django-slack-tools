@@ -24,7 +24,7 @@ help: Makefile  ## Show help
 # Common
 # =============================================================================
 install:  ## Install deps
-	poetry install --no-root
+	POETRY_VIRTUALENVS_IN_PROJECT=1 poetry install --no-root
 	pre-commit install --install-hooks
 .PHONY: install
 
