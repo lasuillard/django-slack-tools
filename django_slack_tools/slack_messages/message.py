@@ -58,7 +58,7 @@ RESERVED_CONTEXT_KWARGS = frozenset({"mentions", "mentions_as_str"})
 
 
 def slack_message_via_policy(  # noqa: PLR0913
-    policy: str | SlackMessagingPolicy | None = None,
+    policy: str | SlackMessagingPolicy = app_settings.default_policy_code,
     *,
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
@@ -73,7 +73,7 @@ def slack_message_via_policy(  # noqa: PLR0913
     which is form of comma-separated list. Template should include it to use mentions.
 
     Args:
-        policy: Messaging policy code or policy instance.
+        policy: Messaging policy code or policy instance. Defaults to app's default policy.
         header: Slack message control header.
         raise_exception: Whether to re-raise caught exception while sending messages.
         lazy: Decide whether try create policy with disabled, if not exists.
@@ -87,9 +87,6 @@ def slack_message_via_policy(  # noqa: PLR0913
     Raises:
         SlackMessagingPolicy.DoesNotExist: Policy for given code does not exists.
     """
-    if not policy:
-        policy = app_settings.default_policy_code
-
     if isinstance(policy, str):
         if lazy:
             policy, created = SlackMessagingPolicy.objects.get_or_create(code=policy, defaults={"enabled": False})
