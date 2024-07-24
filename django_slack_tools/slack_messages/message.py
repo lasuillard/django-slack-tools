@@ -26,7 +26,7 @@ def slack_message(  # noqa: PLR0913
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     get_permalink: bool = False,
-    backend: BackendBase | None = None,
+    backend: BackendBase = app_settings.backend,
 ) -> SlackMessage | None:
     """Send a simple text message.
 
@@ -45,9 +45,6 @@ def slack_message(  # noqa: PLR0913
     body = MessageBody(text=body) if isinstance(body, str) else MessageBody.model_validate(body)
     header = MessageHeader.model_validate(header or {})
 
-    if not backend:
-        backend = app_settings.backend
-
     return backend.send_message(
         channel=channel,
         header=header,
@@ -65,7 +62,7 @@ def slack_message_via_policy(  # noqa: PLR0913
     lazy: bool = False,
     get_permalink: bool = False,
     context: dict[str, Any] | None = None,
-    backend: BackendBase | None = None,
+    backend: BackendBase = app_settings.backend,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 
@@ -100,9 +97,6 @@ def slack_message_via_policy(  # noqa: PLR0913
 
     header = MessageHeader.model_validate(header or {})
     context = context or {}
-
-    if not backend:
-        backend = app_settings.backend
 
     # Prepare template
     template = policy.template
