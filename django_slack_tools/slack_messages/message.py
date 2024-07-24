@@ -14,16 +14,19 @@ from .models import SlackMessagingPolicy
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from django_slack_tools.slack_messages.backends.base import BackendBase
+
     from .models import SlackMention, SlackMessage
 
 
-def slack_message(
+def slack_message(  # noqa: PLR0913
     body: str | MessageBody | dict[str, Any],
     *,
     channel: str,
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     get_permalink: bool = False,
+    backend: BackendBase = app_settings.backend,
 ) -> SlackMessage | None:
     """Send a simple text message.
 
@@ -33,6 +36,7 @@ def slack_message(
         header: Slack message control header.
         raise_exception: Whether to re-raise caught exception while sending messages.
         get_permalink: Try to get the message permalink via extraneous Slack API calls.
+        backend: Messaging backend. If not set, use `app_settings.backend`.
 
     Returns:
         Sent message instance or `None`.
@@ -41,7 +45,7 @@ def slack_message(
     body = MessageBody(text=body) if isinstance(body, str) else MessageBody.model_validate(body)
     header = MessageHeader.model_validate(header or {})
 
-    return app_settings.backend.send_message(
+    return backend.send_message(
         channel=channel,
         header=header,
         body=body,
@@ -49,7 +53,9 @@ def slack_message(
         get_permalink=get_permalink,
     )
 
+
 RESERVED_CONTEXT_KWARGS = frozenset({"mentions", "mentions_as_str"})
+
 
 def slack_message_via_policy(  # noqa: PLR0913
     policy: str | SlackMessagingPolicy | None = None,
@@ -59,6 +65,7 @@ def slack_message_via_policy(  # noqa: PLR0913
     lazy: bool = False,
     get_permalink: bool = False,
     context: dict[str, Any] | None = None,
+    backend: BackendBase = app_settings.backend,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 
@@ -72,6 +79,7 @@ def slack_message_via_policy(  # noqa: PLR0913
         lazy: Decide whether try create policy with disabled, if not exists.
         get_permalink: Try to get the message permalink via extraneous Slack API calls.
         context: Dictionary to pass to template for rendering.
+        backend: Messaging backend. If not set, use `app_settings.backend`.
 
     Returns:
         Sent message instance or `None`.
@@ -126,9 +134,7 @@ def slack_message_via_policy(  # noqa: PLR0913
         # Render template and parse as body
         rendered = render(template, **kwargs)
         body = MessageBody.model_validate(rendered)
-
-        # Send message
-        message = app_settings.backend.send_message(
+        message = backend.send_message(
             policy=policy,
             channel=recipient.channel,
             header=header,
