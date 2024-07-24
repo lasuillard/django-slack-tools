@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
+from typing_extensions import NotRequired
 
 from django_slack_tools.slack_messages.backends.base import BackendBase
 
@@ -65,6 +66,8 @@ class AppSettings:
         # Initialize with provided options
         self.backend = messaging_backend(**settings_dict["BACKEND"]["OPTIONS"])
 
+        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE") or "DEFAULT"
+
     @property
     def slack_app(self) -> App:
         """Registered Slack app or `None`."""
@@ -82,6 +85,9 @@ class ConfigDict(TypedDict):
 
     BACKEND: BackendConfig
     "Nested backend config."
+
+    DEFAULT_POLICY_CODE: NotRequired[str]
+    "Default Policy code."
 
 
 class BackendConfig(TypedDict):

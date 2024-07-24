@@ -50,7 +50,6 @@ def slack_message(
     )
 
 RESERVED_CONTEXT_KWARGS = frozenset({"mentions", "mentions_as_str"})
-DEFAULT_POLICY_CODE = "DEFAULT"
 
 def slack_message_via_policy(  # noqa: PLR0913
     policy: str | SlackMessagingPolicy | None = None,
@@ -81,7 +80,7 @@ def slack_message_via_policy(  # noqa: PLR0913
         SlackMessagingPolicy.DoesNotExist: Policy for given code does not exists.
     """
     if not policy:
-        policy = DEFAULT_POLICY_CODE
+        policy = app_settings.default_policy_code
 
     if isinstance(policy, str):
         if lazy:
