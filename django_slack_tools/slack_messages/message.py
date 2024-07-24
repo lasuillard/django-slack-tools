@@ -117,8 +117,7 @@ def slack_message_via_policy(  # noqa: PLR0913
 
     messages: list[SlackMessage | None] = []
     for recipient in policy.recipients.all():
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("Sending message to recipient %s", recipient)
+        logger.debug("Sending message to recipient %s", recipient)
 
         # Auto-generated reserved kwargs
         mentions: list[SlackMention] = list(recipient.mentions.all())
@@ -126,8 +125,7 @@ def slack_message_via_policy(  # noqa: PLR0913
 
         # Prepare rendering arguments
         kwargs = {"mentions": mentions, "mentions_as_str": mentions_as_str}
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("Context kwargs prepared as: %r", kwargs)
+        logger.debug("Context kwargs prepared as: %r", kwargs)
 
         kwargs.update(context)
 
