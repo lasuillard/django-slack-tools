@@ -71,6 +71,40 @@ def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
     assert SlackMessage.objects.filter(id__in=ids).count() == 3
 
 
+def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:
+    # TODO(lasuillard): Currently message is saved to database conditionally, which leads to poor user experience.
+    #                   Soon will be rewritten.
+    default_policy = SlackMessagingPolicy.objects.get(code="DEFAULT")
+    default_policy.enabled = True
+    default_policy.template = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "{greet}, {mentions_as_str}",
+                },
+            },
+        ],
+    }
+    default_policy.save()
+    default_policy.recipients.add(
+        SlackMessageRecipientFactory(
+            channel="whatever-channel",
+            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!channel>")],
+        ),
+    )
+
+    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+    messages = slack_message_via_policy(context={"greet": "Nice to meet you"})
+
+    assert len(messages) == 1
+    assert all(isinstance(msg, SlackMessage) for msg in messages)
+    assert all(msg.policy.code == "DEFAULT" for msg in messages)  # type: ignore[union-attr]
+    ids = [msg.id for msg in messages]  # type: ignore[union-attr]
+    assert SlackMessage.objects.filter(id__in=ids).count() == 1
+
+
 def test_slack_message_via_policy_policy_not_enabled(mock_slack_client: Mock) -> None:
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-002",
