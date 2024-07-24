@@ -82,7 +82,17 @@ class BaseBackend(ABC):
         header: MessageHeader,
         body: MessageBody,
     ) -> SlackMessage:
-        """Create message instance."""
+        """Prepare message.
+
+        Args:
+            policy: Related policy instance.
+            channel: Channel to send message.
+            header: Slack message control header.
+            body: Slack message body.
+
+        Returns:
+            Prepared message.
+        """
         _header: dict = policy.header_defaults if policy else {}
         _header.update(header.model_dump(exclude_unset=True))
 
@@ -146,7 +156,7 @@ class BaseBackend(ABC):
         try:
             response: SlackResponse
             try:
-                response = self._send_message(message, raise_exception=raise_exception, get_permalink=get_permalink)
+                response = self._send_message(message)
             except SlackApiError as err:
                 if raise_exception:
                     raise
@@ -185,7 +195,7 @@ class BaseBackend(ABC):
         return message
 
     @abstractmethod
-    def _send_message(self, message: SlackMessage, *, raise_exception: bool, get_permalink: bool) -> SlackResponse:
+    def _send_message(self, message: SlackMessage) -> SlackResponse:
         """Internal implementation of actual 'send message' behavior."""
 
     @abstractmethod

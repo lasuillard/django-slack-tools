@@ -63,12 +63,10 @@ def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
         recipients=recipients,
     )
     mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
-    messages = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
+    num_sent = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
 
-    assert len(messages) == 3
-    assert all(isinstance(msg, SlackMessage) for msg in messages)
-    ids = [msg.id for msg in messages]  # type: ignore[union-attr]
-    assert SlackMessage.objects.filter(id__in=ids).count() == 3
+    assert num_sent == 3
+    assert SlackMessage.objects.filter(policy=policy).count() == 3
 
 
 def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:
@@ -96,13 +94,10 @@ def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:
     )
 
     mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
-    messages = slack_message_via_policy(context={"greet": "Nice to meet you"})
+    num_sent = slack_message_via_policy(context={"greet": "Nice to meet you"})
 
-    assert len(messages) == 1
-    assert all(isinstance(msg, SlackMessage) for msg in messages)
-    assert all(msg.policy.code == "DEFAULT" for msg in messages)  # type: ignore[union-attr]
-    ids = [msg.id for msg in messages]  # type: ignore[union-attr]
-    assert SlackMessage.objects.filter(id__in=ids).count() == 1
+    assert num_sent == 1
+    assert SlackMessage.objects.filter(policy=default_policy).count() == 1
 
 
 def test_slack_message_via_policy_policy_not_enabled(mock_slack_client: Mock) -> None:
@@ -113,10 +108,10 @@ def test_slack_message_via_policy_policy_not_enabled(mock_slack_client: Mock) ->
             SlackMessageRecipientFactory(),
         ],
     )
-    messages = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
+    num_sent = slack_message_via_policy(policy.code, context={"greet": "Nice to meet you"})
     mock_slack_client.chat_postMessage.assert_not_called()
 
-    assert messages == []
+    assert num_sent == 0
 
 
 def test_slack_message_via_policy_context_shadowing_defaults(mock_slack_client: Mock) -> None:
@@ -125,10 +120,10 @@ def test_slack_message_via_policy_context_shadowing_defaults(mock_slack_client: 
 
     # As there is no recipient, no message will be sent
     # It's just OK no exception being thrown
-    messages = slack_message_via_policy(policy.code, context={"mentions_as_str": "💣"})
+    num_sent = slack_message_via_policy(policy.code, context={"mentions_as_str": "💣"})
     mock_slack_client.chat_postMessage.assert_not_called()
 
-    assert messages == []
+    assert num_sent == 0
 
 
 def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
@@ -137,7 +132,7 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
     assert not SlackMessagingPolicy.objects.filter(code=code).exists()
 
     # Make call with lazy mode
-    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
+    num_sent = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
     mock_slack_client.chat_postMessage.assert_not_called()
 
     # Ensure policy has been created
@@ -148,7 +143,7 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
     assert policy.template is None
 
     # No message will be sent
-    assert len(messages) == 0
+    assert num_sent == 0
 
     # Update policy
     policy.enabled = True
@@ -173,10 +168,10 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
 
     # Re-send message
     mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
-    messages = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
+    num_sent = slack_message_via_policy(code, lazy=True, context={"message": "Nice to meet you"})
 
-    assert len(messages) == 1
-    message = messages.pop()
+    assert num_sent == 1
+    message = SlackMessage.objects.get(policy__code=code)
     assert isinstance(message, SlackMessage)
     assert message.policy == policy
     assert message.channel == "whatever-channel"

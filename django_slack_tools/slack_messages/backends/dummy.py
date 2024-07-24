@@ -17,8 +17,8 @@ logger = getLogger(__name__)
 class DummyBackend(BaseBackend):
     """An dummy backend that does nothing with message."""
 
-    def _prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
-        return SlackMessage()
+    def prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: D102, ARG002
+        return SlackMessage(header={}, body={})
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse:  # noqa: ARG002
         return SlackResponse(
@@ -26,7 +26,7 @@ class DummyBackend(BaseBackend):
             http_verb="POST",
             api_url="https://www.slack.com/api/chat.postMessage",
             req_args={},
-            data={"ok": False},
+            data={"ok": True},
             headers={},
             status_code=200,
         )
