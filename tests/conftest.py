@@ -8,14 +8,6 @@ from slack_bolt import App
 
 
 @pytest.fixture(scope="session")
-def vcr_config() -> dict:
-    """Fixture for providing config to pytest-recording."""
-    return {
-        "allowed_hosts": ["localhost"],
-    }
-
-
-@pytest.fixture(scope="session")
 def slack_app() -> App:
     """Dummy Slack app fixture. It won't work."""
     return App(
