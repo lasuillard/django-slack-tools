@@ -9,12 +9,12 @@ from slack_sdk.web import SlackResponse
 
 from django_slack_tools.slack_messages.models import SlackMessage
 
-from .base import BackendBase
+from .base import BaseBackend
 
 logger = getLogger(__name__)
 
 
-class DummyBackend(BackendBase):
+class DummyBackend(BaseBackend):
     """An dummy backend that does nothing with message."""
 
     def send_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002

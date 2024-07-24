@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
-from .base import BackendBase
+from .base import BaseBackend
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 
-class SlackBackend(BackendBase):
+class SlackBackend(BaseBackend):
     """Backend actually sending the messages."""
 
     def __init__(

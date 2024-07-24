@@ -11,7 +11,7 @@ from django.utils.module_loading import import_string
 from slack_bolt import App
 from typing_extensions import NotRequired
 
-from django_slack_tools.slack_messages.backends.base import BackendBase
+from django_slack_tools.slack_messages.backends.base import BaseBackend
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 "Django settings key for this application."
@@ -22,7 +22,7 @@ logger = getLogger(__name__)
 class AppSettings:
     """Application settings."""
 
-    backend: BackendBase
+    backend: BaseBackend
 
     def __init__(self, settings_dict: ConfigDict | None = None) -> None:
         """Initialize app settings.
@@ -57,9 +57,9 @@ class AppSettings:
 
         # Find backend class
         messaging_backend = import_string(settings_dict["BACKEND"]["NAME"])
-        if not issubclass(messaging_backend, BackendBase):
+        if not issubclass(messaging_backend, BaseBackend):
             msg = "Provided backend is not a subclass of `{qualified_path}` class.".format(
-                qualified_path=f"{BackendBase.__module__}.{BackendBase.__name__}",
+                qualified_path=f"{BaseBackend.__module__}.{BaseBackend.__name__}",
             )
             raise ImproperlyConfigured(msg)
 

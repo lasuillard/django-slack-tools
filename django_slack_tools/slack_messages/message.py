@@ -14,7 +14,7 @@ from .models import SlackMessagingPolicy
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from django_slack_tools.slack_messages.backends.base import BackendBase
+    from django_slack_tools.slack_messages.backends.base import BaseBackend
 
     from .models import SlackMention, SlackMessage
 
@@ -26,7 +26,7 @@ def slack_message(  # noqa: PLR0913
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     get_permalink: bool = False,
-    backend: BackendBase = app_settings.backend,
+    backend: BaseBackend = app_settings.backend,
 ) -> SlackMessage | None:
     """Send a simple text message.
 
@@ -65,7 +65,7 @@ def slack_message_via_policy(  # noqa: PLR0913
     lazy: bool = False,
     get_permalink: bool = False,
     context: dict[str, Any] | None = None,
-    backend: BackendBase = app_settings.backend,
+    backend: BaseBackend = app_settings.backend,
 ) -> list[SlackMessage | None]:
     """Send a simple text message.
 

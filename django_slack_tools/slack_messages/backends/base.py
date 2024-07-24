@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 
-class BackendBase(ABC):
+class BaseBackend(ABC):
     """Abstract base class for messaging backends."""
 
     @overload
