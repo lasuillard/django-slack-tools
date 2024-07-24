@@ -70,8 +70,6 @@ def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
 
 
 def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:
-    # TODO(lasuillard): Currently message is saved to database conditionally, which leads to poor user experience.
-    #                   Soon will be rewritten.
     default_policy = SlackMessagingPolicy.objects.get(code="DEFAULT")
     default_policy.enabled = True
     default_policy.template = {
