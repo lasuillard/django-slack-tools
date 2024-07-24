@@ -17,10 +17,6 @@ logger = getLogger(__name__)
 class DummyBackend(BaseBackend):
     """An dummy backend that does nothing with message."""
 
-    def send_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
-        """This backend will not do anything, just like dummy."""
-        return SlackMessage()
-
     def _prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
         return SlackMessage()
 
@@ -34,6 +30,9 @@ class DummyBackend(BaseBackend):
             headers={},
             status_code=200,
         )
+
+    def _get_permalink(self, *, message: SlackMessage, raise_exception: bool) -> str:  # noqa: ARG002
+        return ""
 
     def _record_request(self, *args: Any, **kwargs: Any) -> Any: ...
 
