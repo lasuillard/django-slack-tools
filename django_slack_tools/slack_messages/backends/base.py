@@ -7,8 +7,6 @@ from abc import ABC, abstractmethod
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, cast
 
-import django
-from django import db
 from slack_sdk.errors import SlackApiError
 
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
@@ -73,14 +71,6 @@ class BaseBackend(ABC):
             # Create message instance
             message = self.prepare_message(policy=policy, channel=recipient.channel, header=header, body=body)
             messages.append(message)
-
-        # HACK(lasuillard): Support for the fetching primary key attributes on SQLite 3.35+ was added in Django 4.0  # noqa: FIX004, E501
-        # TODO(lasuillard): Remove this hack when dropping support for Django 3.2
-        if django.VERSION < (4, 0, 0) and db.connection.vendor == "sqlite":
-            for m in messages:
-                m.save()
-
-            return messages
 
         return SlackMessage.objects.bulk_create(messages)
 
