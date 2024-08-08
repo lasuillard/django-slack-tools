@@ -137,7 +137,7 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
     policy = SlackMessagingPolicy.objects.get(code=code)
     assert policy.code == code
     assert policy.enabled is False
-    assert list(policy.recipients.values_list("alias", flat=True)) == ["DEFAULT"]
+    assert list(policy.recipients.values_list("alias", flat=True)) == ["DEFAULT"]  # type: ignore[misc]
     assert policy.template == {"text": "No template configured for lazily created policy {policy}"}
 
     # No message will be sent
