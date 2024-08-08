@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from slack_bolt import App
 
 from django_slack_tools.app_settings import AppSettings
-from django_slack_tools.slack_messages.backends import BackendBase
+from django_slack_tools.slack_messages.backends import BaseBackend
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
@@ -62,7 +62,7 @@ settings_dict_parametrizer = pytest.mark.parametrize(
 
 class TestAppSettings:
     def _assert_app_settings(self, app_settings: AppSettings) -> None:
-        assert issubclass(app_settings.backend.__class__, BackendBase)
+        assert issubclass(app_settings.backend.__class__, BaseBackend)
 
     @settings_dict_parametrizer
     def test_dict_config(self, settings_dict: ConfigDict) -> None:
@@ -82,7 +82,7 @@ class TestAppSettings:
     def test_raises_if_backend_is_not_subclass_of_base_class(self) -> None:
         with pytest.raises(
             ImproperlyConfigured,
-            match="Provided backend is not a subclass of `django_slack_tools.slack_messages.backends.base.BackendBase` class.",  # noqa: E501
+            match="Provided backend is not a subclass of `django_slack_tools.slack_messages.backends.base.BaseBackend` class.",  # noqa: E501
         ):
             AppSettings(
                 {
