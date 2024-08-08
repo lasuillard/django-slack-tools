@@ -6,7 +6,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django_slack_tools.app_settings import app_settings
-from django_slack_tools.utils.dict_template import render
+from django_slack_tools.slack_messages.models.message_recipient import SlackMessageRecipient
 from django_slack_tools.utils.slack import MessageBody, MessageHeader
 
 from .models import SlackMessagingPolicy
@@ -14,9 +14,9 @@ from .models import SlackMessagingPolicy
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from django_slack_tools.slack_messages.backends.base import BackendBase
+    from django_slack_tools.slack_messages.backends.base import BaseBackend
 
-    from .models import SlackMention, SlackMessage
+    from .models import SlackMessage
 
 
 def slack_message(  # noqa: PLR0913
@@ -26,8 +26,8 @@ def slack_message(  # noqa: PLR0913
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     get_permalink: bool = False,
-    backend: BackendBase = app_settings.backend,
-) -> SlackMessage | None:
+    backend: BaseBackend = app_settings.backend,
+) -> SlackMessage:
     """Send a simple text message.
 
     Args:
@@ -41,39 +41,30 @@ def slack_message(  # noqa: PLR0913
     Returns:
         Sent message instance or `None`.
     """
-    # If body is just an string, make a simple message body
     body = MessageBody(text=body) if isinstance(body, str) else MessageBody.model_validate(body)
     header = MessageHeader.model_validate(header or {})
+    message = backend.prepare_message(channel=channel, header=header, body=body)
 
-    return backend.send_message(
-        channel=channel,
-        header=header,
-        body=body,
-        raise_exception=raise_exception,
-        get_permalink=get_permalink,
-    )
-
-
-RESERVED_CONTEXT_KWARGS = frozenset({"mentions", "mentions_as_str"})
+    return backend.send_message(message, raise_exception=raise_exception, get_permalink=get_permalink)
 
 
 def slack_message_via_policy(  # noqa: PLR0913
-    policy: str | SlackMessagingPolicy | None = None,
+    policy: str | SlackMessagingPolicy = app_settings.default_policy_code,
     *,
     header: MessageHeader | dict[str, Any] | None = None,
     raise_exception: bool = False,
     lazy: bool = False,
     get_permalink: bool = False,
     context: dict[str, Any] | None = None,
-    backend: BackendBase = app_settings.backend,
-) -> list[SlackMessage | None]:
+    backend: BaseBackend = app_settings.backend,
+) -> int:
     """Send a simple text message.
 
-    Mentions for each recipient will be passed to template as keyword `{mentions}` or `{mentions_as_str}`
-    which is form of comma-separated list. Template should include it to use mentions.
+    Some default context variables are populated and available for use in templates.
+    See corresponding backend implementation for available context variables.
 
     Args:
-        policy: Messaging policy code or policy instance.
+        policy: Messaging policy code or policy instance. Defaults to app's default policy.
         header: Slack message control header.
         raise_exception: Whether to re-raise caught exception while sending messages.
         lazy: Decide whether try create policy with disabled, if not exists.
@@ -82,64 +73,40 @@ def slack_message_via_policy(  # noqa: PLR0913
         backend: Messaging backend. If not set, use `app_settings.backend`.
 
     Returns:
-        Sent message instance or `None`.
+        Count of messages sent successfully.
 
     Raises:
         SlackMessagingPolicy.DoesNotExist: Policy for given code does not exists.
     """
-    if not policy:
-        policy = app_settings.default_policy_code
-
     if isinstance(policy, str):
         if lazy:
-            policy, created = SlackMessagingPolicy.objects.get_or_create(code=policy, defaults={"enabled": False})
+            policy, created = SlackMessagingPolicy.objects.get_or_create(
+                code=policy,
+                defaults={
+                    "enabled": False,
+                    "template": app_settings.default_template,
+                },
+            )
+
+            # Add default recipient for created policy
+            recipient = SlackMessageRecipient.objects.get(alias=app_settings.default_recipient)
+            policy.recipients.add(recipient)
+
             if created:
                 logger.warning("Policy for code %r created because `lazy` is set.", policy)
         else:
             policy = SlackMessagingPolicy.objects.get(code=policy)
 
-    if not policy.enabled:
-        logger.warning("Trying to send messages but policy %s is not enabled.", policy.code)
-        return []
-
     header = MessageHeader.model_validate(header or {})
     context = context or {}
 
-    # Prepare template
-    template = policy.template
-    overridden_reserved = RESERVED_CONTEXT_KWARGS & set(context.keys())
-    if overridden_reserved:
+    messages = backend.prepare_messages_from_policy(policy, header=header, context=context)
+    if not policy.enabled:
         logger.warning(
-            "Template keyword argument(s) %s reserved for passing mentions, but already exists."
-            " User provided value will override it.",
-            ", ".join(f"`{s}`" for s in overridden_reserved),
+            "Created %d messages but not sending because policy %s is not enabled.",
+            len(messages),
+            policy.code,
         )
+        return 0
 
-    messages: list[SlackMessage | None] = []
-    for recipient in policy.recipients.all():
-        logger.debug("Sending message to recipient %s", recipient)
-
-        # Auto-generated reserved kwargs
-        mentions: list[SlackMention] = list(recipient.mentions.all())
-        mentions_as_str = ", ".join(mention.mention for mention in mentions)
-
-        # Prepare rendering arguments
-        kwargs = {"mentions": mentions, "mentions_as_str": mentions_as_str}
-        logger.debug("Context kwargs prepared as: %r", kwargs)
-
-        kwargs.update(context)
-
-        # Render template and parse as body
-        rendered = render(template, **kwargs)
-        body = MessageBody.model_validate(rendered)
-        message = backend.send_message(
-            policy=policy,
-            channel=recipient.channel,
-            header=header,
-            body=body,
-            raise_exception=raise_exception,
-            get_permalink=get_permalink,
-        )
-        messages.append(message)
-
-    return messages
+    return backend.send_messages(*messages, raise_exception=raise_exception, get_permalink=get_permalink)

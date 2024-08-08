@@ -9,20 +9,16 @@ from slack_sdk.web import SlackResponse
 
 from django_slack_tools.slack_messages.models import SlackMessage
 
-from .base import BackendBase
+from .base import BaseBackend
 
 logger = getLogger(__name__)
 
 
-class DummyBackend(BackendBase):
+class DummyBackend(BaseBackend):
     """An dummy backend that does nothing with message."""
 
-    def send_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
-        """This backend will not do anything, just like dummy."""
-        return SlackMessage()
-
-    def _prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: ARG002
-        return SlackMessage()
+    def prepare_message(self, *args: Any, **kwargs: Any) -> SlackMessage:  # noqa: D102, ARG002
+        return SlackMessage(header={}, body={})
 
     def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse:  # noqa: ARG002
         return SlackResponse(
@@ -30,10 +26,13 @@ class DummyBackend(BackendBase):
             http_verb="POST",
             api_url="https://www.slack.com/api/chat.postMessage",
             req_args={},
-            data={"ok": False},
+            data={"ok": True},
             headers={},
             status_code=200,
         )
+
+    def _get_permalink(self, *, message: SlackMessage, raise_exception: bool) -> str:  # noqa: ARG002
+        return ""
 
     def _record_request(self, *args: Any, **kwargs: Any) -> Any: ...
 

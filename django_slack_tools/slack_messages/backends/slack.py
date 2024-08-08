@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import traceback
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, Callable
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
@@ -12,19 +11,19 @@ from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
-from .base import BackendBase
+from .base import BaseBackend
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
-    from django_slack_tools.utils.slack import MessageBody, MessageHeader
+    from django_slack_tools.slack_messages.models import SlackMessage
+    from django_slack_tools.utils.slack import MessageBody
 
 
 logger = getLogger(__name__)
 
 
-class SlackBackend(BackendBase):
+class SlackBackend(BaseBackend):
     """Backend actually sending the messages."""
 
     def __init__(
@@ -49,88 +48,21 @@ class SlackBackend(BackendBase):
 
         self._slack_app = slack_app
 
-    def send_message(  # noqa: PLR0913
-        self,
-        message: SlackMessage | None = None,
-        *,
-        policy: SlackMessagingPolicy | None = None,
-        channel: str | None = None,
-        header: MessageHeader | None = None,
-        body: MessageBody | None = None,
-        raise_exception: bool,
-        get_permalink: bool = False,
-    ) -> SlackMessage:
-        """Send Slack message.
+    def _send_message(self, message: SlackMessage) -> SlackResponse:
+        header = message.header or {}
+        body = message.body or {}
+        return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
 
-        Args:
-            message: Externally prepared message.
-                If not given, make one using `channel`, `header` and `body` parameters.
-            policy: Messaging policy to create message with.
-            channel: Channel to send message.
-            header: Message header that controls how message will sent.
-            body: Message body describing content of the message.
-            raise_exception: Whether to re-raise caught exception while sending messages.
-            get_permalink: Try to get the message permalink via extraneous Slack API calls.
-
-        Returns:
-            Sent Slack message.
-        """
-        if not message:
-            if not (channel and header and body):
-                msg = (
-                    "Call signature mismatch for overload."
-                    " If `message` not provided, `channel`, `header` and `body` all must given."
-                )
-                raise TypeError(msg)
-
-            message = self._prepare_message(policy=policy, channel=channel, header=header, body=body)
-
-        try:
-            # Send Slack message
-            response: SlackResponse
-            try:
-                response = self._send_message(message=message)
-            except SlackApiError as err:
-                if raise_exception:
-                    raise
-
-                logger.exception(
-                    "Error occurred while sending Slack message, but ignored because `raise_exception` not set.",
-                )
-                response = err.response
-
-            # Update message detail
-            ok: bool | None = response.get("ok")
-            message.ok = ok
-            if ok:
-                # `str` if OK, otherwise `None`
-                message.ts = cast(str, response.get("ts"))
-                message.parent_ts = response.get("message", {}).get("thread_ts", "")  # type: ignore[call-overload]
-                if get_permalink:
-                    message.permalink = self._get_permalink(
-                        channel=message.channel,
-                        message_ts=message.ts,
-                        raise_exception=raise_exception,
-                    )
-
-            message.request = self._record_request(response)
-            message.response = self._record_response(response)
-        except:
-            message.exception = traceback.format_exc()
-
-            # Don't omit raise with flag `raise_exception` here
-            raise
-        finally:
-            message.save()
-
-        return message
-
-    def _get_permalink(self, *, channel: str, message_ts: str, raise_exception: bool = False) -> str:
+    def _get_permalink(self, *, message: SlackMessage, raise_exception: bool = False) -> str:
         """Get a permalink for given message identifier."""
+        if not message.ts:
+            msg = "Message timestamp is not set, can't retrieve permalink."
+            raise ValueError(msg)
+
         try:
             _permalink_resp = self._slack_app.client.chat_getPermalink(
-                channel=channel,
-                message_ts=message_ts,
+                channel=message.channel,
+                message_ts=message.ts,
             )
         except SlackApiError:
             if raise_exception:
@@ -143,11 +75,6 @@ class SlackBackend(BackendBase):
             return ""
 
         return _permalink_resp.get("permalink", default="")
-
-    def _send_message(self, *, message: SlackMessage) -> SlackResponse:
-        header = message.header or {}
-        body = message.body or {}
-        return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
 
     def _record_request(self, response: SlackResponse) -> dict[str, Any]:
         # Remove auth header (token) from request before recording
@@ -182,7 +109,18 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def _prepare_message(self, *args: Any, channel: str, body: MessageBody, **kwargs: Any) -> SlackMessage:
+    def prepare_message(self, *args: Any, channel: str, body: MessageBody, **kwargs: Any) -> SlackMessage:
+        """Prepare message to send, with modified for redirection.
+
+        Args:
+            args: Positional arguments to pass to super method.
+            channel: Original channel to send message.
+            body: Message content.
+            kwargs: Keyword arguments to pass to super method.
+
+        Returns:
+            Prepared message instance.
+        """
         # Modify channel to force messages always sent to specific channel
         # Add an attachment that informing message has been redirected
         if self.inform_redirect:
@@ -191,7 +129,7 @@ class SlackRedirectBackend(SlackBackend):
                 *(body.attachments or []),
             ]
 
-        return super()._prepare_message(*args, channel=self.redirect_channel, body=body, **kwargs)
+        return super().prepare_message(*args, channel=self.redirect_channel, body=body, **kwargs)
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
         msg_redirect_inform = _(

@@ -1,16 +1,19 @@
 from __future__ import annotations
 
-from slack_sdk.web import SlackResponse
+import pytest
 
 from django_slack_tools.slack_messages.backends import LoggingBackend
-from django_slack_tools.slack_messages.models import SlackMessage
+from django_slack_tools.utils.slack.message import MessageBody, MessageHeader
 
 
 class TestLoggingBackend:
+    pytestmark = pytest.mark.django_db()
+
     def test_backend(self) -> None:
         backend = LoggingBackend()
-        assert isinstance(backend.send_message(), SlackMessage)
-        assert isinstance(backend._prepare_message(), SlackMessage)
-        assert isinstance(backend._send_message(), SlackResponse)
-        assert backend._record_request() is None
-        assert backend._record_response() is None
+        message = backend.prepare_message(
+            channel="dummy-dummy",
+            header=MessageHeader(),
+            body=MessageBody(text="Get some sleep"),
+        )
+        backend.send_message(message=message, raise_exception=True, get_permalink=True)

@@ -11,7 +11,7 @@ from django.utils.module_loading import import_string
 from slack_bolt import App
 from typing_extensions import NotRequired
 
-from django_slack_tools.slack_messages.backends.base import BackendBase
+from django_slack_tools.slack_messages.backends.base import BaseBackend
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 "Django settings key for this application."
@@ -19,10 +19,11 @@ APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 logger = getLogger(__name__)
 
 
+# TODO(lasuillard): Configuration getting dirty, need refactoring
 class AppSettings:
     """Application settings."""
 
-    backend: BackendBase
+    backend: BaseBackend
 
     def __init__(self, settings_dict: ConfigDict | None = None) -> None:
         """Initialize app settings.
@@ -57,16 +58,24 @@ class AppSettings:
 
         # Find backend class
         messaging_backend = import_string(settings_dict["BACKEND"]["NAME"])
-        if not issubclass(messaging_backend, BackendBase):
+        if not issubclass(messaging_backend, BaseBackend):
             msg = "Provided backend is not a subclass of `{qualified_path}` class.".format(
-                qualified_path=f"{BackendBase.__module__}.{BackendBase.__name__}",
+                qualified_path=f"{BaseBackend.__module__}.{BaseBackend.__name__}",
             )
             raise ImproperlyConfigured(msg)
 
         # Initialize with provided options
         self.backend = messaging_backend(**settings_dict["BACKEND"]["OPTIONS"])
 
-        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE") or "DEFAULT"
+        # Message delivery default
+        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE", "DEFAULT")
+
+        # Lazy policy defaults
+        self.default_template = settings_dict.get(
+            "DEFAULT_POLICY_CODE",
+            {"text": "No template configured for lazily created policy {policy}"},
+        )
+        self.default_recipient = settings_dict.get("DEFAULT_RECIPIENT", "DEFAULT")
 
     @property
     def slack_app(self) -> App:
@@ -87,7 +96,13 @@ class ConfigDict(TypedDict):
     "Nested backend config."
 
     DEFAULT_POLICY_CODE: NotRequired[str]
-    "Default Policy code."
+    "Default policy code used when sending messages via policy with no policy specified."
+
+    DEFAULT_TEMPLATE: NotRequired[Any]
+    "Default template for lazy policy."
+
+    DEFAULT_RECIPIENT: NotRequired[str]
+    "Default recipient alias for lazy policy."
 
 
 class BackendConfig(TypedDict):

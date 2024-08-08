@@ -1,3 +1,3 @@
 # TODO(lasuillard): Test backend base class
-class TestBackendBase:
+class TestBaseBackend:
     pass
