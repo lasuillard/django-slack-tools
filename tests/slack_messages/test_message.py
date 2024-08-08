@@ -91,7 +91,7 @@ def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:
         ),
     )
 
-    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory()
     num_sent = slack_message_via_policy(context={"greet": "Nice to meet you"})
 
     assert num_sent == 1
