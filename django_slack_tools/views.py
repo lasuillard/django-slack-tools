@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from slack_bolt import App
 
 
-class SlackEventHandlerView(View):
+class SlackEventHandlerView(View):  # pragma: no cover; TODO(lasuillard): deal with this in future
     """View for handling Slack events."""
 
     app: App | None = None

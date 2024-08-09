@@ -87,12 +87,10 @@ def slack_message_via_policy(  # noqa: PLR0913
                     "template": app_settings.default_template,
                 },
             )
-
-            # Add default recipient for created policy
-            recipient = SlackMessageRecipient.objects.get(alias=app_settings.default_recipient)
-            policy.recipients.add(recipient)
-
             if created:
+                # Add default recipient for created policy
+                recipient = SlackMessageRecipient.objects.get(alias=app_settings.default_recipient)
+                policy.recipients.add(recipient)
                 logger.warning("Policy for code %r created because `lazy` is set.", policy)
         else:
             policy = SlackMessagingPolicy.objects.get(code=policy)

@@ -91,6 +91,36 @@ class TestAppSettings:
                 },
             )
 
+    def test_bad_config_not_slack_app(self) -> None:
+        def not_slack_app() -> str:
+            return "I'm not a slack app"
+
+        with pytest.raises(ImproperlyConfigured, match="Couldn't resolve provided app spec into Slack app instance."):
+            AppSettings(
+                {
+                    "SLACK_APP": "tests.test_app_settings.get_slack_app",
+                    "BACKEND": {
+                        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
+                        "OPTIONS": {
+                            "slack_app": not_slack_app,
+                        },
+                    },
+                },
+            )
+
+        with pytest.raises(ImproperlyConfigured, match="Provided `SLACK_APP` config is not Slack app."):
+            AppSettings(
+                {
+                    "SLACK_APP": not_slack_app,  # type: ignore[typeddict-item]
+                    "BACKEND": {
+                        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
+                        "OPTIONS": {
+                            "slack_app": "tests.test_app_settings.get_slack_app",
+                        },
+                    },
+                },
+            )
+
 
 def get_slack_app() -> App:
     return App(token="i-am-a-cookie", token_verification_enabled=False)  # noqa: S106

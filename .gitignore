@@ -1,4 +1,4 @@
-report.xml
+junit.xml
 **/*.ipynb
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,django,python,visualstudiocode,linux,macos,windows
