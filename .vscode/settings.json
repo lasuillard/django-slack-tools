@@ -12,8 +12,6 @@
     ".ruff_cache": true,
     ".venv": true,
     ".coverage": true,
-    "coverage.xml": true,
-    "report.xml": true,
   },
   "files.insertFinalNewline": true,
   "emmet.includeLanguages": {
