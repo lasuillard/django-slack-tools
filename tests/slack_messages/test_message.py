@@ -142,3 +142,20 @@ def test_slack_message_via_policy_lazy(mock_slack_client: Mock) -> None:
 
     # No message will be sent
     assert num_sent == 0
+
+
+def test_slack_message_via_policy_lazy_already_exists(mock_slack_client: Mock) -> None:
+    policy = SlackMessagingPolicyFactory(
+        code="TEST-PO-LAZY-002",
+        enabled=True,
+        recipients=[
+            SlackMessageRecipientFactory(),
+        ],
+    )
+
+    # Make call with lazy mode
+    mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
+    num_sent = slack_message_via_policy(policy.code, lazy=True, context={"message": "Nice to meet you"})
+
+    # No message will be sent
+    assert num_sent == 1
