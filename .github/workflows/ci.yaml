@@ -80,6 +80,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           files: junit.xml
+          flags: >-
+            python-${{ matrix.python-version }},
+            django-${{ matrix.django-version }}
 
       - name: Upload coverage report
         uses: codecov/codecov-action@v4
@@ -91,3 +94,6 @@ jobs:
           fail_ci_if_error: false
           files: coverage.xml
           env_vars: PYTHON,DJANGO
+          flags: >-
+            python-${{ matrix.python-version }},
+            django-${{ matrix.django-version }}
