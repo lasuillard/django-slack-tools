@@ -22,7 +22,7 @@ class TestSlackBackend:
 
     pytestmark = pytest.mark.django_db()
 
-    @pytest.fixture()
+    @pytest.fixture
     def backend(self, slack_app: App) -> SlackBackend:
         return SlackBackend(slack_app=slack_app)
 
@@ -115,7 +115,7 @@ class TestSlackBackend:
 class TestSlackRedirectBackend:
     pytestmark = pytest.mark.django_db()
 
-    @pytest.fixture()
+    @pytest.fixture
     def backend(self, slack_app: App) -> SlackRedirectBackend:
         return SlackRedirectBackend(slack_app=slack_app, redirect_channel="test-redirect-channel")
 

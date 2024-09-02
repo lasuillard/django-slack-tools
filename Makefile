@@ -52,6 +52,7 @@ ci: lint test  ## Run CI tasks
 
 format:  ## Run autoformatters
 	poetry run ruff check --fix .
+	poetry run ruff format .
 .PHONY: format
 
 lint:  ## Run all linters

@@ -17,7 +17,7 @@ def slack_app() -> App:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_slack_client() -> Generator[mock.Mock, None, None]:
     """Mock `slack_bolt.App.client`."""
     with mock.patch("slack_bolt.App.client") as m:
