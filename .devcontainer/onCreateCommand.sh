@@ -7,9 +7,3 @@ curl -fsSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/tr
 sudo apt-get update && sudo apt-get install -y \
     bash-completion \
     ngrok
-
-echo '
-if [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-fi
-' >> ~/.bashrc
