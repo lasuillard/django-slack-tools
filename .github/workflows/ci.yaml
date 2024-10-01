@@ -33,7 +33,7 @@ jobs:
         env:
           SKIP: pytest
 
-      - uses: pre-commit-ci/lite-action@v1.0.2
+      - uses: pre-commit-ci/lite-action@v1.0.3
         if: always()
 
   test:
