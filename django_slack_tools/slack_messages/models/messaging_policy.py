@@ -42,7 +42,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         blank=True,
         default=dict,
     )
-    template = models.JSONField(
+    template: models.JSONField[dict | None] = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),
         validators=[dict_template_validator],
