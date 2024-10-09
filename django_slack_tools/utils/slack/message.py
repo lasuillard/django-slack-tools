@@ -2,43 +2,90 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, model_validator
+if TYPE_CHECKING:
+    from typing import Any, List, Optional
 
-
-class MessageHeader(BaseModel):
-    """Type definition for message header."""
-
-    # NOTE: `channel` is omitted to handle it in recipients
-    #       Because extra fields not forbidden for reasons, channel can be passed but not recommended
-
-    mrkdwn: Optional[str] = None  # noqa: UP007
-    parse: Optional[str] = None  # noqa: UP007
-    reply_broadcast: Optional[bool] = None  # noqa: UP007
-    thread_ts: Optional[str] = None  # noqa: UP007
-    unfurl_links: Optional[bool] = None  # noqa: UP007
-    unfurl_media: Optional[bool] = None  # noqa: UP007
+NoneType = type(None)
 
 
-class MessageBody(BaseModel):
-    """Type definition for message body."""
+@dataclass
+class MessageHeader:
+    """Message header data definition."""
 
-    attachments: Optional[List[dict]] = None  # noqa: UP006, UP007
+    mrkdwn: Optional[str] = field(default=None)  # noqa: UP007
+    parse: Optional[str] = field(default=None)  # noqa: UP007
+    reply_broadcast: Optional[bool] = field(default=None)  # noqa: UP007
+    thread_ts: Optional[str] = field(default=None)  # noqa: UP007
+    unfurl_links: Optional[bool] = field(default=None)  # noqa: UP007
+    unfurl_media: Optional[bool] = field(default=None)  # noqa: UP007
+
+    def __post_init__(self) -> None:
+        _assert_type(self.mrkdwn, (str, NoneType))
+        _assert_type(self.parse, (str, NoneType))
+        _assert_type(self.reply_broadcast, (bool, NoneType))
+        _assert_type(self.thread_ts, (str, NoneType))
+        _assert_type(self.unfurl_links, (bool, NoneType))
+        _assert_type(self.unfurl_media, (bool, NoneType))
+
+    @classmethod
+    def from_any(
+        cls,
+        obj: MessageHeader | dict[str, Any] | None = None,
+    ) -> MessageHeader:
+        """Create instance from compatible types."""
+        if obj is None:
+            return cls()
+
+        if isinstance(obj, dict):
+            return cls(**obj)
+
+        return obj
+
+
+@dataclass
+class MessageBody:
+    """Data definition for message body."""
+
+    attachments: Optional[List[dict]] = field(default=None)  # noqa: UP006, UP007
 
     # See more about blocks at https://api.slack.com/reference/block-kit/blocks
-    blocks: Optional[List[dict]] = None  # noqa: UP006, UP007
+    blocks: Optional[List[dict]] = field(default=None)  # noqa: UP006, UP007
 
-    text: Optional[str] = None  # noqa: UP007
-    icon_emoji: Optional[str] = None  # noqa: UP007
-    icon_url: Optional[str] = None  # noqa: UP007
-    metadata: Optional[dict] = None  # noqa: UP007
-    username: Optional[str] = None  # noqa: UP007
+    text: Optional[str] = field(default=None)  # noqa: UP007
+    icon_emoji: Optional[str] = field(default=None)  # noqa: UP007
+    icon_url: Optional[str] = field(default=None)  # noqa: UP007
+    metadata: Optional[dict] = field(default=None)  # noqa: UP007
+    username: Optional[str] = field(default=None)  # noqa: UP007
 
-    @model_validator(mode="after")
-    def _check_one_of_exists(self) -> MessageBody:
-        if not self.attachments and not self.blocks and not self.text:
+    def __post_init__(self) -> None:
+        _assert_type(self.attachments, (list, NoneType))
+        _assert_type(self.blocks, (list, NoneType))
+        _assert_type(self.text, (str, NoneType))
+        _assert_type(self.icon_emoji, (str, NoneType))
+        _assert_type(self.icon_url, (str, NoneType))
+        _assert_type(self.metadata, (dict, NoneType))
+        _assert_type(self.username, (str, NoneType))
+
+        if not any((self.attachments, self.blocks, self.text)):
             msg = "At least one of `attachments`, `blocks` and `text` must set"
             raise ValueError(msg)
 
-        return self
+    @classmethod
+    def from_any(cls, body: str | MessageBody | dict[str, Any]) -> MessageBody:
+        """Create instance from compatible types."""
+        if isinstance(body, dict):
+            return cls(**body)
+
+        if isinstance(body, str):
+            return cls(text=body)
+
+        return body
+
+
+def _assert_type(obj: Any, cls: type | tuple[type, ...]) -> None:
+    if not isinstance(obj, cls):
+        msg = f"Invalid value type, expected {cls}, got {type(obj)}"
+        raise TypeError(msg)
