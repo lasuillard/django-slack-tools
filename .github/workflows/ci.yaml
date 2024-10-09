@@ -46,7 +46,6 @@ jobs:
 
           - python-version: "3.9"
             django-version: "4.2"
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,6 +55,9 @@ jobs:
         with:
           version: latest
           enable-cache: true
+
+      - name: Set Python version
+        run: uv python pin "${{ matrix.python-version }}"
 
       - name: Install deps
         run: uv sync --frozen --all-extras
