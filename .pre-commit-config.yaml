@@ -1,14 +1,14 @@
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
   - repo: https://github.com/lasuillard/pre-commit-hooks
-    rev: v0.2.3
+    rev: v0.3.0
     hooks:
       - id: check-directory-structure
         args: [--source, django_slack_tools, --extend-exclude, '**/migrations/*.py']
@@ -50,3 +50,7 @@ repos:
         types: [python]
         pass_filenames: false
         entry: uv run pytest
+
+ci:
+  autofix_prs: true
+  autoupdate_schedule: quarterly
