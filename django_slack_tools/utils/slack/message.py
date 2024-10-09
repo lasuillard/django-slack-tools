@@ -74,15 +74,15 @@ class MessageBody:
             raise ValueError(msg)
 
     @classmethod
-    def from_any(cls, body: str | MessageBody | dict[str, Any]) -> MessageBody:
+    def from_any(cls, obj: str | MessageBody | dict[str, Any]) -> MessageBody:
         """Create instance from compatible types."""
-        if isinstance(body, dict):
-            return cls(**body)
+        if isinstance(obj, dict):
+            return cls(**obj)
 
-        if isinstance(body, str):
-            return cls(text=body)
+        if isinstance(obj, str):
+            return cls(text=obj)
 
-        return body
+        return obj
 
 
 def _assert_type(obj: Any, cls: type | tuple[type, ...]) -> None:
