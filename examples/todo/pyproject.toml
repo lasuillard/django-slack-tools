@@ -1,16 +1,15 @@
-[tool.poetry]
+[project]
 name = "todo"
 version = "0.1.0"
 description = "Example To-Do Slack bot application."
-authors = ["Yuchan Lee <lasuillard@gmail.com>"]
+authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 license = "MIT"
 readme = "README.md"
-classifiers = ["Private :: Do not Upload"]
+requires-python = ">=3.8,<4.0"
+dependencies = ["django-slack-tools"]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-django-slack-tools = "0.1.0"
+[tool.uv]
+package = false
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv.sources]
+django-slack-tools = { path = "../../" }

@@ -28,19 +28,16 @@ Required scopes to bot fully work (including admin pages):
 ## Run application
 
 ```bash
-# Install the deps
-$ poetry install
-
 # Initialize
-$ poetry run python manage.py migrate
+$ uv run python manage.py migrate
 
 # Create superuser
-$ poetry run python manage.py createsuperuser
+$ uv run python manage.py createsuperuser
 
 # Run server with environment variables set
 $ export SLACK_BOT_TOKEN='...'
 $ export SLACK_SIGNING_SECRET='...'
-$ poetry run python manage.py runserver 0.0.0.0:8000
+$ uv run python manage.py runserver 0.0.0.0:8000
 ```
 
 Once server started, open a new terminal and run ngrok for event subscription.

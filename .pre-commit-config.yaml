@@ -1,14 +1,14 @@
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
   - repo: https://github.com/lasuillard/pre-commit-hooks
-    rev: v0.2.3
+    rev: v0.3.0
     hooks:
       - id: check-directory-structure
         args: [--source, django_slack_tools, --extend-exclude, '**/migrations/*.py']
@@ -19,21 +19,21 @@ repos:
         name: Fix using Ruff
         language: system
         types: [python]
-        entry: poetry run ruff check
+        entry: uv run ruff check
         args: [--fix]
 
       - id: ruff-format
         name: Format using Ruff
         language: system
         types: [python]
-        entry: poetry run ruff format
+        entry: uv run ruff format
 
       - id: django-migration
         name: Check migrations created for model changes
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run python manage.py makemigrations
+        entry: uv run python manage.py makemigrations
         args: [--check, --dry-run]
 
       - id: mypy
@@ -41,7 +41,7 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run mypy
+        entry: uv run mypy
         args: [--show-error-codes, --pretty, .]
 
       - id: pytest
@@ -49,4 +49,8 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run pytest
+        entry: uv run pytest
+
+ci:
+  autofix_prs: true
+  autoupdate_schedule: quarterly
