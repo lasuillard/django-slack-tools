@@ -67,7 +67,7 @@ class BaseBackend(ABC):
 
             # Render template and parse as body
             rendered = render(template, **render_kwargs)
-            body = MessageBody(**rendered)
+            body = MessageBody.from_any(rendered)
 
             # Create message instance
             message = self.prepare_message(policy=policy, channel=recipient.channel, header=header, body=body)
