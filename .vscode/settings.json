@@ -30,12 +30,13 @@
   "cSpell.words": [
     "lasuillard",
     "mrkdwn",
-    "pydantic",
     "Pylance",
     "pytestmark",
     "subteam",
     "usergroup",
-    "usergroups"
+    "usergroups",
+    "dataclasses",
+    "dataclass"
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
