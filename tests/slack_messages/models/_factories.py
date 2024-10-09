@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Sequence
 
 import faker
@@ -58,6 +59,15 @@ class SlackMessageFactory(DjangoModelFactory):
     parent_ts = ""
     request = None
     response = None
+
+    # Hook to set the created(`auto_now_add` set) field after creation
+    @post_generation
+    def created(self: SlackMessage, create: bool, extracted: datetime, **kwargs: Any) -> None:  # noqa: ARG002, FBT001
+        if not create or not extracted:
+            return
+
+        self.created = extracted
+        self.save()
 
 
 class SlackMessagingPolicyFactory(DjangoModelFactory):
