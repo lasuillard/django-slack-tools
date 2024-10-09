@@ -16,18 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Poetry
-        run: pip install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version-file: .python-version
-          cache: poetry
-          cache-dependency-path: pyproject.toml
+          version: latest
+          enable-cache: true
 
-      - name: Install pip deps
-        run: poetry install
+      - name: Install deps
+        run: uv sync --frozen --all-extras
 
       - uses: pre-commit/action@v3.0.1
         env:
@@ -55,24 +51,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Poetry
-        run: pip install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: poetry
-          cache-dependency-path: pyproject.toml
+          version: latest
+          enable-cache: true
 
-      - name: Install pip deps
-        run: poetry install
+      - name: Install deps
+        run: uv sync --frozen --all-extras
 
       - name: Install Django
-        run: poetry run pip install Django=="${{ matrix.django-version }}.*"
+        run: uv pip install Django=="${{ matrix.django-version }}.*"
 
       - name: Run tests
-        run: poetry run pytest
+        run: uv run --frozen pytest
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1

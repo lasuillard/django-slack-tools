@@ -18,7 +18,6 @@
     "django-html": "html"
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.poetryPath": "poetry",
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
     "editor.formatOnSave": true,

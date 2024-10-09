@@ -16,20 +16,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Poetry
-        run: pip install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version-file: .python-version
-          cache: poetry
+          version: latest
+          enable-cache: true
 
-      - name: Install pip deps
-        run: poetry install
+      - name: Install deps
+        run: uv sync --frozen --all-extras
 
       - name: Build package
-        run: poetry build
+        run: uv build
 
       - name: Create release
         uses: softprops/action-gh-release@v2

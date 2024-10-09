@@ -19,21 +19,21 @@ repos:
         name: Fix using Ruff
         language: system
         types: [python]
-        entry: poetry run ruff check
+        entry: uv run ruff check
         args: [--fix]
 
       - id: ruff-format
         name: Format using Ruff
         language: system
         types: [python]
-        entry: poetry run ruff format
+        entry: uv run ruff format
 
       - id: django-migration
         name: Check migrations created for model changes
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run python manage.py makemigrations
+        entry: uv run python manage.py makemigrations
         args: [--check, --dry-run]
 
       - id: mypy
@@ -41,7 +41,7 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run mypy
+        entry: uv run mypy
         args: [--show-error-codes, --pretty, .]
 
       - id: pytest
@@ -49,4 +49,4 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        entry: poetry run pytest
+        entry: uv run pytest

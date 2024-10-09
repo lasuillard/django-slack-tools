@@ -1,8 +1,9 @@
 junit.xml
 **/*.ipynb
+/staticfiles/
 
-# Created by https://www.toptal.com/developers/gitignore/api/git,django,python,visualstudiocode,linux,macos,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,django,python,visualstudiocode,linux,macos,windows
+# Created by https://www.toptal.com/developers/gitignore/api/git,linux,macos,django,python,windows,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,linux,macos,django,python,windows,visualstudiocode
 
 ### Django ###
 *.log
@@ -16,7 +17,7 @@ media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
 # in your Git repository. Update and uncomment the following line accordingly.
-/staticfiles/
+# <django-project-name>/staticfiles/
 
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -114,7 +115,7 @@ ipython_config.py
 #   This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-poetry.lock
+#poetry.lock
 
 # pdm
 #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
@@ -321,7 +322,7 @@ Temporary Items
 
 ### Python Patch ###
 # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
-#poetry.toml
+poetry.toml
 
 # ruff
 .ruff_cache/
@@ -374,6 +375,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/git,django,python,visualstudiocode,linux,macos,windows
-
-!examples/todo/poetry.lock
+# End of https://www.toptal.com/developers/gitignore/api/git,linux,macos,django,python,windows,visualstudiocode

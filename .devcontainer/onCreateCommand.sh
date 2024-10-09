@@ -6,3 +6,5 @@ curl -fsSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/tr
 
 sudo apt-get update && sudo apt-get install -y \
     ngrok
+
+pipx install uv
