@@ -6,7 +6,7 @@ authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8, <4.0"
-dependencies = ["slack-bolt>=1,<2", "django>=4.2,<5.2", "pydantic>=2,<3"]
+dependencies = ["slack-bolt>=1,<2", "django>=4.2,<5.2"]
 
 [project.optional-dependencies]
 dev = [
@@ -59,7 +59,7 @@ convention = "google"
 [tool.mypy]
 python_version = "3.8"
 exclude = ['^\.venv/*']
-plugins = ["mypy_django_plugin.main", "pydantic.mypy"]
+plugins = ["mypy_django_plugin.main"]
 namespace_packages = true
 check_untyped_defs = true
 disallow_untyped_defs = true
