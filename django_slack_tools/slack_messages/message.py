@@ -41,8 +41,8 @@ def slack_message(  # noqa: PLR0913
     Returns:
         Sent message instance or `None`.
     """
-    body = MessageBody(text=body) if isinstance(body, str) else MessageBody.model_validate(body)
-    header = MessageHeader.model_validate(header or {})
+    body = MessageBody.from_any(body)
+    header = MessageHeader.from_any(header)
     message = backend.prepare_message(channel=channel, header=header, body=body)
 
     return backend.send_message(message, raise_exception=raise_exception, get_permalink=get_permalink)
@@ -95,7 +95,7 @@ def slack_message_via_policy(  # noqa: PLR0913
         else:
             policy = SlackMessagingPolicy.objects.get(code=policy)
 
-    header = MessageHeader.model_validate(header or {})
+    header = MessageHeader.from_any(header)
     context = context or {}
 
     messages = backend.prepare_messages_from_policy(policy, header=header, context=context)

@@ -28,7 +28,14 @@ def test_slack_message(mock_slack_client: Mock) -> None:
     assert SlackMessage.objects.filter(id=msg.id).exists()
     assert msg.policy is None
     assert msg.channel == "whatever-channel"
-    assert msg.header == {}
+    assert msg.header == {
+        "mrkdwn": None,
+        "parse": None,
+        "reply_broadcast": None,
+        "thread_ts": None,
+        "unfurl_links": None,
+        "unfurl_media": None,
+    }
     assert msg.body["text"] == "Hello, World!"
     assert msg.ok
     assert msg.permalink == ""
