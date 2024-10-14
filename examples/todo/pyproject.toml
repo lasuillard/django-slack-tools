@@ -5,8 +5,8 @@ description = "Example To-Do Slack bot application."
 authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8,<4.0"
-dependencies = ["django-slack-tools"]
+requires-python = ">=3.12,<4.0"
+dependencies = ["django-slack-tools", "django>=5,<6"]
 
 [tool.uv]
 package = false
