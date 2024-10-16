@@ -482,6 +482,7 @@ dependencies = [
     { name = "django" },
     { name = "pydantic" },
     { name = "slack-bolt" },
+    { name = "xmltodict" },
 ]
 
 [package.optional-dependencies]
@@ -531,6 +532,7 @@ requires-dist = [
     { name = "pytest-xdist", marker = "extra == 'test'", specifier = "~=3.6" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "~=0.6" },
     { name = "slack-bolt", specifier = ">=1,<2" },
+    { name = "xmltodict", specifier = ">=0.14.1,<1" },
 ]
 
 [[package]]
@@ -1938,6 +1940,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b7/a0/95e9e962c5fd9da11c1e28aa4c0d8210ab277b1ada951d2aee336b505813/wheel-0.44.0.tar.gz", hash = "sha256:a29c3f2817e95ab89aa4660681ad547c0e9547f20e75b0562fe7723c9a2a9d49", size = 100733 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1b/d1/9babe2ccaecff775992753d8686970b1e2755d21c8a63be73aba7a4e7d77/wheel-0.44.0-py3-none-any.whl", hash = "sha256:2376a90c98cc337d18623527a97c31797bd02bad0033d41547043a1cbfbe448f", size = 67059 },
+]
+
+[[package]]
+name = "xmltodict"
+version = "0.14.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/f7/d29b8cdc9d8d075673be0f800013c1161e2fd4234546a140855a1bcc9eb4/xmltodict-0.14.1.tar.gz", hash = "sha256:338c8431e4fc554517651972d62f06958718f6262b04316917008e8fd677a6b0", size = 51919 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/33/ce3c404fece93880135ab9a07414d57f642e9340717130362bcd4ecee3c1/xmltodict-0.14.1-py2.py3-none-any.whl", hash = "sha256:3ef4a7b71c08f19047fcbea572e1d7f4207ab269da1565b5d40e9823d3894e63", size = 9982 },
 ]
 
 [[package]]
