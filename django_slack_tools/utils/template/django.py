@@ -149,8 +149,7 @@ def _remove_single_newline(text: str) -> str:
     return re.sub(r"([\n]+)", lambda m: "\n" * (m.group(1).count("\n") - 1) or " ", text)
 
 
-def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:
-    logger.debug("Path: %r, Key: %r, Value: %r", path, key, value)
+def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # noqa: ARG001
     if value == "true":
         return key, True
 
