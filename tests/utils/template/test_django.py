@@ -16,7 +16,7 @@ class _TestCase(NamedTuple):
 
 @pytest.fixture(scope="module")
 def testcase(request: pytest.FixtureRequest) -> _TestCase:
-    case_dir = Path(__file__).parent / "cases"
+    case_dir = Path(__file__).parent / "testcases"
     case_name = str(request.param)
     return _TestCase(
         xml_input=(case_dir / f"{case_name}.xml").read_text(),
