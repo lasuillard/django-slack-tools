@@ -27,9 +27,7 @@ class DictTemplate(BaseTemplate):
         self.template = template
 
     def render(self, *, context: dict[str, Any] | None = None) -> dict:  # noqa: D102
-        if context is None:
-            context = {}
-
+        context = {} if context is None else context
         result = self.template.copy()
         for k, v in result.items():
             result[k] = _format_obj(v, context=context)
