@@ -112,7 +112,7 @@ class BaseBackend(ABC):
             return DjangoTemplate(file=policy.template)
 
         if policy.template_type == SlackMessagingPolicy.TemplateType.DjangoInline:
-            return DjangoTemplate(xml=policy.template)
+            return DjangoTemplate(inline=policy.template)
 
         msg = f"Unsupported template type: {policy.template_type!r}"
         raise ValueError(msg)
