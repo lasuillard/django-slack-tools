@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -11,6 +13,9 @@ from django_slack_tools.utils.slack import header_validator
 
 from .message_recipient import SlackMessageRecipient
 
+if TYPE_CHECKING:
+    from typing import Any
+
 
 class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
     """Manager for Slack messaging policies."""
@@ -18,6 +23,21 @@ class SlackMessagingPolicyManager(models.Manager["SlackMessagingPolicy"]):
 
 class SlackMessagingPolicy(TimestampMixin, models.Model):
     """An Slack messaging policy which determines message content and those who receive messages."""
+
+    class TemplateType(models.TextChoices):
+        """Possible template types."""
+
+        Dict = "D", _("Dictionary")
+        "Dictionary-based template."
+
+        Django = "DJ", _("Django")
+        "Django XML-based template."
+
+        DjangoInline = "DI", _("Django Inline")
+        "Django inline template."
+
+        UNKNOWN = "?", _("Unknown")
+        "Unknown template type."
 
     code = models.CharField(
         verbose_name=_("Code"),
@@ -42,7 +62,14 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         blank=True,
         default=dict,
     )
-    template: models.JSONField[dict | None] = models.JSONField(
+    template_type = models.CharField(
+        verbose_name=_("Template type"),
+        help_text=_("Type of message template."),
+        max_length=2,
+        choices=TemplateType.choices,
+        default=TemplateType.Dict,
+    )
+    template: models.JSONField[Any] = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),
         validators=[dict_template_validator],
