@@ -1,0 +1,43 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            Hello, Assistant to the Regional Manager Dwight! *Michael Scott* wants to know where
+            you'd like to take the Paper Company investors to dinner tonight.
+
+            *Please select a restaurant:*
+        </text>
+    </block>
+    <block type="divider" />
+    {% for rs in restaurants %}
+    <block type="section">
+        <text type="mrkdwn">
+            *{{ rs.title }}*
+
+            {% for _ in ''|ljust:rs.rating %}:star:{% endfor %} {{ rs.reviews }} reviews
+
+            {{ rs.comment }}
+        </text>
+        <accessory
+            type="image"
+            image_url="{{ rs.image_url }}"
+            alt_text="alt text for image"
+        />
+    </block>
+    {% endfor %}
+    <block type="divider" />
+    <block type="actions">
+        {% for rs in restaurants %}
+        <element
+            type="button"
+            value="{{ rs.action.id }}"
+            {% if rs.action.url %}url="{{ rs.action.url }}"{% endif %}
+        >
+            <text
+                type="plain_text"
+                text="{{ rs.action.display }}"
+                emoji="{% if rs.action.emoji %}true{% else %}false{% endif %}"
+            />
+        </element>
+        {% endfor %}
+    </block>
+</root>

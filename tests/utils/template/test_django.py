@@ -2,30 +2,101 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import NamedTuple
 
 import pytest
+from django.template import TemplateDoesNotExist
 
 from django_slack_tools.utils.template.django import DjangoTemplate
 
 
-class _TestCase(NamedTuple):
-    xml_input: str
-    expect: dict
-
-
-@pytest.fixture(scope="module")
-def testcase(request: pytest.FixtureRequest) -> _TestCase:
-    case_dir = Path(__file__).parent / "testcases"
-    case_name = str(request.param)
-    return _TestCase(
-        xml_input=(case_dir / f"{case_name}.xml").read_text(),
-        expect=json.loads((case_dir / f"{case_name}.json").read_text()),
-    )
+@pytest.fixture(scope="session")
+def data_dir() -> Path:
+    return Path(__file__).parent / "testcases"
 
 
 class TestDjangoTemplate:
-    @pytest.mark.parametrize("testcase", ["001"], indirect=True)
-    def test_render_xml_to_json_conversion(self, testcase: _TestCase) -> None:
-        actual = DjangoTemplate(xml=testcase.xml_input).render()
-        assert actual == testcase.expect
+    def test_instance_creation(self) -> None:
+        # Mutually exclusive arguments provided
+        with pytest.raises(TypeError, match="Exactly one of 'file' or 'inline' must be provided."):
+            DjangoTemplate(file="whatever.xml", inline="<whatever>Whatever</whatever>")  # type: ignore[call-overload]
+
+        # Unsupported file extension
+        with pytest.raises(TemplateDoesNotExist, match="template-does-not-exists.xml"):
+            DjangoTemplate(file="template-does-not-exists.xml")
+
+    @pytest.mark.parametrize(
+        ("xml_input", "json_expect"),
+        [
+            ("001.xml", "001.json"),
+        ],
+    )
+    def test_render(self, xml_input: str, json_expect: str, data_dir: Path) -> None:
+        expect = json.loads((data_dir / json_expect).read_text())
+        actual = DjangoTemplate(inline=(data_dir / xml_input).read_text()).render()
+        assert actual == expect
+
+    def test_render_complex_with_context(self, data_dir: Path) -> None:
+        # Arrange
+        template = DjangoTemplate(file="001-template.xml")
+        context = {
+            "restaurants": [
+                {
+                    "id": "click_me_123",
+                    "title": "Farmhouse Thai Cuisine",
+                    "rating": 4,
+                    "reviews": 1528,
+                    "comment": (
+                        "They do have some vegan options, like the roti and curry, plus they have a ton of"
+                        " salad stuff and noodles can be ordered without meat!! They have something for"
+                        " everyone here"
+                    ),
+                    "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/c7ed05m9lC2EmA3Aruue7A/o.jpg",
+                    "action": {
+                        "id": "click_me_123",
+                        "display": "Farmhouse",
+                        "url": "",
+                        "emoji": False,
+                    },
+                },
+                {
+                    "id": "click_me_123",
+                    "title": "Kin Khao",
+                    "rating": 4,
+                    "reviews": 1638,
+                    "comment": (
+                        "The sticky rice also goes wonderfully with the caramelized pork belly, which is"
+                        " absolutely melt-in-your-mouth and so soft."
+                    ),
+                    "image_url": "https://s3-media2.fl.yelpcdn.com/bphoto/korel-1YjNtFtJlMTaC26A/o.jpg",
+                    "action": {
+                        "id": "click_me_123",
+                        "display": "Kin Khao",
+                        "url": "https://google.com",
+                        "emoji": True,
+                    },
+                },
+                {
+                    "title": "Ler Ros",
+                    "rating": 4,
+                    "reviews": 2082,
+                    "comment": (
+                        "I would really recommend the Yum Koh Moo Yang - Spicy lime dressing and roasted"
+                        " quick marinated pork shoulder, basil leaves, chili & rice powder."
+                    ),
+                    "image_url": "https://s3-media2.fl.yelpcdn.com/bphoto/DawwNigKJ2ckPeDeDM7jAg/o.jpg",
+                    "action": {
+                        "id": "click_me_123",
+                        "display": "Ler Ros",
+                        "url": "https://google.com",
+                        "emoji": True,
+                    },
+                },
+            ],
+        }
+
+        # Act
+        actual = template.render(context=context)
+
+        # Assert
+        expect = json.loads((data_dir / "001.json").read_text())
+        assert actual == expect

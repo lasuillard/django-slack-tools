@@ -57,7 +57,7 @@
     <block type="divider" />
     <block type="actions">
         <element type="button" value="click_me_123">
-            <text type="plain_text" text="Farmhouse" emoji="true" />
+            <text type="plain_text" text="Farmhouse" emoji="false" />
         </element>
         <element type="button" value="click_me_123" url="https://google.com">
             <text type="plain_text" text="Kin Khao" emoji="true" />

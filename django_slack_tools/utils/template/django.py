@@ -24,73 +24,54 @@ class DjangoTemplate(BaseTemplate):
     """Template utilizing Django built-in template engine."""
 
     @overload
-    def __init__(self, *, file: str, engine: BaseEngine | None = None) -> None: ...
+    def __init__(self, *, file: str, engine: BaseEngine | None = None) -> None: ...  # pragma: no cover
 
     @overload
-    def __init__(self, *, xml: str, engine: BaseEngine | None = None) -> None: ...
+    def __init__(self, *, inline: str, engine: BaseEngine | None = None) -> None: ...  # pragma: no cover
 
     def __init__(
         self,
         *,
         file: str | None = None,
-        xml: str | None = None,
+        inline: str | None = None,
         engine: BaseEngine | None = None,
     ) -> None:
         """Initialize template.
 
         Args:
             file: Path to file with template.
-            xml: XML inline template.
+            inline: XML inline template.
             engine: Template engine to use. Defaults to Django engine.
 
         Raises:
-            ValueError: Some of the arguments are missing or multiple are provided.
+            TypeError: Some of the arguments are missing or multiple are provided.
+            ValueError: Unsupported value provided.
         """
-        if engine is None:
-            engine = engines["django"]
+        engine = engines["django"] if engine is None else engine
 
-        if sum([1 for value in (file, xml) if value is not None]) != 1:
-            msg = "Exactly one of 'xml', or 'file' must be provided."
-            raise ValueError(msg)
+        if len([value for value in (file, inline) if value is not None]) != 1:
+            msg = "Exactly one of 'file' or 'inline' must be provided."
+            raise TypeError(msg)
 
         if file:
-            if file.endswith(".xml"):
-                type_ = "xml"
-            else:
-                msg = "Only XML files are supported."
-                raise ValueError(msg)
-
             template = engine.get_template(file)
+        elif inline:
+            template = engine.from_string(inline)
+        else:  # pragma: no cover
+            msg = "Unreachable code"
+            raise NotImplementedError(msg)
 
-        elif xml:
-            type_ = "xml"
-            template = engine.from_string(xml)
-
-        else:
-            # This should unreachable
-            msg = "Exactly one of 'xml', or 'file' must be provided."
-            raise ValueError(msg)
-
-        self.type_ = type_
         self.template = template
-        logger.debug("Template loaded with type: %r, content: %r", type_, template)
 
     def render(self, *, context: dict[str, Any] | None = None) -> dict:  # noqa: D102
-        if context is None:
-            context = {}
+        context = {} if context is None else context
 
-        string = self.template.render(context=context)
-        if self.type_ == "xml":
-            obj = _xml_to_dict(string)
-
-        else:
-            msg = f"Unsupported template type: {self.type_}"
-            raise ValueError(msg)
-
-        return dict(obj)
+        logger.debug("Rendering template with context: %r", context)
+        rendered = self.template.render(context=context)
+        return _xml_to_dict(rendered)
 
 
-def _xml_to_dict(xml: str) -> Any:
+def _xml_to_dict(xml: str) -> dict:
     """Parse XML string to Python dictionary.
 
     Following transformations are applied by default:

@@ -57,7 +57,7 @@
 					"text": {
 						"type": "plain_text",
 						"text": "Farmhouse",
-						"emoji": true
+						"emoji": false
 					},
 					"value": "click_me_123"
 				},
