@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_tools.utils.dict_template import dict_template_validator
 from django_slack_tools.utils.model_mixins import TimestampMixin
 from django_slack_tools.utils.slack import header_validator
 
@@ -72,7 +71,6 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
     template: models.JSONField[Any] = models.JSONField(
         verbose_name=_("Message template object"),
         help_text=_("Dictionary-based template object."),
-        validators=[dict_template_validator],
         null=True,
         blank=True,
     )
