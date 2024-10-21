@@ -43,10 +43,13 @@ $ uv run python manage.py runserver 0.0.0.0:8000
 Once server started, open a new terminal and run ngrok for event subscription.
 
 ```bash
-# Run ngrok server to get Slack events
-$ ngrok http 8000
+# Add auth token for ngrok if not set yet
+$ ngrok config add-authtoken '...'
+
+# Run ngrok server (with free static domain for later re-run) to get Slack events
+$ ngrok http 8000 --domain '....ngrok.free.app'
 ```
 
-Go to the Slack bot settings and configure event subscription with given ngrok URL.
+Go to the Slack bot settings and configure event subscription with given ngrok URL. If you are seeing 401 errors in ngrok traffic logs, check your bot credentials.
 
 Once all setup is done, you will see shortcuts in Slack chat if you type slash(/).
