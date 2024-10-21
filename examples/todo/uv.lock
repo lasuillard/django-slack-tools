@@ -171,6 +171,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-celery-results"
+version = "2.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "celery" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/24/a13ad6a276f62385da6d83a1995ded452d173841b6e0a83a899c3b75062e/django_celery_results-2.5.1.tar.gz", hash = "sha256:3ecb7147f773f34d0381bac6246337ce4cf88a2ea7b82774ed48e518b67bb8fd", size = 80944 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/05/2e/aa82857354d5227922c2ae6e83e5214537d8f108184bfeea6704d0b045d8/django_celery_results-2.5.1-py3-none-any.whl", hash = "sha256:0da4cd5ecc049333e4524a23fcfc3460dfae91aa0a60f1fae4b6b2889c254e01", size = 36293 },
+]
+
+[[package]]
 name = "django-slack-tools"
 version = "0.1.0"
 source = { directory = "../../" }
@@ -403,6 +416,7 @@ dependencies = [
     { name = "celery", extra = ["django", "redis"] },
     { name = "django" },
     { name = "django-celery-beat" },
+    { name = "django-celery-results" },
     { name = "django-slack-tools" },
     { name = "psycopg2-binary" },
 ]
@@ -412,6 +426,7 @@ requires-dist = [
     { name = "celery", extras = ["django", "redis"], specifier = ">=5,<6" },
     { name = "django", specifier = ">=5,<6" },
     { name = "django-celery-beat", specifier = ">=2,<3" },
+    { name = "django-celery-results", specifier = ">=2.5.1" },
     { name = "django-slack-tools", directory = "../../" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
 ]

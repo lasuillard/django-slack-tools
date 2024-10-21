@@ -12,6 +12,7 @@ dependencies = [
     "celery[django,redis]>=5,<6",
     "django-celery-beat>=2,<3",
     "psycopg2-binary>=2.9.10",
+    "django-celery-results>=2.5.1",
 ]
 
 [tool.uv]

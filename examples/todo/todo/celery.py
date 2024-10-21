@@ -10,6 +10,8 @@ app = Celery("todo")
 
 app.conf.broker_url = "redis://localhost:6379/0"
 
+app.conf.result_backend = "django-db"
+
 if settings.USE_TZ:
     app.conf.timezone = settings.TIME_ZONE
 
