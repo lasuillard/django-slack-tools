@@ -97,12 +97,7 @@ def cleanup_old_messages(
     Returns:
         Number of deleted messages.
     """
-    if base_ts:
-        dt = datetime.fromisoformat(base_ts)
-        if timezone.is_naive(dt):
-            dt = timezone.make_aware(dt)
-    else:
-        dt = timezone.localtime()
+    dt = datetime.fromisoformat(base_ts) if base_ts else timezone.localtime()
 
     if threshold_seconds is None:
         logger.warning("Threshold seconds not provided, skipping cleanup.")
