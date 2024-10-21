@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from django_slack_tools.slack_messages.celery import cleanup_old_messages
 from django_slack_tools.slack_messages.models import SlackMessage
+from django_slack_tools.slack_messages.tasks import cleanup_old_messages
 from tests.slack_messages.models._factories import SlackMessageFactory
 
 pytestmark = pytest.mark.django_db
