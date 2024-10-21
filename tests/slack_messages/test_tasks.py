@@ -1,12 +1,55 @@
 from datetime import datetime, timedelta, timezone
+from unittest import mock
 
 import pytest
 
+from django_slack_tools.slack_messages import tasks
 from django_slack_tools.slack_messages.models import SlackMessage
-from django_slack_tools.slack_messages.tasks import cleanup_old_messages
 from tests.slack_messages.models._factories import SlackMessageFactory
 
 pytestmark = pytest.mark.django_db
+
+
+class TestSlackMessage:
+    def test_slack_message(self) -> None:
+        with mock.patch("django_slack_tools.slack_messages.message.slack_message") as m:
+            tasks.slack_message(
+                "Hello, world!",
+                channel="test",
+                header={"key": "value"},
+                raise_exception=True,
+                get_permalink=True,
+            )
+
+        m.assert_called_once_with(
+            "Hello, world!",
+            channel="test",
+            header={"key": "value"},
+            raise_exception=True,
+            get_permalink=True,
+        )
+
+
+class TestSlackMessageViaPolicy:
+    def test_slack_message_via_policy(self) -> None:
+        with mock.patch("django_slack_tools.slack_messages.message.slack_message_via_policy") as m:
+            tasks.slack_message_via_policy(
+                "TEST-POLICY",
+                header={"key": "value"},
+                raise_exception=True,
+                lazy=True,
+                get_permalink=True,
+                context={"another-key": "another-value"},
+            )
+
+        m.assert_called_once_with(
+            "TEST-POLICY",
+            header={"key": "value"},
+            raise_exception=True,
+            lazy=True,
+            get_permalink=True,
+            context={"another-key": "another-value"},
+        )
 
 
 class TestCleanupOldMessages:
@@ -26,7 +69,7 @@ class TestCleanupOldMessages:
         ]
 
         # Act
-        num_deleted = cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=5 * 60)  # 5 minutes
+        num_deleted = tasks.cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=5 * 60)  # 5 minutes
 
         # Assert
         assert num_deleted == 2
@@ -40,7 +83,7 @@ class TestCleanupOldMessages:
         SlackMessageFactory()
 
         # Act
-        num_deleted = cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=None)
+        num_deleted = tasks.cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=None)
 
         # Assert
         assert num_deleted == 0
