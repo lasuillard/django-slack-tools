@@ -6,7 +6,13 @@ authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
-dependencies = ["django-slack-tools", "django>=5,<6"]
+dependencies = [
+    "django-slack-tools",
+    "django>=5,<6",
+    "celery[django,redis]>=5,<6",
+    "django-celery-beat>=2,<3",
+    "psycopg2-binary>=2.9.10",
+]
 
 [tool.uv]
 package = false
