@@ -3,7 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-import django_slack_tools.utils.dict_template
 import django_slack_tools.utils.slack.django
 
 
@@ -163,7 +162,6 @@ class Migration(migrations.Migration):
                         blank=True,
                         help_text="Dictionary-based template object.",
                         null=True,
-                        validators=[django_slack_tools.utils.dict_template.dict_template_validator],
                         verbose_name="Message template object",
                     ),
                 ),

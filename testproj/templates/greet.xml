@@ -1,0 +1,7 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            {{ greet }}, {{ mentions }}
+        </text>
+    </block>
+</root>

@@ -6,7 +6,12 @@ authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8, <4.0"
-dependencies = ["slack-bolt>=1,<2", "django>=4.2,<5.2", "pydantic>=2,<3"]
+dependencies = [
+    "slack-bolt>=1,<2",
+    "django>=4.2,<5.2",
+    "pydantic>=2,<3",
+    "xmltodict>=0.14.1,<1",
+]
 
 [project.optional-dependencies]
 celery = ["celery>=5,<6"]
