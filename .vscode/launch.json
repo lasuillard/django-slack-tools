@@ -9,7 +9,7 @@
       "cwd":"${workspaceFolder}/testproj",
       "program":"manage.py",
       "args": [
-        "runserver", "0.0.0.0:8000"  // TODO: Determine bind address based on $CONTAINER
+        "runserver", "127.0.0.1:8000"
       ],
       "django": true,
       "justMyCode": true,

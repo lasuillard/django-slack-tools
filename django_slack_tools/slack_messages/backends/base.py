@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING, Any, cast
 from slack_sdk.errors import SlackApiError
 
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
-from django_slack_tools.utils.dict_template import render
 from django_slack_tools.utils.slack import MessageBody
+from django_slack_tools.utils.template import DictTemplate, DjangoTemplate
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from django_slack_tools.slack_messages.models.mention import SlackMention
     from django_slack_tools.slack_messages.models.message_recipient import SlackMessageRecipient
     from django_slack_tools.utils.slack import MessageHeader
+    from django_slack_tools.utils.template import BaseTemplate
 
 logger = getLogger(__name__)
 
@@ -29,51 +30,6 @@ RESERVED_CONTEXT_KWARGS = frozenset({"policy", "mentions", "mentions_as_str"})
 
 class BaseBackend(ABC):
     """Abstract base class for messaging backends."""
-
-    def prepare_messages_from_policy(
-        self,
-        policy: SlackMessagingPolicy,
-        *,
-        header: MessageHeader,
-        context: dict[str, Any],
-    ) -> list[SlackMessage]:
-        """Prepare messages from policy.
-
-        Args:
-            policy: Policy to create messages from.
-            header: Common message header.
-            context: Message context.
-
-        Returns:
-            Prepared messages.
-        """
-        overridden_reserved = RESERVED_CONTEXT_KWARGS & set(context.keys())
-        if overridden_reserved:
-            logger.warning(
-                "Template keyword argument(s) %s reserved for passing mentions, but already exists."
-                " User provided value will override it.",
-                ", ".join(f"`{s}`" for s in overridden_reserved),
-            )
-
-        template = policy.template
-        messages: list[SlackMessage] = []
-        for recipient in policy.recipients.all():
-            logger.debug("Sending message to recipient %s", recipient)
-
-            # Prepare rendering arguments
-            render_kwargs = self._get_default_context(policy=policy, recipient=recipient)
-            render_kwargs.update(context)
-            logger.debug("Context prepared as: %r", render_kwargs)
-
-            # Render template and parse as body
-            rendered = render(template, **render_kwargs)
-            body = MessageBody.from_any(rendered)
-
-            # Create message instance
-            message = self.prepare_message(policy=policy, channel=recipient.channel, header=header, body=body)
-            messages.append(message)
-
-        return SlackMessage.objects.bulk_create(messages)
 
     def prepare_message(
         self,
@@ -100,6 +56,67 @@ class BaseBackend(ABC):
         _body = dataclasses.asdict(body)
 
         return SlackMessage(policy=policy, channel=channel, header=_header, body=_body)
+
+    def prepare_messages_from_policy(
+        self,
+        policy: SlackMessagingPolicy,
+        *,
+        header: MessageHeader,
+        context: dict[str, Any],
+    ) -> list[SlackMessage]:
+        """Prepare messages from policy.
+
+        Args:
+            policy: Policy to create messages from.
+            header: Common message header.
+            context: Message context.
+
+        Returns:
+            Prepared messages.
+        """
+        overridden_reserved = RESERVED_CONTEXT_KWARGS & set(context.keys())
+        if overridden_reserved:
+            logger.warning(
+                "Template keyword argument(s) %s reserved for passing mentions, but already exists."
+                " User provided value will override it.",
+                ", ".join(f"`{s}`" for s in overridden_reserved),
+            )
+
+        messages: list[SlackMessage] = []
+        for recipient in policy.recipients.all():
+            logger.debug("Sending message to recipient %s", recipient)
+
+            # Initialize template instance
+            template = self._get_template_instance_from_policy(policy)
+
+            # Prepare rendering arguments
+            render_context = self._get_default_context(policy=policy, recipient=recipient)
+            render_context.update(context)
+            logger.debug("Context prepared as: %r", render_context)
+
+            # Render template and parse as body
+            rendered = template.render(context=render_context)
+            body = MessageBody.from_any(rendered)
+
+            # Create message instance
+            message = self.prepare_message(policy=policy, channel=recipient.channel, header=header, body=body)
+            messages.append(message)
+
+        return SlackMessage.objects.bulk_create(messages)
+
+    def _get_template_instance_from_policy(self, policy: SlackMessagingPolicy) -> BaseTemplate:
+        """Get template instance."""
+        if policy.template_type == SlackMessagingPolicy.TemplateType.Dict:
+            return DictTemplate(policy.template)
+
+        if policy.template_type == SlackMessagingPolicy.TemplateType.Django:
+            return DjangoTemplate(file=policy.template)
+
+        if policy.template_type == SlackMessagingPolicy.TemplateType.DjangoInline:
+            return DjangoTemplate(inline=policy.template)
+
+        msg = f"Unsupported template type: {policy.template_type!r}"
+        raise ValueError(msg)
 
     def _get_default_context(self, *, policy: SlackMessagingPolicy, recipient: SlackMessageRecipient) -> dict[str, Any]:
         """Get default context for rendering.

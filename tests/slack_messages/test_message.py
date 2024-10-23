@@ -46,7 +46,7 @@ def test_slack_message(mock_slack_client: Mock) -> None:
     assert msg.exception == ""
 
 
-def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
+def test_slack_message_via_policy_dict_template(mock_slack_client: Mock) -> None:
     recipients = [
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
         SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
@@ -74,6 +74,71 @@ def test_slack_message_via_policy(mock_slack_client: Mock) -> None:
 
     assert num_sent == 3
     assert SlackMessage.objects.filter(policy=policy).count() == 3
+
+
+def test_slack_message_via_policy_django_template(mock_slack_client: Mock) -> None:
+    recipients = [
+        SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
+        SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
+        SlackMessageRecipientFactory(
+            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!here>")],
+        ),
+    ]
+    policy = SlackMessagingPolicyFactory(
+        code="TEST-PO-001-DJ",
+        template_type=SlackMessagingPolicy.TemplateType.Django,
+        template="greet.xml",
+        recipients=recipients,
+    )
+    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+    num_sent = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
+
+    assert num_sent == 3
+    assert SlackMessage.objects.filter(policy=policy).count() == 3
+
+
+def test_slack_message_via_policy_django_inline_template(mock_slack_client: Mock) -> None:
+    recipients = [
+        SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
+        SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
+        SlackMessageRecipientFactory(
+            mentions=[SlackMentionFactory(type=SlackMention.MentionType.SPECIAL, mention_id="<!here>")],
+        ),
+    ]
+    policy = SlackMessagingPolicyFactory(
+        code="TEST-PO-001-DJI",
+        template_type=SlackMessagingPolicy.TemplateType.DjangoInline,
+        template="""
+            <root>
+                <block type="section">
+                    <text type="mrkdwn">
+                        {{ greet }}, {{ mentions }}
+                    </text>
+                </block>
+            </root>
+        """,
+        recipients=recipients,
+    )
+    mock_slack_client.chat_postMessage.side_effect = SlackMessageResponseFactory.create_batch(size=3)
+    num_sent = slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
+
+    assert num_sent == 3
+    assert SlackMessage.objects.filter(policy=policy).count() == 3
+
+
+def test_slack_message_via_policy_unknown_template_type(mock_slack_client: Mock) -> None:
+    recipients = [
+        SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(size=2)),
+    ]
+    policy = SlackMessagingPolicyFactory(
+        code="TEST-PO-001-?",
+        template_type=SlackMessagingPolicy.TemplateType.UNKNOWN,
+        template=None,
+        recipients=recipients,
+    )
+    mock_slack_client.chat_postMessage.side_effect = [SlackMessageResponseFactory()]
+    with pytest.raises(ValueError, match="Unsupported template type: SlackMessagingPolicy.TemplateType.UNKNOWN"):
+        slack_message_via_policy(policy, context={"greet": "Nice to meet you"})
 
 
 def test_slack_message_via_policy_default(mock_slack_client: Mock) -> None:

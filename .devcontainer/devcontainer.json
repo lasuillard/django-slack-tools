@@ -5,7 +5,8 @@
     "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
     "ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
       "packages": "gettext"
-    }
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
   "updateContentCommand": "make install",
