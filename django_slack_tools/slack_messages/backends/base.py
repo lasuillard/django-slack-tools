@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import traceback
 from abc import ABC, abstractmethod
 from logging import getLogger
@@ -50,9 +51,9 @@ class BaseBackend(ABC):
             Prepared message.
         """
         _header: dict = policy.header_defaults if policy else {}
-        _header.update(header.model_dump(exclude_unset=True))
+        _header.update(dataclasses.asdict(header))
 
-        _body = body.model_dump()
+        _body = dataclasses.asdict(body)
 
         return SlackMessage(policy=policy, channel=channel, header=_header, body=_body)
 
@@ -95,7 +96,7 @@ class BaseBackend(ABC):
 
             # Render template and parse as body
             rendered = template.render(context=render_context)
-            body = MessageBody.model_validate(rendered)
+            body = MessageBody.from_any(rendered)
 
             # Create message instance
             message = self.prepare_message(policy=policy, channel=recipient.channel, header=header, body=body)
