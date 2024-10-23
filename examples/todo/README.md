@@ -27,26 +27,43 @@ Required scopes to bot fully work (including admin pages):
 
 ## Run application
 
+Create .env file with content:
+
+```dotenv
+SLACK_BOT_TOKEN='...'
+SLACK_SIGNING_SECRET='...'
+```
+
 ```bash
-# Initialize
-$ uv run python manage.py migrate
+# Run Postgres and Valkey services
+$ docker compose up -d
+
+# Initialize database
+$ make migrate
 
 # Create superuser
-$ uv run python manage.py createsuperuser
+$ make superuser
 
-# Run server with environment variables set
-$ export SLACK_BOT_TOKEN='...'
-$ export SLACK_SIGNING_SECRET='...'
-$ uv run python manage.py runserver 0.0.0.0:8000
+# Run Django web server, then open http://localhost:8000/admin to open admin page
+$ source .env && make run
+
+# (Recommended) To test full functionality, create new terminal and run Celery worker
+$ source .env && make run-celery-worker
+
+# (Optional) To test periodic tasks, create another new terminal and run Celery Beat scheduler
+$ source .env && make run-celery-beat
 ```
 
 Once server started, open a new terminal and run ngrok for event subscription.
 
 ```bash
-# Run ngrok server to get Slack events
-$ ngrok http 8000
+# Add auth token for ngrok if not set yet
+$ ngrok config add-authtoken '...'
+
+# Run ngrok server (with free static domain for later re-run) to get Slack events
+$ ngrok http 8000 --domain '....ngrok.free.app'
 ```
 
-Go to the Slack bot settings and configure event subscription with given ngrok URL.
+Go to the Slack bot settings and configure event subscription with given ngrok URL. If you are seeing 401 errors in ngrok traffic logs, check your bot credentials.
 
 Once all setup is done, you will see shortcuts in Slack chat if you type slash(/).

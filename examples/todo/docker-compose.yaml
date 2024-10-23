@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:17-bookworm
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_HOST:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432
+    environment:
+      POSTGRES_PASSWORD: password
+
+  valkey:
+    image: valkey/valkey:8-bookworm
+    ports:
+      - ${VALKEY_HOST:-127.0.0.1}:${VALKEY_PORT:-6379}:6379
+
+volumes:
+  postgres-data:
