@@ -42,7 +42,8 @@ class MessageHeader:
         if isinstance(obj, dict):
             return cls(**obj)
 
-        return obj
+        msg = f"Unsupported type {type(obj)}"
+        raise TypeError(msg)
 
 
 @dataclass
@@ -82,7 +83,8 @@ class MessageBody:
         if isinstance(obj, str):
             return cls(text=obj)
 
-        return obj
+        msg = f"Unsupported type {type(obj)}"
+        raise TypeError(msg)
 
 
 def _assert_type(obj: Any, cls: type | tuple[type, ...]) -> None:
