@@ -30,6 +30,9 @@ Currently it is focused on messaging features. In future, hoping to bring more h
 
 **django-slack-tools** supports Python 3.8+ and Django 4.2+. Supports for each deps will be dropped as soon as the ends of security updates.
 
+> [!WARNING]
+> 0.x versions are for development. Breaking changes can be made at any time. If gonna use this package, recommend to pin down the version.
+
 Install the package:
 
 ```bash
