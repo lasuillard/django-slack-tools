@@ -83,7 +83,7 @@ def slack_message_via_policy(  # noqa: PLR0913
             policy, created = SlackMessagingPolicy.objects.get_or_create(
                 code=policy,
                 defaults={
-                    "enabled": False,
+                    "enabled": app_settings.lazy_policy_enabled,
                     "template": app_settings.default_template,
                 },
             )
