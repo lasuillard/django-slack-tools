@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
-from typing_extensions import NotRequired
 
 from django_slack_tools.slack_messages.backends.base import BaseBackend
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from typing_extensions import NotRequired
 
 APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
 "Django settings key for this application."
