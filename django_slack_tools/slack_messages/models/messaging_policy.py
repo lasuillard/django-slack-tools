@@ -26,13 +26,13 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
     class TemplateType(models.TextChoices):
         """Possible template types."""
 
-        Dict = "D", _("Dictionary")
+        DICT = "D", _("Dictionary")
         "Dictionary-based template."
 
-        Django = "DJ", _("Django")
+        DJANGO = "DJ", _("Django")
         "Django XML-based template."
 
-        DjangoInline = "DI", _("Django Inline")
+        DJANGO_INLINE = "DI", _("Django Inline")
         "Django inline template."
 
         UNKNOWN = "?", _("Unknown")
@@ -66,7 +66,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         help_text=_("Type of message template."),
         max_length=2,
         choices=TemplateType.choices,
-        default=TemplateType.Dict,
+        default=TemplateType.DICT,
     )
     template: models.JSONField[Any] = models.JSONField(
         verbose_name=_("Message template object"),
