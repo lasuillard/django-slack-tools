@@ -20,12 +20,14 @@ Key features are:
 
 - [x] Built-in admin for management working with Slack workspace
 
+- [x] Django template support
+
+- [x] Celery support for messaging backends, management and shortcut tasks, etc.
+
 And more in future roadmap...
 
-- [ ] Celery support for messaging backends, management and shortcut tasks, etc.
-
-- [ ] Django template support
-
 - [ ] New Django apps and helpers for Slack features such as modals, event subscription, etc.
+
+- [ ] More fine working example with rich documentation
 
 Currently it is focused on messaging features. In future, hoping to bring more helpful features across Slack Bot ecosystem, such as event subscriptions, modals, bot interactions, etc.
