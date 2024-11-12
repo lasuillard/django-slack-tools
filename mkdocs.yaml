@@ -21,6 +21,7 @@ nav:
       - Models: api-references/slack-messages/models.md
       - Messaging Backends: api-references/slack-messages/messaging-backends.md
       - Sending Messages: api-references/slack-messages/sending-messages.md
+      - Celery Support: api-references/slack-messages/celery.md
 markdown_extensions:
   - def_list
   - pymdownx.tasklist:

@@ -86,7 +86,7 @@ def test_slack_message_via_policy_django_template(mock_slack_client: Mock) -> No
     ]
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-001-DJ",
-        template_type=SlackMessagingPolicy.TemplateType.Django,
+        template_type=SlackMessagingPolicy.TemplateType.DJANGO,
         template="greet.xml",
         recipients=recipients,
     )
@@ -107,7 +107,7 @@ def test_slack_message_via_policy_django_inline_template(mock_slack_client: Mock
     ]
     policy = SlackMessagingPolicyFactory(
         code="TEST-PO-001-DJI",
-        template_type=SlackMessagingPolicy.TemplateType.DjangoInline,
+        template_type=SlackMessagingPolicy.TemplateType.DJANGO_INLINE,
         template="""
             <root>
                 <block type="section">

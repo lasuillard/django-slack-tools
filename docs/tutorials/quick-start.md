@@ -48,4 +48,4 @@ message = slack_message(
 )
 ```
 
-Check examples for about more usages.
+Check [examples](https://github.com/lasuillard/django-slack-tools/tree/main/examples) for about more detailed usage examples.

@@ -71,6 +71,7 @@ class AppSettings:
         self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE", "DEFAULT")
 
         # Lazy policy defaults
+        self.lazy_policy_enabled = settings_dict.get("LAZY_POLICY_ENABLED", False)
         self.default_template = settings_dict.get(
             "DEFAULT_POLICY_CODE",
             {"text": "No template configured for lazily created policy {policy}"},
@@ -94,6 +95,9 @@ class ConfigDict(TypedDict):
 
     BACKEND: BackendConfig
     "Nested backend config."
+
+    LAZY_POLICY_ENABLED: NotRequired[bool]
+    "Whether to enable lazy policy by default."
 
     DEFAULT_POLICY_CODE: NotRequired[str]
     "Default policy code used when sending messages via policy with no policy specified."

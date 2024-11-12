@@ -89,7 +89,7 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
 
         self.recipients.add(*extracted)
 
-    template_type = SlackMessagingPolicy.TemplateType.Dict
+    template_type = SlackMessagingPolicy.TemplateType.DICT
     template = {  # noqa: RUF012
         "blocks": [
             {

@@ -1,15 +1,3 @@
-::: django_slack_tools.slack_messages.backends.dummy.DummyBackend
-    options:
-      show_root_heading: true
-
-::: django_slack_tools.slack_messages.backends.logging.LoggingBackend
-    options:
-      show_root_heading: true
-
-::: django_slack_tools.slack_messages.backends.slack.SlackBackend
-    options:
-      show_root_heading: true
-
-::: django_slack_tools.slack_messages.backends.slack.SlackRedirectBackend
+::: django_slack_tools.slack_messages.backends
     options:
       show_root_heading: true

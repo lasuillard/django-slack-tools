@@ -106,13 +106,13 @@ class BaseBackend(ABC):
 
     def _get_template_instance_from_policy(self, policy: SlackMessagingPolicy) -> BaseTemplate:
         """Get template instance."""
-        if policy.template_type == SlackMessagingPolicy.TemplateType.Dict:
+        if policy.template_type == SlackMessagingPolicy.TemplateType.DICT:
             return DictTemplate(policy.template)
 
-        if policy.template_type == SlackMessagingPolicy.TemplateType.Django:
+        if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO:
             return DjangoTemplate(file=policy.template)
 
-        if policy.template_type == SlackMessagingPolicy.TemplateType.DjangoInline:
+        if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO_INLINE:
             return DjangoTemplate(inline=policy.template)
 
         msg = f"Unsupported template type: {policy.template_type!r}"
