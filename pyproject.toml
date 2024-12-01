@@ -33,7 +33,7 @@ test = [
 	"pytest-sugar~=1.0",
 	"django-coverage-plugin~=3.1",
 	"pytest-django~=4.9",
-	"faker~=30.3",
+	"faker>=30.3,<34.0",
 	"factory-boy~=3.3",
 	"pytest-xdist~=3.6",
 ]
