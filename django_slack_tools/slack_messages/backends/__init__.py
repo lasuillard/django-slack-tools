@@ -5,8 +5,8 @@ from .slack import SlackBackend, SlackRedirectBackend
 
 __all__ = (
     "BaseBackend",
-    "SlackBackend",
-    "SlackRedirectBackend",
     "DummyBackend",
     "LoggingBackend",
+    "SlackBackend",
+    "SlackRedirectBackend",
 )
