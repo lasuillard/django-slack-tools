@@ -9,7 +9,7 @@
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
   "onCreateCommand": "./.devcontainer/onCreateCommand.sh",
-  "updateContentCommand": "make install",
+  "postAttachCommand": "make install",
   "customizations": {
     "vscode": {
       "extensions": [
