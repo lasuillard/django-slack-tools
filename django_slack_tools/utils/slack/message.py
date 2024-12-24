@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, List, Optional
+    from typing import Any, Optional
 
 NoneType = type(None)
 
@@ -50,10 +50,10 @@ class MessageHeader:
 class MessageBody:
     """Data definition for message body."""
 
-    attachments: Optional[List[dict]] = field(default=None)  # noqa: UP006, UP007
+    attachments: Optional[list[dict]] = field(default=None)  # noqa: UP007
 
     # See more about blocks at https://api.slack.com/reference/block-kit/blocks
-    blocks: Optional[List[dict]] = field(default=None)  # noqa: UP006, UP007
+    blocks: Optional[list[dict]] = field(default=None)  # noqa: UP007
 
     text: Optional[str] = field(default=None)  # noqa: UP007
     icon_emoji: Optional[str] = field(default=None)  # noqa: UP007

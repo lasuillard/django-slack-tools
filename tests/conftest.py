@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from typing import Generator
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
 from slack_bolt import App
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @pytest.fixture(scope="session")
@@ -18,7 +21,7 @@ def slack_app() -> App:
 
 
 @pytest.fixture
-def mock_slack_client() -> Generator[mock.Mock, None, None]:
+def mock_slack_client() -> Iterator[mock.Mock]:
     """Mock `slack_bolt.App.client`."""
     with mock.patch("slack_bolt.App.client") as m:
         yield m
