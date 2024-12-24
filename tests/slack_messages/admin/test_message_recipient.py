@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
@@ -13,6 +13,8 @@ from tests._helpers import ModelAdminTestBase
 from tests.slack_messages.models._factories import SlackMessageRecipientFactory
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from django.test import Client
     from django.test.client import _MonkeyPatchedWSGIResponse
 

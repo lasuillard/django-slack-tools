@@ -1,6 +1,6 @@
 ## Installation
 
-**django-slack-tools** supports Python 3.8+ and Django 3.2+. Supports for each deps will be dropped as soon as the ends of security updates.
+**django-slack-tools** supports Python 3.9+ and Django 3.2+. Supports for each deps will be dropped as soon as the ends of security updates.
 
 Install the package:
 

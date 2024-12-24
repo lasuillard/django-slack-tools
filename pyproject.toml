@@ -5,7 +5,7 @@ description = "Little helpers working with Slack bot 🤖 in Django."
 authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8, <4.0"
+requires-python = ">=3.9, <4.0"
 dependencies = [
     "slack-bolt>=1,<2",
     "django>=4.2,<5.2",
@@ -46,9 +46,9 @@ build-backend = "hatchling.build"
 packages = ["django_slack_tools"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 lint.select = ["ALL"]
-lint.ignore = ["ANN101", "ANN401", "TD003", "FIX002", "ANN102", "D105"]
+lint.ignore = ["ANN401", "TD003", "FIX002", "D105"]
 line-length = 120
 
 [tool.ruff.lint.extend-per-file-ignores]
@@ -62,7 +62,7 @@ line-length = 120
 convention = "google"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 exclude = ['^\.venv/*']
 plugins = ["mypy_django_plugin.main"]
 namespace_packages = true
