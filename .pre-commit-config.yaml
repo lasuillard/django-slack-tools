@@ -11,7 +11,12 @@ repos:
     rev: v0.3.0
     hooks:
       - id: check-directory-structure
-        args: [--source, django_slack_tools, --extend-exclude, '**/migrations/*.py']
+        args:
+          - --source
+          - django_slack_tools
+          - --extend-exclude
+          - '**/migrations/*.py'
+          - '**/errors.py'
 
   - repo: local
     hooks:

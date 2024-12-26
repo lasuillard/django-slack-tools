@@ -11,7 +11,8 @@ from typing import TYPE_CHECKING, Any, cast
 from slack_sdk.errors import SlackApiError
 
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
-from django_slack_tools.utils.slack import MessageBody
+from django_slack_tools.slack_messages.response import MessageResponse
+from django_slack_tools.utils.slack import MessageBody, MessageHeader
 from django_slack_tools.utils.template import DictTemplate, DjangoTemplate
 
 if TYPE_CHECKING:
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 
     from django_slack_tools.slack_messages.models.mention import SlackMention
     from django_slack_tools.slack_messages.models.message_recipient import SlackMessageRecipient
-    from django_slack_tools.utils.slack import MessageHeader
+    from django_slack_tools.slack_messages.request import MessageRequest
     from django_slack_tools.utils.template import BaseTemplate
 
 logger = getLogger(__name__)
@@ -211,6 +212,23 @@ class BaseBackend(ABC):
 
         message.refresh_from_db()
         return message
+
+    # TODO(lasuillard): Temporary adaption for migration
+    def deliver(self, request: MessageRequest) -> MessageResponse:
+        """Deliver message request."""
+        message = self.prepare_message(
+            policy=None,
+            channel=request.recipient,
+            header=MessageHeader.from_any(request.headers),
+            body=request.body,
+        )
+        message = self.send_message(message, raise_exception=True, get_permalink=False)
+        return MessageResponse(
+            request=request,
+            is_sent=message.ok or False,
+            error=message.exception,
+            data=message.response,
+        )
 
     @abstractmethod
     def _send_message(self, message: SlackMessage) -> SlackResponse:
