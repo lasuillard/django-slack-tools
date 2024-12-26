@@ -12,8 +12,9 @@ from slack_sdk.errors import SlackApiError
 
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
 from django_slack_tools.slack_messages.response import MessageResponse
+from django_slack_tools.slack_messages.template_loaders.django import DjangoPolicyTemplateLoader
+from django_slack_tools.slack_messages.template_loaders.errors import TemplateNotFoundError
 from django_slack_tools.utils.slack import MessageBody, MessageHeader
-from django_slack_tools.utils.template import DictTemplate, DjangoTemplate
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
     from django_slack_tools.slack_messages.models.mention import SlackMention
     from django_slack_tools.slack_messages.models.message_recipient import SlackMessageRecipient
     from django_slack_tools.slack_messages.request import MessageRequest
-    from django_slack_tools.utils.template import BaseTemplate
 
 logger = getLogger(__name__)
 
@@ -88,7 +88,10 @@ class BaseBackend(ABC):
             logger.debug("Sending message to recipient %s", recipient)
 
             # Initialize template instance
-            template = self._get_template_instance_from_policy(policy)
+            template = DjangoPolicyTemplateLoader()._get_template_from_policy(policy)  # noqa: SLF001
+            if template is None:
+                msg = f"Template for policy {policy!r} not found."
+                raise TemplateNotFoundError(msg)
 
             # Prepare rendering arguments
             render_context = self._get_default_context(policy=policy, recipient=recipient)
@@ -96,7 +99,7 @@ class BaseBackend(ABC):
             logger.debug("Context prepared as: %r", render_context)
 
             # Render template and parse as body
-            rendered = template.render(context=render_context)
+            rendered = template.render(render_context)
             body = MessageBody.from_any(rendered)
 
             # Create message instance
@@ -104,20 +107,6 @@ class BaseBackend(ABC):
             messages.append(message)
 
         return SlackMessage.objects.bulk_create(messages)
-
-    def _get_template_instance_from_policy(self, policy: SlackMessagingPolicy) -> BaseTemplate:
-        """Get template instance."""
-        if policy.template_type == SlackMessagingPolicy.TemplateType.DICT:
-            return DictTemplate(policy.template)
-
-        if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO:
-            return DjangoTemplate(file=policy.template)
-
-        if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO_INLINE:
-            return DjangoTemplate(inline=policy.template)
-
-        msg = f"Unsupported template type: {policy.template_type!r}"
-        raise ValueError(msg)
 
     def _get_default_context(self, *, policy: SlackMessagingPolicy, recipient: SlackMessageRecipient) -> dict[str, Any]:
         """Get default context for rendering.

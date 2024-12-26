@@ -45,6 +45,8 @@ class DjangoPolicyTemplateLoader(BaseTemplateLoader):
                 policy = SlackMessagingPolicy.objects.get(code=policy_or_code)
             except SlackMessagingPolicy.DoesNotExist:
                 return None
+        else:
+            policy = policy_or_code
 
         if policy.template_type == SlackMessagingPolicy.TemplateType.DICT:
             return PythonTemplate(policy.template)
