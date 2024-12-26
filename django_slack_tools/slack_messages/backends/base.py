@@ -220,7 +220,7 @@ class BaseBackend(ABC):
             policy=None,
             channel=request.recipient,
             header=MessageHeader.from_any(request.headers),
-            body=request.body,
+            body=MessageBody.from_any(request.body),
         )
         message = self.send_message(message, raise_exception=True, get_permalink=False)
         return MessageResponse(
