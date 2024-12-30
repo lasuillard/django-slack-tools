@@ -14,41 +14,18 @@ class TestSlackMessage:
     def test_slack_message(self) -> None:
         with mock.patch("django_slack_tools.slack_messages.message.slack_message") as m:
             tasks.slack_message(
-                "Hello, world!",
-                channel="test",
+                "test",
+                template="simple",
                 header={"key": "value"},
-                raise_exception=True,
-                get_permalink=True,
+                context={"greet": "Hello, world!"},
             )
 
         m.assert_called_once_with(
-            "Hello, world!",
-            channel="test",
+            "test",
+            messenger_name=None,
+            template="simple",
             header={"key": "value"},
-            raise_exception=True,
-            get_permalink=True,
-        )
-
-
-class TestSlackMessageViaPolicy:
-    def test_slack_message_via_policy(self) -> None:
-        with mock.patch("django_slack_tools.slack_messages.message.slack_message_via_policy") as m:
-            tasks.slack_message_via_policy(
-                "TEST-POLICY",
-                header={"key": "value"},
-                raise_exception=True,
-                lazy=True,
-                get_permalink=True,
-                context={"another-key": "another-value"},
-            )
-
-        m.assert_called_once_with(
-            "TEST-POLICY",
-            header={"key": "value"},
-            raise_exception=True,
-            lazy=True,
-            get_permalink=True,
-            context={"another-key": "another-value"},
+            context={"greet": "Hello, world!"},
         )
 
 

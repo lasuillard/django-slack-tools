@@ -10,30 +10,38 @@ class MessageResponse:
     """Response from a messaging backend."""
 
     request: MessageRequest | None
-    is_sent: bool
+    ok: bool
     error: Any | None
     data: Any
+    ts: str | None
+    parent_ts: str | None
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         *,
         request: MessageRequest | None = None,
-        is_sent: bool,
+        ok: bool,
         error: Any | None = None,
         data: Any,
+        ts: str | None,
+        parent_ts: str | None,
     ) -> None:
         """Initialize a Response object.
 
         Args:
             request: The message request associated with the response.
-            is_sent: Indicates whether the message was sent successfully.
+            ok: Indicates whether the message was sent successfully.
             error: Any error information related to the response.
             data: The data associated with the response.
+            ts: Identifier of the message.
+            parent_ts: Identifier of the parent message.
         """
         self.request = request
-        self.is_sent = is_sent
+        self.ok = ok
         self.error = error
         self.data = data
+        self.ts = ts
+        self.parent_ts = parent_ts
 
     def __str__(self) -> str:
         request_id = getattr(self.request, "id_", None)
@@ -46,7 +54,7 @@ class MessageResponse:
     def as_dict(self) -> dict[str, Any]:
         """Return the response as a dictionary, except for the request."""
         return {
-            "is_sent": self.is_sent,
+            "ok": self.ok,
             "error": self.error,
             "data": self.data,
         }

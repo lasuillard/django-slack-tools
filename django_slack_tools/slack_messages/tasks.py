@@ -20,66 +20,33 @@ logger = get_task_logger(__name__)
 
 @shared_task
 def slack_message(
-    body: str | dict[str, Any],
+    to: str,
     *,
-    channel: str,
+    messenger_name: str | None = None,
+    template: str,
     header: dict[str, Any] | None = None,
-    raise_exception: bool = False,
-    get_permalink: bool = False,
-) -> int | None:
+    context: dict[str, Any] | None = None,
+) -> str | None:
     """Celery task wrapper for `message.slack_message`.
 
     Args:
-        body: Message content, simple message or full request body.
-        channel: Channel to send message.
+        to: Recipient.
+        messenger_name: Messenger name. If not set, default messenger is used.
+        template: Message template key.
         header: Slack message control header.
-        raise_exception: Whether to re-raise caught exception while sending messages.
-        get_permalink: Try to get the message permalink via extraneous Slack API calls.
+        context: Context for rendering the template.
 
     Returns:
-        ID of sent message.
+        ID of sent message if any, `None` otherwise.
     """
-    sent_msg = message.slack_message(
-        body,
-        channel=channel,
+    response = message.slack_message(
+        to,
+        messenger_name=messenger_name,
+        template=template,
         header=header,
-        raise_exception=raise_exception,
-        get_permalink=get_permalink,
-    )
-    return sent_msg.id
-
-
-@shared_task
-def slack_message_via_policy(  # noqa: PLR0913
-    policy: str,
-    *,
-    header: dict[str, Any] | None = None,
-    raise_exception: bool = False,
-    lazy: bool = False,
-    get_permalink: bool = False,
-    context: dict[str, Any] | None = None,
-) -> int:
-    """Celery task wrapper for `message.slack_message_via_policy`.
-
-    Args:
-        policy: Messaging policy code.
-        header: Slack message control header.
-        raise_exception: Whether to re-raise caught exception while sending messages.
-        lazy: Decide whether try to create policy with disabled, if not exists.
-        get_permalink: Try to get the message permalink via extraneous Slack API calls.
-        context: Context variables for message rendering.
-
-    Returns:
-        Number of sent messages.
-    """
-    return message.slack_message_via_policy(
-        policy,
-        header=header,
-        raise_exception=raise_exception,
-        lazy=lazy,
-        get_permalink=get_permalink,
         context=context,
     )
+    return response.ts if response else None
 
 
 @shared_task

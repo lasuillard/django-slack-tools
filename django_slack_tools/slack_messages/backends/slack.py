@@ -9,15 +9,13 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
-from slack_sdk.errors import SlackApiError
 
 from .base import BaseBackend
 
 if TYPE_CHECKING:
     from slack_sdk.web import SlackResponse
 
-    from django_slack_tools.slack_messages.models import SlackMessage
-    from django_slack_tools.utils.slack import MessageBody
+    from django_slack_tools.slack_messages.request import MessageBody, MessageHeader
 
 
 logger = getLogger(__name__)
@@ -48,48 +46,12 @@ class SlackBackend(BaseBackend):
 
         self._slack_app = slack_app
 
-    def _send_message(self, message: SlackMessage) -> SlackResponse:
-        header = message.header or {}
-        body = message.body or {}
-        return self._slack_app.client.chat_postMessage(channel=message.channel, **header, **body)
-
-    def _get_permalink(self, *, message: SlackMessage, raise_exception: bool = False) -> str:
-        """Get a permalink for given message identifier."""
-        if not message.ts:
-            msg = "Message timestamp is not set, can't retrieve permalink."
-            raise ValueError(msg)
-
-        try:
-            _permalink_resp = self._slack_app.client.chat_getPermalink(
-                channel=message.channel,
-                message_ts=message.ts,
-            )
-        except SlackApiError:
-            if raise_exception:
-                raise
-
-            logger.exception(
-                "Error occurred while sending retrieving message's permalink,"
-                " but ignored as `raise_exception` not set.",
-            )
-            return ""
-
-        return _permalink_resp.get("permalink", default="")
-
-    def _record_request(self, response: SlackResponse) -> dict[str, Any]:
-        # Remove auth header (token) from request before recording
-        response.req_args.get("headers", {}).pop("Authorization", None)
-
-        return response.req_args
-
-    def _record_response(self, response: SlackResponse) -> dict[str, Any]:
-        return {
-            "http_verb": response.http_verb,
-            "api_url": response.api_url,
-            "status_code": response.status_code,
-            "headers": response.headers,
-            "data": response.data,
-        }
+    def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:  # noqa: D102
+        return self._slack_app.client.chat_postMessage(
+            channel=channel,
+            **header.as_dict(),
+            **body.as_dict(),
+        )
 
 
 class SlackRedirectBackend(SlackBackend):
@@ -109,27 +71,19 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def prepare_message(self, *args: Any, channel: str, body: MessageBody, **kwargs: Any) -> SlackMessage:
-        """Prepare message to send, with modified for redirection.
-
-        Args:
-            args: Positional arguments to pass to super method.
-            channel: Original channel to send message.
-            body: Message content.
-            kwargs: Keyword arguments to pass to super method.
-
-        Returns:
-            Prepared message instance.
-        """
-        # Modify channel to force messages always sent to specific channel
-        # Add an attachment that informing message has been redirected
+    def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:  # noqa: D102
         if self.inform_redirect:
-            body.attachments = [
+            attachments = body.attachments or []
+            attachments.append(
                 self._make_inform_attachment(original_channel=channel),
-                *(body.attachments or []),
-            ]
+            )
+            body.attachments = attachments
 
-        return super().prepare_message(*args, channel=self.redirect_channel, body=body, **kwargs)
+        return self._slack_app.client.chat_postMessage(
+            channel=self.redirect_channel,
+            **header.as_dict(),
+            **body.as_dict(),
+        )
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
         msg_redirect_inform = _(

@@ -3,7 +3,7 @@ from __future__ import annotations  # noqa: D100
 import logging
 from typing import TYPE_CHECKING, Any
 
-from django_slack_tools.slack_messages.request import MessageRequest
+from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
 from django_slack_tools.slack_messages.template_loaders import TemplateNotFoundError
 
 if TYPE_CHECKING:
@@ -63,11 +63,11 @@ class Messenger:
         *,
         template: str,
         context: dict[str, str],
-        headers: dict[str, Any] | None = None,
+        header: MessageHeader | dict[str, Any] | None = None,
     ) -> MessageResponse | None:
         """Shortcut of `.send_request()`."""
-        headers = headers or {}
-        request = MessageRequest(template_key=template, recipient=to, context=context, headers=headers)
+        header = MessageHeader.from_any(header or {})
+        request = MessageRequest(template_key=template, channel=to, context=context, header=header)
         response = self.send_request(request=request)
         if response is None:
             return None
@@ -106,7 +106,8 @@ class Messenger:
     def _render_message(self, request: MessageRequest) -> MessageRequest:
         template = self._get_template(request.template_key)
         logger.debug("Rendering request %s with template: %s", request, template)
-        body = template.render(request.context)
+        rendered = template.render(request.context)
+        body = MessageBody.from_any(rendered)
         return request.copy_with_overrides(body=body)
 
     def _get_template(self, key: str) -> BaseTemplate:
