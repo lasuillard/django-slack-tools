@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_tools.slack_messages.validators import body_validator, header_validator
-from django_slack_tools.utils.model_mixins import TimestampMixin
+from django_slack_tools.utils.django.model_mixins import TimestampMixin
 
 from .messaging_policy import SlackMessagingPolicy
 
