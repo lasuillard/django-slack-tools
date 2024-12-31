@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
 
 class TestSlackMessage:
     def test_slack_message(self) -> None:
-        with mock.patch("django_slack_tools.slack_messages.message.slack_message") as m:
+        with mock.patch("django_slack_tools.slack_messages.shortcuts.slack_message") as m:
             tasks.slack_message(
                 "test",
                 template="simple",

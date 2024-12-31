@@ -5,8 +5,8 @@ from unittest import mock
 
 import pytest
 
-from django_slack_tools.slack_messages.message import slack_message
 from django_slack_tools.slack_messages.response import MessageResponse
+from django_slack_tools.slack_messages.shortcuts import slack_message
 
 from ._factories import SlackMessageResponseFactory
 

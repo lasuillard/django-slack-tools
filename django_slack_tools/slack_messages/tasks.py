@@ -9,7 +9,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 
-from django_slack_tools.slack_messages import message
+from django_slack_tools.slack_messages import shortcuts
 from django_slack_tools.slack_messages.models import SlackMessage
 
 if TYPE_CHECKING:
@@ -39,7 +39,7 @@ def slack_message(
     Returns:
         ID of sent message if any, `None` otherwise.
     """
-    response = message.slack_message(
+    response = shortcuts.slack_message(
         to,
         messenger_name=messenger_name,
         template=template,

@@ -1,4 +1,5 @@
 """Handy APIs for sending Slack messages."""
+# TODO(lasuillard): Rename this module to `shortcuts.py`
 
 from __future__ import annotations
 
