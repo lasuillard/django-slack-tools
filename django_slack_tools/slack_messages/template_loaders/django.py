@@ -1,6 +1,7 @@
 # noqa: D100
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from django.template import engines
@@ -12,6 +13,9 @@ from .base import BaseTemplateLoader
 
 if TYPE_CHECKING:
     from django.template.backends.base import BaseEngine
+
+
+logger = logging.getLogger(__name__)
 
 
 class DjangoTemplateLoader(BaseTemplateLoader):
@@ -44,6 +48,7 @@ class DjangoPolicyTemplateLoader(BaseTemplateLoader):
             try:
                 policy = SlackMessagingPolicy.objects.get(code=policy_or_code)
             except SlackMessagingPolicy.DoesNotExist:
+                logger.warning("Policy not found: %s", policy_or_code)
                 return None
         else:
             policy = policy_or_code
