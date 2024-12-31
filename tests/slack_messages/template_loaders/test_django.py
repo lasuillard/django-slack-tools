@@ -20,7 +20,7 @@ class TestDjangoPolicyTemplateLoader:
 
     def test_load_python_template(self) -> None:
         policy = SlackMessagingPolicyFactory(
-            template_type=SlackMessagingPolicy.TemplateType.DICT,
+            template_type=SlackMessagingPolicy.TemplateType.PYTHON,
             template={
                 "attachments": [
                     {

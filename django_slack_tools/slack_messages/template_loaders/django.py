@@ -53,7 +53,7 @@ class DjangoPolicyTemplateLoader(BaseTemplateLoader):
         else:
             policy = policy_or_code
 
-        if policy.template_type == SlackMessagingPolicy.TemplateType.DICT:
+        if policy.template_type == SlackMessagingPolicy.TemplateType.PYTHON:
             return PythonTemplate(policy.template)
 
         if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO:
