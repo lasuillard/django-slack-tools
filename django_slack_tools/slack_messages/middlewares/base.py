@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class BaseMiddleware:
     """Base class for middleware components."""
 
-    def process_request(self, request: MessageRequest) -> MessageRequest | None:
+    def process_request(self, request: MessageRequest) -> MessageRequest | None:  # pragma: no cover
         """Process the incoming requests.
 
         Args:
@@ -21,7 +21,7 @@ class BaseMiddleware:
         """
         return request
 
-    def process_response(self, response: MessageResponse) -> MessageResponse | None:
+    def process_response(self, response: MessageResponse) -> MessageResponse | None:  # pragma: no cover
         """Processes a sequence of MessageResponse objects and returns the processed sequence.
 
         Args:
