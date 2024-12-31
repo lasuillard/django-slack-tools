@@ -66,7 +66,7 @@ class Messenger:
         context: dict[str, str],
         header: MessageHeader | dict[str, Any] | None = None,
     ) -> MessageResponse | None:
-        """Shortcut of `.send_request()`."""
+        """Simplified shortcut for `.send_request()`."""
         header = MessageHeader.from_any(header or {})
         request = MessageRequest(template_key=template, channel=to, context=context, header=header)
         response = self.send_request(request=request)
@@ -82,7 +82,7 @@ class Messenger:
         if _request is None:
             return None
 
-        _request = self._render_message(_request)
+        self._render_message(_request)
         response = self._deliver_message(_request)
         _response = self._process_response(response)
         if _response is None:
@@ -92,6 +92,7 @@ class Messenger:
         return response
 
     def _process_request(self, request: MessageRequest) -> MessageRequest | None:
+        """Processes the request with middlewares in forward order."""
         for middleware in self.middlewares:
             logger.debug("Processing request (%s) with middleware %s", request, middleware)
             new_request = middleware.process_request(request)
@@ -104,14 +105,16 @@ class Messenger:
         logger.debug("Request after processing: %s", request)
         return request
 
-    def _render_message(self, request: MessageRequest) -> MessageRequest:
+    def _render_message(self, request: MessageRequest) -> None:
+        """Updates the request with rendered message, in-place."""
         template = self._get_template(request.template_key)
         logger.debug("Rendering request %s with template: %s", request, template)
         rendered = template.render(request.context)
-        body = MessageBody.from_any(rendered)
-        return request.copy_with_overrides(body=body)
+        request.body = MessageBody.from_any(rendered)
+        # TODO(lasuillard): Is this meaningful? why not just update it in-place?
 
     def _get_template(self, key: str) -> BaseTemplate:
+        """Loads the template by key."""
         for loader in self.template_loaders:
             template = loader.load(key)
             if template is not None:
@@ -121,12 +124,14 @@ class Messenger:
         raise TemplateNotFoundError(msg)
 
     def _deliver_message(self, request: MessageRequest) -> MessageResponse:
+        """Invoke the messaging backend to deliver the message."""
         logger.debug("Delivering message request: %s", request)
         response = self.messaging_backend.deliver(request)
         logger.debug("Response after delivery: %s", response)
         return response
 
     def _process_response(self, response: MessageResponse) -> MessageResponse | None:
+        """Processes the response with middlewares in reverse order."""
         for middleware in reversed(self.middlewares):
             logger.debug("Processing response (%s) with middleware: %s", response, middleware)
             new_response = middleware.process_response(response)

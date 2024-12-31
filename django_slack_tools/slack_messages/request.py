@@ -61,18 +61,6 @@ class MessageRequest:
     def _generate_id(cls) -> str:
         return str(uuid.uuid4())
 
-    def copy_with_overrides(self, **overrides: Any) -> MessageRequest:
-        """Create a new message request with the given overrides."""
-        attrs = {
-            "channel": self.channel,
-            "template_key": self.template_key,
-            "context": self.context,
-            "header": self.header,
-            "body": self.body,
-        }
-        attrs.update(overrides)
-        return MessageRequest(**attrs)
-
     def as_dict(self) -> dict[str, Any]:
         """Return the message request as a dictionary."""
         return {

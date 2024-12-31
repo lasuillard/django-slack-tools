@@ -48,25 +48,6 @@ class TestMessageRequest:
             body=None,
         )
 
-    def test_copy_with_overrides(self) -> None:
-        request = MessageRequestFactory(
-            id_="request-id",
-            channel="some-channel",
-            template_key="some-template-key",
-            context={"some": "context"},
-            header=MessageHeader(),
-        )
-
-        copy = request.copy_with_overrides(channel="some-other-channel")
-
-        assert copy is not request
-        assert copy.id_ != request.id_
-        assert copy.channel == "some-other-channel"
-        assert copy.template_key == "some-template-key"
-        assert copy.context == {"some": "context"}
-        assert copy.header == MessageHeader()
-        assert copy.body is None
-
     def test_as_dict(self) -> None:
         request = MessageRequestFactory(
             id_="request-id",
