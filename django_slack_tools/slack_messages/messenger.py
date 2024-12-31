@@ -1,4 +1,5 @@
-from __future__ import annotations  # noqa: D100
+# noqa: D100
+from __future__ import annotations
 
 import logging
 from typing import TYPE_CHECKING, Any
