@@ -1,7 +1,10 @@
-from __future__ import annotations  # noqa: D100
+# noqa: D100
+from __future__ import annotations
 
 import uuid
 from typing import Any
+
+from django_slack_tools.utils.repr import make_repr
 
 
 class MessageRequest:
@@ -44,9 +47,14 @@ class MessageRequest:
     def __str__(self) -> str:
         return f"<{self.__class__.__name__}:{self.id_}>"
 
-    # TODO(lasuillard): Test it can initialize object by its repr.
     def __repr__(self) -> str:
-        return self.__str__()
+        return make_repr(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+
+        return all(getattr(self, attr) == getattr(other, attr) for attr in self.__dict__)
 
     # TODO(lasuillard): Put `message_id` field in the database model.
     @classmethod
@@ -68,7 +76,7 @@ class MessageRequest:
     def as_dict(self) -> dict[str, Any]:
         """Return the message request as a dictionary."""
         return {
-            "id": self.id_,
+            "id_": self.id_,
             "channel": self.channel,
             "template_key": self.template_key,
             "context": self.context,
@@ -103,6 +111,15 @@ class MessageHeader:
         self.thread_ts = thread_ts
         self.unfurl_links = unfurl_links
         self.unfurl_media = unfurl_media
+
+    def __repr__(self) -> str:
+        return make_repr(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+
+        return all(getattr(self, attr) == getattr(other, attr) for attr in self.__dict__)
 
     @classmethod
     def from_any(cls, obj: MessageHeader | dict[str, Any] | None = None) -> MessageHeader:
@@ -168,6 +185,15 @@ class MessageBody:
         self.icon_url = icon_url
         self.metadata = metadata
         self.username = username
+
+    def __repr__(self) -> str:
+        return make_repr(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+
+        return all(getattr(self, attr) == getattr(other, attr) for attr in self.__dict__)
 
     @classmethod
     def from_any(cls, obj: str | MessageBody | dict[str, Any]) -> MessageBody:

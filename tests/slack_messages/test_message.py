@@ -23,16 +23,16 @@ def test_slack_message(mock_slack_client: Mock) -> None:
     assert isinstance(response, MessageResponse)
     request = response.request
     assert request
-    assert request.as_dict() == {
+    assert {  # noqa: SIM300; Necessary for mock.ANY to work properly
         "body": mock.ANY,
         "channel": "whatever-channel",
         "context": {
             "greet": "Hello, World!",
         },
         "header": mock.ANY,
-        "id": mock.ANY,
+        "id_": mock.ANY,
         "template_key": "greet.xml",
-    }
+    } == request.as_dict()
     assert request.body
     assert request.body.as_dict() == {
         "attachments": None,

@@ -1,6 +1,9 @@
-from __future__ import annotations  # noqa: D100
+# noqa: D100
+from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+
+from django_slack_tools.utils.repr import make_repr
 
 if TYPE_CHECKING:
     from django_slack_tools.slack_messages.request import MessageRequest
@@ -47,9 +50,14 @@ class MessageResponse:
         request_id = getattr(self.request, "id_", None)
         return f"<{self.__class__.__name__}:{request_id}>"
 
-    # TODO(lasuillard): Test it can initialize object by its repr.
     def __repr__(self) -> str:
-        return self.__str__()
+        return make_repr(self)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+
+        return all(getattr(self, attr) == getattr(other, attr) for attr in self.__dict__)
 
     def as_dict(self) -> dict[str, Any]:
         """Return the response as a dictionary, except for the request."""
@@ -57,4 +65,6 @@ class MessageResponse:
             "ok": self.ok,
             "error": self.error,
             "data": self.data,
+            "ts": self.ts,
+            "parent_ts": self.parent_ts,
         }
