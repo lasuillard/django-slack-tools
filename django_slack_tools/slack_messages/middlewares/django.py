@@ -28,7 +28,7 @@ class DjangoDatabasePersister(BaseMiddleware):
     def process_response(self, response: MessageResponse) -> MessageResponse | None:  # noqa: D102
         request = response.request
         if request is None:
-            msg = "No request found in response, skipping persister"
+            msg = "No request found in response, skipping persister."
             if self.log_level_if_no_request >= logging.WARNING:
                 msg += " If you want to suppress this warning, set `log_level_if_no_request` to whatever you want."
 
