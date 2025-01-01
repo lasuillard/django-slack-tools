@@ -6,7 +6,7 @@ from django_slack_tools.slack_messages.validators import body_validator, header_
 
 def test_header_validator() -> None:
     header_validator({})
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match=".+"):
         header_validator(
             {
                 "_unknown_": "Give me an error",
@@ -20,5 +20,5 @@ def test_body_validator() -> None:
             "text": "Hello, World!",
         },
     )
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match=".+"):
         body_validator({})

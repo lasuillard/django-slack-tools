@@ -21,35 +21,31 @@ def test_slack_message(mock_slack_client: Mock) -> None:
     response = slack_message("whatever-channel", template="greet.xml", context={"greet": "Hello, World!"})
 
     assert isinstance(response, MessageResponse)
-    request = response.request
-    assert request
-    assert {  # noqa: SIM300; Necessary for mock.ANY to work properly
-        "body": mock.ANY,
+    assert (request := response.request)
+    assert request.model_dump() == {
+        "body": {
+            "attachments": None,
+            "blocks": [{"text": {"text": "Hello, World!,", "type": "mrkdwn"}, "type": "section"}],
+            "icon_emoji": None,
+            "icon_url": None,
+            "metadata": None,
+            "text": None,
+            "username": None,
+        },
         "channel": "whatever-channel",
         "context": {
             "greet": "Hello, World!",
         },
-        "header": mock.ANY,
+        "header": {
+            "mrkdwn": None,
+            "parse": None,
+            "reply_broadcast": None,
+            "thread_ts": None,
+            "unfurl_links": None,
+            "unfurl_media": None,
+        },
         "id_": mock.ANY,
         "template_key": "greet.xml",
-    } == request.as_dict()
-    assert request.body
-    assert request.body.as_dict() == {
-        "attachments": None,
-        "blocks": [{"text": {"text": "Hello, World!,", "type": "mrkdwn"}, "type": "section"}],
-        "icon_emoji": None,
-        "icon_url": None,
-        "metadata": None,
-        "text": None,
-        "username": None,
-    }
-    assert request.header.as_dict() == {
-        "mrkdwn": None,
-        "parse": None,
-        "reply_broadcast": None,
-        "thread_ts": None,
-        "unfurl_links": None,
-        "unfurl_media": None,
     }
     assert response.error is None
     assert response.data

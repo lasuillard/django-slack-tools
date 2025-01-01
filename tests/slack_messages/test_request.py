@@ -1,6 +1,6 @@
 import pytest
 
-from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
+from django_slack_tools.slack_messages.request import MessageBody, MessageHeader
 
 from ._factories import MessageRequestFactory
 
@@ -11,82 +11,10 @@ class TestMessageRequest:
     def test_instance_creation(self) -> None:
         assert MessageRequestFactory()
 
-    def test_str(self) -> None:
-        request = MessageRequestFactory(id_="request-id")
-        assert str(request) == "<MessageRequest:request-id>"
-
-    def test_repr(self) -> None:
-        request = MessageRequestFactory(
-            id_="request-id",
-            channel="some-channel",
-            template_key="some-template-key",
-            context={"some": "context"},
-            header=MessageHeader(),
-            body=None,
-        )
-        assert (
-            repr(request)
-            == "MessageRequest(id_='request-id', channel='some-channel', template_key='some-template-key', context={'some': 'context'}, header=MessageHeader(mrkdwn=None, parse=None, reply_broadcast=None, thread_ts=None, unfurl_links=None, unfurl_media=None), body=None)"  # noqa: E501
-        )
-
-    def test_eq(self) -> None:
-        request = MessageRequestFactory(
-            id_="request-id",
-            channel="some-channel",
-            template_key="some-template-key",
-            context={"some": "context"},
-            header=MessageHeader(),
-            body=None,
-        )
-        assert request != -1
-        assert request == MessageRequest(
-            id_="request-id",
-            channel="some-channel",
-            template_key="some-template-key",
-            context={"some": "context"},
-            header=MessageHeader(),
-            body=None,
-        )
-
-    def test_as_dict(self) -> None:
-        request = MessageRequestFactory(
-            id_="request-id",
-            channel="some-channel",
-            template_key="some-template-key",
-            context={"some": "context"},
-            header=MessageHeader(),
-            body=None,
-        )
-        assert request.as_dict() == {
-            "id_": "request-id",
-            "channel": "some-channel",
-            "template_key": "some-template-key",
-            "context": {"some": "context"},
-            "header": {
-                "mrkdwn": None,
-                "parse": None,
-                "reply_broadcast": None,
-                "thread_ts": None,
-                "unfurl_links": None,
-                "unfurl_media": None,
-            },
-            "body": None,
-        }
-
 
 class TestMessageHeader:
     def test_instance_creation(self) -> None:
         assert MessageHeader()
-
-    def test_repr(self) -> None:
-        assert (
-            repr(MessageHeader())
-            == "MessageHeader(mrkdwn=None, parse=None, reply_broadcast=None, thread_ts=None, unfurl_links=None, unfurl_media=None)"  # noqa: E501
-        )
-
-    def test_eq(self) -> None:
-        assert MessageHeader() != -1
-        assert MessageHeader() == MessageHeader()
 
     def test_from_any(self) -> None:
         assert MessageHeader.from_any(None) == MessageHeader()
@@ -98,16 +26,6 @@ class TestMessageHeader:
 class TestMessageBody:
     def test_instance_creation(self) -> None:
         assert MessageBody(text="some-text")
-
-    def test_repr(self) -> None:
-        assert (
-            repr(MessageBody(text="some-text"))
-            == "MessageBody(attachments=None, blocks=None, text='some-text', icon_emoji=None, icon_url=None, metadata=None, username=None)"  # noqa: E501
-        )
-
-    def test_eq(self) -> None:
-        assert MessageBody(text="some-text") != -1
-        assert MessageBody(text="some-text") == MessageBody(text="some-text")
 
     def test_from_any(self) -> None:
         assert MessageBody.from_any(MessageBody(text="some-text")) == MessageBody(text="some-text")

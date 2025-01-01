@@ -41,14 +41,14 @@ class DjangoDatabasePersister(BaseMiddleware):
         try:
             history = SlackMessage(
                 channel=request.channel,
-                header=request.header.as_dict(),
-                body=request.body.as_dict() if request.body else {},
+                header=request.header.model_dump(),
+                body=request.body.model_dump() if request.body else {},
                 ok=response.ok,
                 permalink="",  # TODO(lasuillard): Re-impl this
                 ts=response.ts,
                 parent_ts=response.parent_ts or "",
-                request=request.as_dict(),
-                response=response.as_dict(),
+                request=request.model_dump(),
+                response=response.model_dump(),
                 exception=response.error or "",
             )
             history.save()
@@ -107,7 +107,8 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
                 channel=recipient.channel,
                 template_key=policy.code,
                 context={**request.context, "__final__": True},
-                header=MessageHeader.from_any({**policy.header_defaults, **request.header.as_dict()}),
+                # TODO(lasuillard): Want some cleaner way to merge models
+                header=MessageHeader.from_any({**policy.header_defaults, **request.header.model_dump()}),
             )
             requests.append(req)
 

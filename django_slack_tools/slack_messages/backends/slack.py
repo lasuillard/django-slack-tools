@@ -49,8 +49,8 @@ class SlackBackend(BaseBackend):
     def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:  # noqa: D102
         return self._slack_app.client.chat_postMessage(
             channel=channel,
-            **header.as_dict(),
-            **body.as_dict(),
+            **header.model_dump(),
+            **body.model_dump(),
         )
 
 
@@ -81,8 +81,8 @@ class SlackRedirectBackend(SlackBackend):
 
         return self._slack_app.client.chat_postMessage(
             channel=self.redirect_channel,
-            **header.as_dict(),
-            **body.as_dict(),
+            **header.model_dump(),
+            **body.model_dump(),
         )
 
     def _make_inform_attachment(self, *, original_channel: str) -> dict[str, Any]:
