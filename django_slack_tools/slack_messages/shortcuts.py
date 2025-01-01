@@ -45,7 +45,7 @@ def slack_message(
     to: str,
     *,
     messenger_name: str | None = None,
-    template: str,
+    template: str | None = None,
     header: MessageHeader | dict[str, Any] | None = None,
     context: dict[str, Any] | None = None,
 ) -> MessageResponse | None:

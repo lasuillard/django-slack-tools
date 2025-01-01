@@ -58,7 +58,6 @@ class DjangoDatabasePersister(BaseMiddleware):
         return response
 
 
-# TODO(lasuillard): Use `to` instead of `template_key` for policy
 class DjangoDatabasePolicyHandler(BaseMiddleware):
     """Middleware to handle Slack messaging policies from the database."""
 
@@ -92,18 +91,19 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
         if request.context.get("__final__", False):
             return request
 
+        code = request.channel
         try:
-            policy = SlackMessagingPolicy.objects.get(code=request.template_key)
+            policy = SlackMessagingPolicy.objects.get(code=code)
         except SlackMessagingPolicy.DoesNotExist:
             if self.auto_create_policy:
                 # TODO(lasuillard): Provide default template (render all elements in context)
-                logger.warning("No policy found for template key: %s", request.template_key)
-                policy = SlackMessagingPolicy.objects.create(code=request.template_key)
+                logger.warning("No policy found for template key: %s", code)
+                policy = SlackMessagingPolicy.objects.create(code=code)
 
             raise
 
         if not policy.enabled:
-            logger.debug("Policy %s is disabled, skipping further messaging", policy.code)
+            logger.debug("Policy %s is disabled, skipping further messaging", policy)
             return None
 
         requests: list[MessageRequest] = []

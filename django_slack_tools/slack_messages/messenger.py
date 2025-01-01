@@ -62,12 +62,12 @@ class Messenger:
         self,
         to: str,
         *,
-        template: str,
+        template: str | None = None,
         context: dict[str, str],
         header: MessageHeader | dict[str, Any] | None = None,
     ) -> MessageResponse | None:
         """Simplified shortcut for `.send_request()`."""
-        header = MessageHeader.from_any(header or {})
+        header = MessageHeader.model_validate(header or {})
         request = MessageRequest(template_key=template, channel=to, context=context, header=header)
         response = self.send_request(request=request)
         if response is None:
@@ -107,11 +107,14 @@ class Messenger:
 
     def _render_message(self, request: MessageRequest) -> None:
         """Updates the request with rendered message, in-place."""
+        if request.template_key is None:
+            msg = "Template key is required to render the message"
+            raise ValueError(msg)
+
         template = self._get_template(request.template_key)
         logger.debug("Rendering request %s with template: %s", request, template)
         rendered = template.render(request.context)
-        request.body = MessageBody.from_any(rendered)
-        # TODO(lasuillard): Is this meaningful? why not just update it in-place?
+        request.body = MessageBody.model_validate(rendered)
 
     def _get_template(self, key: str) -> BaseTemplate:
         """Loads the template by key."""

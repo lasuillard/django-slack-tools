@@ -15,9 +15,14 @@ class MessageRequest(BaseModel):
 
     id_: str = Field(default_factory=lambda: str(uuid.uuid4()))
     channel: Any
-    template_key: str
+
+    # Template key is optional to allow lazy initialization of the template key
+    template_key: Optional[str]
+
     context: Dict[str, Any]
     header: MessageHeader
+
+    # Also, the body is optional because it is rendered from the template
     body: Optional[MessageBody] = None
 
 
