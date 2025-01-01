@@ -90,7 +90,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     # ------------------------------------------------------------------------
     date_hierarchy = "last_modified"
     search_fields = ("code",)
-    list_display = ("id", "code", "enabled", "_count_recipients", "created", "last_modified")
+    list_display = ("id", "code", "enabled", "_count_recipients", "template_type", "created", "last_modified")
     list_display_links = ("id", "code")
     list_filter = (
         "enabled",
@@ -107,7 +107,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("code", "enabled", "recipients", "header_defaults", "template"),
+                "fields": ("code", "enabled", "recipients", "header_defaults", "template_type", "template"),
             },
         ),
         (
