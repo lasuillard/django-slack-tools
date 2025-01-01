@@ -6,6 +6,8 @@ from typing import Any
 
 from django_slack_tools.utils.repr import make_repr
 
+# TODO(lasuillard): Consider using Pydantic, dirty conversion code is everywhere
+
 
 class MessageRequest:
     """Message request object."""
@@ -68,8 +70,8 @@ class MessageRequest:
             "channel": self.channel,
             "template_key": self.template_key,
             "context": self.context,
-            "header": self.header,
-            "body": self.body,
+            "header": self.header.as_dict(),
+            "body": self.body.as_dict() if self.body else None,
         }
 
 

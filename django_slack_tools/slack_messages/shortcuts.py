@@ -25,6 +25,8 @@ _MESSENGERS = {
             DjangoPolicyTemplateLoader(),
         ],
         middlewares=[
+            # TODO(lasuillard): Uncomment this when ready (centralized configuration)
+            # DjangoDatabasePolicyHandler(messenger="default"),  # noqa: ERA001
             DjangoDatabasePersister(),
         ],
         messaging_backend=app_settings.backend,
@@ -33,7 +35,7 @@ _MESSENGERS = {
 
 
 # TODO(lasuillard): Add support for multiple backends with centralized configuration
-def get_messenger(name: str | None) -> Messenger:
+def get_messenger(name: str | None = None) -> Messenger:
     """Get a messenger instance by name."""
     name = name or "default"
     return _MESSENGERS[name]

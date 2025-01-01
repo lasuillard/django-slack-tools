@@ -62,7 +62,14 @@ class TestMessageRequest:
             "channel": "some-channel",
             "template_key": "some-template-key",
             "context": {"some": "context"},
-            "header": MessageHeader(),
+            "header": {
+                "mrkdwn": None,
+                "parse": None,
+                "reply_broadcast": None,
+                "thread_ts": None,
+                "unfurl_links": None,
+                "unfurl_media": None,
+            },
             "body": None,
         }
 
