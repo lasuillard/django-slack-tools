@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from django.template import engines
+from django.template import TemplateDoesNotExist, engines
 
 from django_slack_tools.slack_messages.message_templates import DjangoTemplate, PythonTemplate
 from django_slack_tools.slack_messages.models import SlackMessagingPolicy
@@ -30,7 +30,11 @@ class DjangoTemplateLoader(BaseTemplateLoader):
         self.engine = engines["django"] if engine is None else engine
 
     def load(self, key: str) -> DjangoTemplate | None:  # noqa: D102
-        return DjangoTemplate(file=key, engine=self.engine)
+        try:
+            return DjangoTemplate(file=key, engine=self.engine)
+        except TemplateDoesNotExist:
+            logger.debug("Template not found: %s", key)
+            return None
 
 
 class DjangoPolicyTemplateLoader(BaseTemplateLoader):
@@ -57,7 +61,11 @@ class DjangoPolicyTemplateLoader(BaseTemplateLoader):
             return PythonTemplate(policy.template)
 
         if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO:
-            return DjangoTemplate(file=policy.template)
+            try:
+                return DjangoTemplate(file=policy.template)
+            except TemplateDoesNotExist:
+                logger.debug("Template not found: %s", policy.template)
+                return None
 
         if policy.template_type == SlackMessagingPolicy.TemplateType.DJANGO_INLINE:
             return DjangoTemplate(inline=policy.template)

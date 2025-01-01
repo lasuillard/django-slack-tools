@@ -14,6 +14,11 @@ class TestDjangoTemplateLoader:
         assert isinstance(template, DjangoTemplate)
         assert template.template.template.name == "greet.xml"  # type: ignore[attr-defined] # Maybe false-positive error?
 
+    def test_load_template_not_found(self) -> None:
+        loader = DjangoTemplateLoader()
+        template = loader.load("NOT_FOUND")
+        assert template is None
+
 
 class TestDjangoPolicyTemplateLoader:
     pytestmark = pytest.mark.django_db
@@ -79,6 +84,17 @@ class TestDjangoPolicyTemplateLoader:
     def test_load_django_template_policy_not_found(self) -> None:
         loader = DjangoPolicyTemplateLoader()
         template = loader.load("NOT_FOUND")
+        assert template is None
+
+    def test_load_django_template_template_not_found(self) -> None:
+        policy = SlackMessagingPolicyFactory(
+            template_type=SlackMessagingPolicy.TemplateType.DJANGO,
+            template="NOT_FOUND",
+        )
+
+        loader = DjangoPolicyTemplateLoader()
+        template = loader.load(policy.code)
+
         assert template is None
 
     def test_load_django_inline_template(self) -> None:
