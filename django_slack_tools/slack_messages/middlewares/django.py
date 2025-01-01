@@ -88,6 +88,7 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
 
     def process_request(self, request: MessageRequest) -> MessageRequest | None:  # noqa: D102
         # TODO(lasuillard): Hacky way to stop the request, need to find a better way
+        #                   Some extra field (request.meta) could be added to share control context
         if request.context.get("__final__", False):
             return request
 
@@ -100,6 +101,10 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
                 policy = SlackMessagingPolicy.objects.create(code=request.template_key)
 
             raise
+
+        if not policy.enabled:
+            logger.debug("Policy %s is disabled, skipping further messaging", policy.code)
+            return None
 
         requests: list[MessageRequest] = []
         for recipient in policy.recipients.all():
