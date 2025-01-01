@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
+from slack_bolt import App
 
 from django_slack_tools.slack_messages.backends import SlackBackend, SlackRedirectBackend
 from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
@@ -12,17 +14,32 @@ from tests.slack_messages._factories import SlackMessageResponseFactory
 if TYPE_CHECKING:
     from unittest.mock import Mock
 
-    from slack_bolt import App
+
+# Values for import testing
+_slack_app = App(
+    token="stupid-sandwich",  # noqa: S106
+    signing_secret="peanut-butter",  # noqa: S106
+    token_verification_enabled=False,
+)
+_not_slack_app = -1
 
 
 class TestSlackBackend:
-    # TODO(lasuillard): Test `.__init__()` for import string & callable
-
     pytestmark = pytest.mark.django_db()
 
     @pytest.fixture
     def backend(self, slack_app: App) -> SlackBackend:
         return SlackBackend(slack_app=slack_app)
+
+    def test_instance_creation(self) -> None:
+        assert SlackBackend(slack_app="tests.slack_messages.backends.test_slack._slack_app")
+        assert SlackBackend(slack_app=lambda: _slack_app)
+        assert SlackBackend(slack_app=_slack_app)
+        with pytest.raises(ImproperlyConfigured, match="Couldn't resolve provided app spec into Slack app instance."):
+            SlackBackend(slack_app="tests.slack_messages.backends.test_slack._not_slack_app")
+
+        with pytest.raises(ImproperlyConfigured, match="Couldn't resolve provided app spec into Slack app instance."):
+            SlackBackend(slack_app=lambda: _not_slack_app)  # type: ignore[arg-type, return-value]
 
     def test_deliver(self, backend: SlackBackend, mock_slack_client: Mock) -> None:
         """Test sending message."""

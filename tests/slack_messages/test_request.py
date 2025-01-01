@@ -6,8 +6,6 @@ from ._factories import MessageRequestFactory
 
 
 class TestMessageRequest:
-    # TODO(lasuillard): Implement tests for MessageRequest
-
     def test_instance_creation(self) -> None:
         assert MessageRequestFactory()
 
