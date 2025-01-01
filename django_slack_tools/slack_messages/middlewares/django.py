@@ -48,7 +48,7 @@ class DjangoDatabasePersister(BaseMiddleware):
                 ts=response.ts,
                 parent_ts=response.parent_ts or "",
                 request=request.model_dump(),
-                response=response.model_dump(),
+                response=response.model_dump(exclude={"request"}),
                 exception=response.error or "",
             )
             history.save()
