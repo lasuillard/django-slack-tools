@@ -10,6 +10,7 @@ dependencies = [
     "slack-bolt>=1,<2",
     "django>=4.2,<5.2",
     "xmltodict>=0.14.1,<1",
+	"pydantic>=2,<3"
 ]
 
 [project.optional-dependencies]
