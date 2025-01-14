@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from slack_bolt import App
@@ -24,11 +23,7 @@ logger = getLogger(__name__)
 class SlackBackend(BaseBackend):
     """Backend actually sending the messages."""
 
-    def __init__(
-        self,
-        *,
-        slack_app: App | Callable[[], App] | str,
-    ) -> None:
+    def __init__(self, *, slack_app: App | str) -> None:
         """Initialize backend.
 
         Args:
@@ -37,12 +32,9 @@ class SlackBackend(BaseBackend):
         if isinstance(slack_app, str):
             slack_app = import_string(slack_app)
 
-        if callable(slack_app):
-            slack_app = slack_app()
-
         if not isinstance(slack_app, App):
-            msg = "Couldn't resolve provided app spec into Slack app instance."
-            raise ImproperlyConfigured(msg)
+            msg = f"Expected {App!s} instance, got {type(slack_app)}"
+            raise TypeError(msg)
 
         self._slack_app = slack_app
 

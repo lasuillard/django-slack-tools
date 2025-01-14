@@ -1,4 +1,4 @@
 from .base import BaseMiddleware
-from .django import DjangoDatabasePersister
+from .django import DjangoDatabasePersister, DjangoDatabasePolicyHandler
 
-__all__ = ("BaseMiddleware", "DjangoDatabasePersister")
+__all__ = ("BaseMiddleware", "DjangoDatabasePersister", "DjangoDatabasePolicyHandler")

@@ -4,21 +4,18 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
+from django_slack_tools.slack_messages.backends import BaseBackend
+from django_slack_tools.slack_messages.middlewares import BaseMiddleware
 from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
-from django_slack_tools.slack_messages.template_loaders import TemplateNotFoundError
+from django_slack_tools.slack_messages.template_loaders import BaseTemplateLoader, TemplateNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from django_slack_tools.slack_messages.backends import BaseBackend
     from django_slack_tools.slack_messages.message_templates import BaseTemplate
-    from django_slack_tools.slack_messages.middlewares import BaseMiddleware
     from django_slack_tools.slack_messages.response import MessageResponse
-    from django_slack_tools.slack_messages.template_loaders import BaseTemplateLoader
 
 logger = logging.getLogger(__name__)
-
-# TODO(lasuillard): Make logs more readable; list representation with `__str__()` instead of `__repr__()`
 
 
 class Messenger:
@@ -48,14 +45,40 @@ class Messenger:
                 Middlewares are applied in the order they are provided for request, and in reverse order for response.
             messaging_backend: The messaging backend to be used.
         """
+        # Validate the template loaders
+        for tl in template_loaders:
+            if not isinstance(tl, BaseTemplateLoader):
+                msg = f"Expected inherited from {BaseTemplateLoader!s}, got {type(tl)}"
+                raise TypeError(msg)
+
         self.template_loaders = template_loaders
+
+        # Validate the middlewares
+        for mw in middlewares:
+            if not isinstance(mw, BaseMiddleware):
+                msg = f"Expected inherited from {BaseMiddleware!s}, got {type(mw)}"
+                raise TypeError(msg)
+
         self.middlewares = middlewares
+
+        # Validate the messaging backend
+        if not isinstance(messaging_backend, BaseBackend):
+            msg = f"Expected inherited from {BaseBackend!s}, got {type(messaging_backend)}"
+            raise TypeError(msg)
+
         self.messaging_backend = messaging_backend
+
+        # Summary
         logger.info(
-            """Initialized messenger with: template loaders: %s, middlewares: %s, and messaging backend: %s""",
-            template_loaders,
-            middlewares,
-            messaging_backend,
+            (
+                "Initialized messenger with:"
+                "\n- Template loaders: %s"
+                "\n- Middlewares: %s"
+                "\n- Messaging backend: %s"
+            ),
+            ", ".join(cls.__class__.__name__ for cls in template_loaders),
+            ", ".join(cls.__class__.__name__ for cls in middlewares),
+            messaging_backend.__class__.__name__,
         )
 
     def send(

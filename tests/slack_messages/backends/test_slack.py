@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from django.core.exceptions import ImproperlyConfigured
 from slack_bolt import App
 
 from django_slack_tools.slack_messages.backends import SlackBackend, SlackRedirectBackend
@@ -33,13 +32,12 @@ class TestSlackBackend:
 
     def test_instance_creation(self) -> None:
         assert SlackBackend(slack_app="tests.slack_messages.backends.test_slack._slack_app")
-        assert SlackBackend(slack_app=lambda: _slack_app)
         assert SlackBackend(slack_app=_slack_app)
-        with pytest.raises(ImproperlyConfigured, match="Couldn't resolve provided app spec into Slack app instance."):
+        with pytest.raises(
+            TypeError,
+            match="Expected <class 'slack_bolt.app.app.App'> instance, got <class 'int'>",
+        ):
             SlackBackend(slack_app="tests.slack_messages.backends.test_slack._not_slack_app")
-
-        with pytest.raises(ImproperlyConfigured, match="Couldn't resolve provided app spec into Slack app instance."):
-            SlackBackend(slack_app=lambda: _not_slack_app)  # type: ignore[arg-type, return-value]
 
     def test_deliver(self, backend: SlackBackend, mock_slack_client: Mock) -> None:
         """Test sending message."""
