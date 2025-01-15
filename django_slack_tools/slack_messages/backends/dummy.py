@@ -15,7 +15,7 @@ logger = getLogger(__name__)
 class DummyBackend(BaseBackend):
     """An dummy backend that does nothing with message."""
 
-    def send_message(self, *args: Any, **kwargs: Any) -> SlackResponse:  # noqa: ARG002, D102
+    def _send_message(self, *args: Any, **kwargs: Any) -> SlackResponse:  # noqa: ARG002
         return SlackResponse(
             client=None,
             http_verb="POST",

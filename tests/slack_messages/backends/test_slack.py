@@ -8,6 +8,7 @@ from slack_bolt import App
 from django_slack_tools.slack_messages.backends import SlackBackend, SlackRedirectBackend
 from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
 from django_slack_tools.slack_messages.response import MessageResponse
+from tests._factories import SlackApiErrorFactory
 from tests.slack_messages._factories import SlackMessageResponseFactory
 
 if TYPE_CHECKING:
@@ -60,6 +61,40 @@ class TestSlackBackend:
         assert response.ts
         assert response.parent_ts is None
 
+    def test_deliver_request_body_required(self, backend: SlackBackend) -> None:
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=None,
+        )
+        with pytest.raises(ValueError, match="Message body is required."):
+            backend.deliver(request)
+
+    def test_deliver_remote_api_error(self, backend: SlackBackend, mock_slack_client: Mock) -> None:
+        """Test sending message with error."""
+        mock_slack_client.chat_postMessage.side_effect = SlackApiErrorFactory()
+
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=MessageBody(text="Hello, World!"),
+        )
+        response = backend.deliver(request)
+
+        assert isinstance(response, MessageResponse)
+        assert response.request is request
+        assert response.ok is False
+        assert response.error
+        assert response.data == {
+            "ok": False,
+        }
+        assert response.ts is None
+        assert response.parent_ts is None
+
 
 class TestSlackRedirectBackend:
     pytestmark = pytest.mark.django_db()
@@ -88,20 +123,6 @@ class TestSlackRedirectBackend:
         assert response.data
         assert response.ts
         assert response.parent_ts is None
-
-    def test_send_message(self, backend: SlackRedirectBackend, mock_slack_client: Mock) -> None:
-        mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
-
-        request = MessageRequest(
-            channel="whatever-this-channel",
-            template_key="__any__",
-            context={},
-            header=MessageHeader(),
-            body=MessageBody(text="Hello, World!"),
-        )
-        response = backend.deliver(request)
-
-        assert isinstance(response, MessageResponse)
         mock_slack_client.chat_postMessage.assert_called_once_with(
             channel="test-redirect-channel",
             mrkdwn=None,
@@ -113,7 +134,7 @@ class TestSlackRedirectBackend:
             attachments=[
                 {
                     "color": "#eb4034",
-                    "text": ":warning:  This message was originally sent to channel *whatever-this-channel* but redirected here.",  # noqa: E501
+                    "text": ":warning:  This message was originally sent to channel *test-channel* but redirected here.",  # noqa: E501
                 },
             ],
             blocks=None,
@@ -124,7 +145,41 @@ class TestSlackRedirectBackend:
             username=None,
         )
 
-    def test_send_message_no_inform_redirect(self, backend: SlackRedirectBackend, mock_slack_client: Mock) -> None:
+    def test_deliver_request_body_required(self, backend: SlackRedirectBackend) -> None:
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=None,
+        )
+        with pytest.raises(ValueError, match="Message body is required."):
+            backend.deliver(request)
+
+    def test_deliver_remote_api_error(self, backend: SlackRedirectBackend, mock_slack_client: Mock) -> None:
+        """Test sending message with error."""
+        mock_slack_client.chat_postMessage.side_effect = SlackApiErrorFactory()
+
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=MessageBody(text="Hello, World!"),
+        )
+        response = backend.deliver(request)
+
+        assert isinstance(response, MessageResponse)
+        assert response.request is request
+        assert response.ok is False
+        assert response.error
+        assert response.data == {
+            "ok": False,
+        }
+        assert response.ts is None
+        assert response.parent_ts is None
+
+    def test_deliver_disable_inform_redirect(self, backend: SlackRedirectBackend, mock_slack_client: Mock) -> None:
         backend.inform_redirect = False
         mock_slack_client.chat_postMessage.return_value = SlackMessageResponseFactory()
 
@@ -154,10 +209,3 @@ class TestSlackRedirectBackend:
             metadata=None,
             username=None,
         )
-
-    def test_make_inform_attachment(self, backend: SlackRedirectBackend) -> None:
-        attachment = backend._make_inform_attachment(original_channel="test-original-channel")
-        assert attachment == {
-            "color": "#eb4034",
-            "text": ":warning:  This message was originally sent to channel *test-original-channel* but redirected here.",  # noqa: E501
-        }

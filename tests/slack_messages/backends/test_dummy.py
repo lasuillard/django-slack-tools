@@ -31,3 +31,14 @@ class TestDummyBackend:
         assert response.data == {}
         assert response.ts is None
         assert response.parent_ts is None
+
+    def test_deliver_request_body_required(self, backend: DummyBackend) -> None:
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=None,
+        )
+        with pytest.raises(ValueError, match="Message body is required."):
+            backend.deliver(request)

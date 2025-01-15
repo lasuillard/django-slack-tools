@@ -30,7 +30,7 @@ class BaseBackend(ABC):
             raise ValueError(msg)
 
         try:
-            response = self.send_message(
+            response = self._send_message(
                 channel=request.channel,
                 header=request.header,
                 body=request.body,
@@ -61,5 +61,5 @@ class BaseBackend(ABC):
         )
 
     @abstractmethod
-    def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:
+    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:
         """Internal implementation of actual 'send message' behavior."""

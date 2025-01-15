@@ -14,9 +14,7 @@ class TestLoggingBackend:
     def backend(self) -> LoggingBackend:
         return LoggingBackend()
 
-    def test_backend(self, backend: LoggingBackend) -> None:
-        backend = LoggingBackend()
-
+    def test_deliver(self, backend: LoggingBackend) -> None:
         request = MessageRequest(
             channel="test-channel",
             template_key="__any__",
@@ -33,3 +31,14 @@ class TestLoggingBackend:
         assert response.data == {}
         assert response.ts is None
         assert response.parent_ts is None
+
+    def test_deliver_request_body_required(self, backend: LoggingBackend) -> None:
+        request = MessageRequest(
+            channel="test-channel",
+            template_key="__any__",
+            context={},
+            header=MessageHeader(),
+            body=None,
+        )
+        with pytest.raises(ValueError, match="Message body is required."):
+            backend.deliver(request)

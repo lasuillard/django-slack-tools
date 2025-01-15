@@ -38,7 +38,7 @@ class SlackBackend(BaseBackend):
 
         self._slack_app = slack_app
 
-    def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:  # noqa: D102
+    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:
         return self._slack_app.client.chat_postMessage(
             channel=channel,
             **header.model_dump(),
@@ -63,7 +63,7 @@ class SlackRedirectBackend(SlackBackend):
 
         super().__init__(slack_app=slack_app)
 
-    def send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:  # noqa: D102
+    def _send_message(self, *, channel: str, header: MessageHeader, body: MessageBody) -> SlackResponse:
         if self.inform_redirect:
             attachments = body.attachments or []
             attachments.append(
