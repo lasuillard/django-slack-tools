@@ -93,6 +93,7 @@ addopts = [
 	"--cov-report=xml",
 	"--show-capture=no",
 	"--junitxml=junit.xml",
+	"-rs"
 ]
 testpaths = ["tests"]
 markers = ["slack: Tests working with Slack."]
