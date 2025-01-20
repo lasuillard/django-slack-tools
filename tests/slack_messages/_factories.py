@@ -3,9 +3,33 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from factory import lazy_attribute
+from factory import Factory, LazyAttribute, SubFactory, lazy_attribute
 
+from django_slack_tools.slack_messages.request import MessageHeader, MessageRequest
+from django_slack_tools.slack_messages.response import MessageResponse
 from tests._factories import SlackResponseFactory
+
+
+class MessageRequestFactory(Factory):
+    channel = "some-channel"
+    template_key = "some-template-key"
+    context = {"some": "context"}  # noqa: RUF012
+    header = LazyAttribute(lambda _: MessageHeader())
+
+    class Meta:
+        model = MessageRequest
+
+
+class MessageResponseFactory(Factory):
+    request = SubFactory(MessageRequestFactory)
+    ok = True
+    error = None
+    data = {"some": "data"}  # noqa: RUF012
+    ts = "some-ts"
+    parent_ts = None
+
+    class Meta:
+        model = MessageResponse
 
 
 class SlackMessageResponseFactory(SlackResponseFactory):

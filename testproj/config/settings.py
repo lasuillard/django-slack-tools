@@ -172,11 +172,25 @@ SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
 SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
 
 DJANGO_SLACK_TOOLS = {
-    "SLACK_APP": "testproj.config.slack_app.app",
-    "BACKEND": {
-        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
-        "OPTIONS": {
-            "slack_app": "testproj.config.slack_app.app",
+    "slack_app": "testproj.config.slack_app.app",
+    "messengers": {
+        "default": {
+            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "kwargs": {
+                "template_loaders": [
+                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
+                    "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                ],
+                "middlewares": [
+                    "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                ],
+                "messaging_backend": {
+                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "kwargs": {
+                        "slack_app": "testproj.config.slack_app.app",
+                    },
+                },
+            },
         },
     },
 }

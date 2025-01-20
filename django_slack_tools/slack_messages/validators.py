@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from django.core.exceptions import ValidationError
 
-from .message import MessageBody, MessageHeader
+from django_slack_tools.slack_messages.request import MessageBody, MessageHeader
 
 
 def header_validator(d: dict) -> None:
