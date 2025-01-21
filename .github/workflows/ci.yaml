@@ -8,6 +8,9 @@ on:
 
 permissions: read-all
 
+env:
+  UV_FROZEN: 1
+
 jobs:
   lint:
     name: Lint
@@ -17,13 +20,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v5
         with:
           version: latest
           enable-cache: true
 
       - name: Install deps
-        run: uv sync --frozen --all-extras
+        run: uv sync --all-extras
 
       - uses: pre-commit/action@v3.0.1
         env:
@@ -52,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v5
         with:
           version: latest
           enable-cache: true
@@ -61,13 +64,13 @@ jobs:
         run: uv python pin "${{ matrix.python-version }}"
 
       - name: Install deps
-        run: uv sync --frozen --all-extras
+        run: uv sync --all-extras
 
       - name: Install Django
         run: uv pip install Django=="${{ matrix.django-version }}.*"
 
       - name: Run tests
-        run: uv run --frozen pytest
+        run: uv run nox
 
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
@@ -80,7 +83,7 @@ jobs:
             django-${{ matrix.django-version }}
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         env:
           PYTHON: ${{ matrix.python-version }}
           DJANGO: ${{ matrix.django-version }}

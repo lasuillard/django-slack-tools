@@ -3,11 +3,22 @@ from unittest import mock
 
 import pytest
 
-from django_slack_tools.slack_messages import tasks
 from django_slack_tools.slack_messages.models import SlackMessage
 from tests.slack_messages.models._factories import SlackMessageFactory
 
-pytestmark = pytest.mark.django_db
+try:
+    import celery  # noqa: F401
+except ImportError:
+    celery_installed = False
+else:
+    from django_slack_tools.slack_messages import tasks
+
+    celery_installed = True
+
+pytestmark = [
+    pytest.mark.django_db,
+    pytest.mark.skipif(not celery_installed, reason="Celery is not installed"),
+]
 
 
 class TestSlackMessage:
