@@ -92,11 +92,7 @@ class Messenger:
         """Simplified shortcut for `.send_request()`."""
         header = MessageHeader.model_validate(header or {})
         request = MessageRequest(template_key=template, channel=to, context=context, header=header)
-        response = self.send_request(request=request)
-        if response is None:
-            return None
-
-        return response
+        return self.send_request(request=request)
 
     def send_request(self, request: MessageRequest) -> MessageResponse | None:
         """Sends a message request and processes the response."""
