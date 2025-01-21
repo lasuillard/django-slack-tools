@@ -1,6 +1,6 @@
 from .base import BaseBackend
 from .dummy import DummyBackend
-from .logging import LoggingBackend
+from .logging_ import LoggingBackend
 from .slack import SlackBackend, SlackRedirectBackend
 
 __all__ = (
