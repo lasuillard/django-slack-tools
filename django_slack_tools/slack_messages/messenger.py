@@ -70,12 +70,7 @@ class Messenger:
 
         # Summary
         logger.info(
-            (
-                "Initialized messenger with:"
-                "\n- Template loaders: %s"
-                "\n- Middlewares: %s"
-                "\n- Messaging backend: %s"
-            ),
+            ("Initialized messenger with:\n- Template loaders: %s\n- Middlewares: %s\n- Messaging backend: %s"),
             ", ".join(cls.__class__.__name__ for cls in template_loaders),
             ", ".join(cls.__class__.__name__ for cls in middlewares),
             messaging_backend.__class__.__name__,
