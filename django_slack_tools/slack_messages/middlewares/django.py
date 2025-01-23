@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
@@ -12,8 +13,6 @@ from django_slack_tools.slack_messages.request import MessageHeader, MessageRequ
 from .base import BaseMiddleware
 
 if TYPE_CHECKING:
-    from slack_bolt import App
-
     from django_slack_tools.slack_messages.messenger import Messenger
     from django_slack_tools.slack_messages.response import MessageResponse
 
@@ -37,6 +36,10 @@ class DjangoDatabasePersister(BaseMiddleware):
             get_permalink: If `True`, will try to get the permalink of the message.
             log_level_if_no_request: Log level to use if no request is found in response.
         """
+        if get_permalink and not isinstance(slack_app, App):
+            msg = "`slack_app` must be an instance of `App` if `get_permalink` is set `True`."
+            raise ValueError(msg)
+
         self.slack_app = slack_app
         self.get_permalink = get_permalink
         self.log_level_if_no_request = log_level_if_no_request
