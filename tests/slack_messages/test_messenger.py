@@ -119,6 +119,26 @@ class TestMessenger:
             "ts": None,
         }
 
+    def test_send_request_request_middleware_returned_none(self) -> None:
+        """When request middleware returned `None`, the request should not be sent."""
+        messenger = Messenger(
+            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
+            middlewares=[_MockMiddleware(process_request=lambda _: None)],
+            messaging_backend=_MockBackend(),
+        )
+        response = messenger.send_request(request=MessageRequestFactory())
+        assert response is None
+
+    def test_send_request_response_middleware_returned_none(self) -> None:
+        """When response middleware returned `None`, it should return the `None`."""
+        messenger = Messenger(
+            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
+            middlewares=[_MockMiddleware(process_response=lambda _: None)],
+            messaging_backend=_MockBackend(),
+        )
+        response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
+        assert response is None
+
 
 class _MockTemplateLoader(BaseTemplateLoader):
     def __init__(self, template: Any, *, key: str | None = None) -> None:
