@@ -1,25 +1,23 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest import mock
 
 import pytest
 
-from django_slack_tools.slack_messages.backends import DummyBackend
-from django_slack_tools.slack_messages.message_templates import PythonTemplate
 from django_slack_tools.slack_messages.messenger import Messenger
 from django_slack_tools.slack_messages.middlewares import (
-    BaseMiddleware,
     DjangoDatabasePersister,
     DjangoDatabasePolicyHandler,
 )
 from django_slack_tools.slack_messages.request import MessageHeader, MessageRequest
 from django_slack_tools.slack_messages.template_loaders import (
-    BaseTemplateLoader,
     DjangoPolicyTemplateLoader,
     DjangoTemplateLoader,
 )
 from tests.slack_messages._factories import MessageRequestFactory
+
+from ._helpers import MockBackend, MockMiddleware, MockTemplateLoader
 
 if TYPE_CHECKING:
     from django_slack_tools.slack_messages.response import MessageResponse
@@ -38,7 +36,7 @@ class TestMessenger:
                 DjangoDatabasePersister(),
                 DjangoDatabasePolicyHandler(messenger="default"),
             ],
-            "messaging_backend": _MockBackend(),
+            "messaging_backend": MockBackend(),
         }
         Messenger(**kwargs)
 
@@ -65,7 +63,7 @@ class TestMessenger:
 
     def test_send(self) -> None:
         """Test `.send()` shortcut method, which wraps `.send_request()` for convenience."""
-        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=_MockBackend())
+        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=MockBackend())
         with mock.patch.object(messenger, "send_request") as send_request:
             messenger.send(to="channel", template="template", context={"key": "value"}, header={"thread_ts": "123"})
             # ? `send_request.assert_called_once_with` not applicable due to `id_`; unable to mock it
@@ -82,9 +80,9 @@ class TestMessenger:
     def test_send_request(self) -> None:
         """Test sending a message request."""
         messenger = Messenger(
-            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
-            middlewares=[_MockMiddleware()],
-            messaging_backend=_MockBackend(),
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware()],
+            messaging_backend=MockBackend(),
         )
         response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
         assert response
@@ -122,9 +120,9 @@ class TestMessenger:
     def test_send_request_request_middleware_returned_none(self) -> None:
         """When request middleware returned `None`, the request should not be sent."""
         messenger = Messenger(
-            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
-            middlewares=[_MockMiddleware(process_request=lambda _: None)],
-            messaging_backend=_MockBackend(),
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware(process_request=lambda _: None)],
+            messaging_backend=MockBackend(),
         )
         response = messenger.send_request(request=MessageRequestFactory())
         assert response is None
@@ -137,9 +135,9 @@ class TestMessenger:
             raise Exception(msg)  # noqa: TRY002
 
         messenger = Messenger(
-            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
-            middlewares=[_MockMiddleware(process_request=_throw_error)],
-            messaging_backend=_MockBackend(),
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware(process_request=_throw_error)],
+            messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):
             messenger.send_request(request=MessageRequestFactory())
@@ -147,9 +145,9 @@ class TestMessenger:
     def test_send_request_response_middleware_returned_none(self) -> None:
         """When response middleware returned `None`, it should return the `None`."""
         messenger = Messenger(
-            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
-            middlewares=[_MockMiddleware(process_response=lambda _: None)],
-            messaging_backend=_MockBackend(),
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware(process_response=lambda _: None)],
+            messaging_backend=MockBackend(),
         )
         response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
         assert response is None
@@ -162,56 +160,9 @@ class TestMessenger:
             raise Exception(msg)  # noqa: TRY002
 
         messenger = Messenger(
-            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
-            middlewares=[_MockMiddleware(process_response=_throw_error)],
-            messaging_backend=_MockBackend(),
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware(process_response=_throw_error)],
+            messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):
             messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
-
-
-class _MockTemplateLoader(BaseTemplateLoader):
-    def __init__(self, template: Any, *, key: str | None = None) -> None:
-        self.template = template
-        self.key = key
-
-    def load(self, key: str) -> PythonTemplate | None:
-        if self.key and key != self.key:
-            return None
-
-        return PythonTemplate(self.template)
-
-
-class _MockMiddleware(BaseMiddleware):
-    def __init__(
-        self,
-        *,
-        process_request: Callable[[MessageRequest], MessageRequest | None] | None = None,
-        process_response: Callable[[MessageResponse], MessageResponse | None] | None = None,
-    ) -> None:
-        self._process_request = process_request
-        self._process_response = process_response
-
-    def process_request(self, request: MessageRequest) -> MessageRequest | None:
-        if self._process_request:
-            return self._process_request(request)
-
-        return super().process_request(request)
-
-    def process_response(self, response: MessageResponse) -> MessageResponse | None:
-        if self._process_response:
-            return self._process_response(response)
-
-        return super().process_response(response)
-
-
-class _MockBackend(DummyBackend):
-    def __init__(self, *, should_error: bool = False) -> None:
-        self.should_error = should_error
-
-    def _send_message(self, *args: Any, **kwargs: Any) -> Any:
-        if self.should_error:
-            msg = "Some error occurred"
-            raise Exception(msg)  # noqa: TRY002
-
-        return super()._send_message(*args, **kwargs)
