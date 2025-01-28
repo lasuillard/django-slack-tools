@@ -129,6 +129,21 @@ class TestMessenger:
         response = messenger.send_request(request=MessageRequestFactory())
         assert response is None
 
+    def test_send_request_request_middleware_raised_error(self) -> None:
+        """When request middleware raised an error, it should propagate the error."""
+
+        def _throw_error(_: MessageRequest) -> None:
+            msg = "Some error occurred"
+            raise Exception(msg)  # noqa: TRY002
+
+        messenger = Messenger(
+            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
+            middlewares=[_MockMiddleware(process_request=_throw_error)],
+            messaging_backend=_MockBackend(),
+        )
+        with pytest.raises(Exception, match="Some error occurred"):
+            messenger.send_request(request=MessageRequestFactory())
+
     def test_send_request_response_middleware_returned_none(self) -> None:
         """When response middleware returned `None`, it should return the `None`."""
         messenger = Messenger(
@@ -138,6 +153,21 @@ class TestMessenger:
         )
         response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
         assert response is None
+
+    def test_send_request_response_middleware_raise_error(self) -> None:
+        """When response middleware raised an error, it should propagate the error."""
+
+        def _throw_error(_: MessageResponse) -> None:
+            msg = "Some error occurred"
+            raise Exception(msg)  # noqa: TRY002
+
+        messenger = Messenger(
+            template_loaders=[_MockTemplateLoader({"text": "Hello, {name}!"})],
+            middlewares=[_MockMiddleware(process_response=_throw_error)],
+            messaging_backend=_MockBackend(),
+        )
+        with pytest.raises(Exception, match="Some error occurred"):
+            messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
 
 
 class _MockTemplateLoader(BaseTemplateLoader):
