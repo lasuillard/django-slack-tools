@@ -14,10 +14,11 @@ from django_slack_tools.slack_messages.request import MessageHeader, MessageRequ
 from django_slack_tools.slack_messages.template_loaders import (
     DjangoPolicyTemplateLoader,
     DjangoTemplateLoader,
+    TemplateNotFoundError,
 )
 from tests.slack_messages._factories import MessageRequestFactory
 
-from ._helpers import MockBackend, MockMiddleware, MockTemplateLoader
+from ._helpers import MockBackend, MockMiddleware, MockTemplate, MockTemplateLoader
 
 if TYPE_CHECKING:
     from django_slack_tools.slack_messages.response import MessageResponse
@@ -137,6 +138,51 @@ class TestMessenger:
         messenger = Messenger(
             template_loaders=[MockTemplateLoader()],
             middlewares=[MockMiddleware(process_request=_throw_error)],
+            messaging_backend=MockBackend(),
+        )
+        with pytest.raises(Exception, match="Some error occurred"):
+            messenger.send_request(request=MessageRequestFactory())
+
+    def test_send_request_template_key_is_not_set(self) -> None:
+        """Template key is required to render the message."""
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware()],
+            messaging_backend=MockBackend(),
+        )
+        with pytest.raises(ValueError, match="Template key is required to render the message"):
+            messenger.send_request(request=MessageRequestFactory(template_key=None))
+
+    def test_send_request_template_load_not_found(self) -> None:
+        """When template is not found, it should raise an error."""
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader(key="hacky-key")],
+            middlewares=[MockMiddleware()],
+            messaging_backend=MockBackend(),
+        )
+        with pytest.raises(TemplateNotFoundError, match="Template with key 'some-template-key' not found"):
+            messenger.send_request(request=MessageRequestFactory(template_key="some-template-key"))
+
+    def test_send_request_message_rendering_failed_missing_context_key(self) -> None:
+        """Rendering fails if required context key is not provided."""
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[MockMiddleware()],
+            messaging_backend=MockBackend(),
+        )
+        with pytest.raises(KeyError, match="name"):
+            messenger.send_request(request=MessageRequestFactory(context={}))
+
+    def test_send_request_message_rendering_failed_template_error_propagates_to_caller(self) -> None:
+        """Error in rendering propagates to caller."""
+
+        def _throw_error(_: dict[str, Any]) -> Any:
+            msg = "Some error occurred"
+            raise Exception(msg)  # noqa: TRY002
+
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader(MockTemplate(render=_throw_error))],
+            middlewares=[MockMiddleware()],
             messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable
 
 from django_slack_tools.slack_messages.backends import DummyBackend
-from django_slack_tools.slack_messages.message_templates import PythonTemplate
+from django_slack_tools.slack_messages.message_templates import BaseTemplate, PythonTemplate
 from django_slack_tools.slack_messages.middlewares import (
     BaseMiddleware,
 )
@@ -16,16 +16,24 @@ if TYPE_CHECKING:
     from django_slack_tools.slack_messages.response import MessageResponse
 
 
+class MockTemplate(BaseTemplate):
+    def __init__(self, render: Callable[[dict[str, Any]], Any]) -> None:
+        self._render = render
+
+    def render(self, context: dict[str, Any]) -> Any:
+        return self._render(context)
+
+
 class MockTemplateLoader(BaseTemplateLoader):
     def __init__(self, template: Any = None, *, key: str | None = None) -> None:
-        self.template = template or {"text": "Hello, {name}!"}
+        self.template = template or PythonTemplate({"text": "Hello, {name}!"})
         self.key = key
 
     def load(self, key: str) -> PythonTemplate | None:
         if self.key and key != self.key:
             return None
 
-        return PythonTemplate(self.template)
+        return self.template
 
 
 class MockMiddleware(BaseMiddleware):
