@@ -63,6 +63,7 @@ class DjangoDatabasePersister(BaseMiddleware):
         logger.debug("Persisting message history to database: %s", response)
         try:
             history = SlackMessage(
+                id=request.id_,
                 channel=request.channel,
                 header=request.header.model_dump(),
                 body=request.body.model_dump() if request.body else {},

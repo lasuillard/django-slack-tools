@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +20,7 @@ class SlackMessageManager(models.Manager["SlackMessage"]):
 class SlackMessage(TimestampMixin, models.Model):
     """An Slack message."""
 
+    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
     policy = models.ForeignKey(
         SlackMessagingPolicy,
         verbose_name=_("Messaging Policy"),
