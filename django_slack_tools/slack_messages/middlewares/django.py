@@ -22,13 +22,7 @@ logger = logging.getLogger(__name__)
 class DjangoDatabasePersister(BaseMiddleware):
     """Persist message history to database. If request is `None`, will do nothing."""
 
-    def __init__(
-        self,
-        *,
-        slack_app: App | None = None,
-        get_permalink: bool = False,
-        log_level_if_no_request: int = logging.WARNING,
-    ) -> None:
+    def __init__(self, *, slack_app: App | None = None, get_permalink: bool = False) -> None:
         """Initialize the middleware.
 
         Args:
@@ -42,16 +36,11 @@ class DjangoDatabasePersister(BaseMiddleware):
 
         self.slack_app = slack_app
         self.get_permalink = get_permalink
-        self.log_level_if_no_request = log_level_if_no_request
 
     def process_response(self, response: MessageResponse) -> MessageResponse | None:  # noqa: D102
         request = response.request
         if request is None:
-            msg = "No request found in response, skipping persister."
-            if self.log_level_if_no_request >= logging.WARNING:
-                msg += " If you want to suppress this warning, set `log_level_if_no_request` to whatever you want."
-
-            logger.log(self.log_level_if_no_request, msg)
+            logger.warning("No request found in response, skipping persister.")
             return response
 
         logger.debug("Getting permalink for message: %s", response)
