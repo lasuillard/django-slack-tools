@@ -33,6 +33,8 @@ class MessageResponseFactory(Factory):
 
 
 class SlackMessageResponseFactory(SlackResponseFactory):
+    """Response factory for `chat.postMessage` API method."""
+
     @lazy_attribute
     def data(self) -> dict[str, Any]:
         ts = str(datetime.now().timestamp())  # noqa: DTZ005
@@ -74,3 +76,18 @@ class SlackMessageResponseFactory(SlackResponseFactory):
             },
         ]
         attachments = []  # type: ignore[var-annotated]  # noqa: RUF012
+
+
+class SlackGetPermalinkResponseFactory(SlackResponseFactory):
+    """Response factory for `chat.getPermalink` API method."""
+
+    @lazy_attribute
+    def data(self) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "channel": "whatever-channel",
+            "permalink": self.permalink,
+        }
+
+    class Params:
+        permalink = "https://ghostbusters.slack.com/archives/C1H9RESGA/p135854651500008"
