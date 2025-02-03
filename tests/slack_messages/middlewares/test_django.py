@@ -9,10 +9,21 @@ from django_slack_tools.slack_messages.backends import DummyBackend
 from django_slack_tools.slack_messages.messenger import Messenger
 from django_slack_tools.slack_messages.middlewares import DjangoDatabasePersister, DjangoDatabasePolicyHandler
 from django_slack_tools.slack_messages.models import SlackMessage
+from django_slack_tools.slack_messages.models.messaging_policy import SlackMessagingPolicy
 from django_slack_tools.slack_messages.request import MessageRequest
 from django_slack_tools.slack_messages.response import MessageResponse
 from tests._factories import SlackApiErrorFactory
-from tests.slack_messages._factories import MessageResponseFactory, SlackGetPermalinkResponseFactory
+from tests._helpers import AnyRegex
+from tests.slack_messages._factories import (
+    MessageRequestFactory,
+    MessageResponseFactory,
+    SlackGetPermalinkResponseFactory,
+)
+from tests.slack_messages.models._factories import (
+    SlackMentionFactory,
+    SlackMessageRecipientFactory,
+    SlackMessagingPolicyFactory,
+)
 
 if TYPE_CHECKING:
     from slack_bolt import App
@@ -34,8 +45,18 @@ def app_settings() -> SettingsDict:
             "test-django-middleware": {
                 "class": "django_slack_tools.slack_messages.messenger.Messenger",
                 "kwargs": {
-                    "template_loaders": [],
-                    "middlewares": [],
+                    "template_loaders": [
+                        {
+                            "class": "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                            "kwargs": {},
+                        },
+                    ],
+                    "middlewares": [
+                        {
+                            "class": "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                            "kwargs": {},
+                        },
+                    ],
                     "messaging_backend": {
                         "class": "django_slack_tools.slack_messages.backends.DummyBackend",
                         "kwargs": {},
@@ -150,3 +171,120 @@ class TestDjangoDatabasePolicyHandler:
 
         middleware = DjangoDatabasePolicyHandler(messenger="test-django-middleware", auto_create_policy=True)
         assert isinstance(middleware.messenger, Messenger)
+
+    def test_process_request(self) -> None:
+        """Test processing the request."""
+        # Arrange
+        middleware = DjangoDatabasePolicyHandler(messenger="test-django-middleware")
+        recipients = [SlackMessageRecipientFactory(mentions=SlackMentionFactory.create_batch(3)) for _ in range(3)]
+        policy = SlackMessagingPolicyFactory(
+            recipients=recipients,
+            template_type=SlackMessagingPolicy.TemplateType.DJANGO_INLINE,
+            template="""
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            {{ greet }}, {{ mentions | join:", " }}!
+        </text>
+    </block>
+</root>
+            """.strip(),
+        )
+
+        # Act
+        # Original request will be stopped, and 3 new requests will be created
+        response = middleware.process_request(
+            MessageRequestFactory(
+                channel=policy.code,
+                context={"greet": "Nice to meet you"},
+            ),
+        )
+
+        # Assert
+        assert response is None
+        assert SlackMessage.objects.count() == 3
+        assert list(
+            SlackMessage.objects.all().values("policy", "channel", "header", "body", "ok"),
+        ) == [
+            {
+                "policy": None,
+                "channel": mock.ANY,
+                "header": {
+                    "mrkdwn": None,
+                    "parse": None,
+                    "reply_broadcast": None,
+                    "thread_ts": None,
+                    "unfurl_links": None,
+                    "unfurl_media": None,
+                },
+                "body": {
+                    "attachments": None,
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {"type": "mrkdwn", "text": AnyRegex(r"Nice to meet you, .*, .*, .*!")},
+                        },
+                    ],
+                    "text": None,
+                    "icon_emoji": None,
+                    "icon_url": None,
+                    "metadata": None,
+                    "username": None,
+                },
+                "ok": True,
+            },
+            {
+                "policy": None,
+                "channel": mock.ANY,
+                "header": {
+                    "mrkdwn": None,
+                    "parse": None,
+                    "reply_broadcast": None,
+                    "thread_ts": None,
+                    "unfurl_links": None,
+                    "unfurl_media": None,
+                },
+                "body": {
+                    "attachments": None,
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {"type": "mrkdwn", "text": AnyRegex(r"Nice to meet you, .*, .*, .*!")},
+                        },
+                    ],
+                    "text": None,
+                    "icon_emoji": None,
+                    "icon_url": None,
+                    "metadata": None,
+                    "username": None,
+                },
+                "ok": True,
+            },
+            {
+                "policy": None,
+                "channel": mock.ANY,
+                "header": {
+                    "mrkdwn": None,
+                    "parse": None,
+                    "reply_broadcast": None,
+                    "thread_ts": None,
+                    "unfurl_links": None,
+                    "unfurl_media": None,
+                },
+                "body": {
+                    "attachments": None,
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {"type": "mrkdwn", "text": AnyRegex(r"Nice to meet you, .*, .*, .*!")},
+                        },
+                    ],
+                    "text": None,
+                    "icon_emoji": None,
+                    "icon_url": None,
+                    "metadata": None,
+                    "username": None,
+                },
+                "ok": True,
+            },
+        ]

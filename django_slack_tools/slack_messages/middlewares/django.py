@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
-from django_slack_tools.slack_messages.models import SlackMessage, SlackMessagingPolicy
+from django_slack_tools.slack_messages.models import SlackMessage, SlackMessageRecipient, SlackMessagingPolicy
 from django_slack_tools.slack_messages.request import MessageHeader, MessageRequest
 
 from .base import BaseMiddleware
@@ -89,7 +89,18 @@ class DjangoDatabasePersister(BaseMiddleware):
 
 
 class DjangoDatabasePolicyHandler(BaseMiddleware):
-    """Middleware to handle Slack messaging policies from the database."""
+    """Middleware to handle Slack messaging policies stored in the database.
+
+    This middleware includes functionality to distribute messages to multiple recipients, which could lead to unwanted infinite loop or recursion.
+
+    To avoid recursion, follow these rules:
+
+    - Do not use the same messenger instance for the policy handler and the messenger itself. Define and use a new messenger instance for the policy handler.
+    - If using same messenger instance, make sure not to modify the context key `__final__` in the request object. This key is used to detect the final request in the recursion chain.
+    """  # noqa: E501
+
+    _RECURSION_DETECTION_CONTEXT_KEY = "__final__"
+    """Key to detect recursion in the request context."""
 
     def __init__(self, *, messenger: Messenger | str, auto_create_policy: bool = False) -> None:
         """Initialize the middleware.
@@ -118,7 +129,7 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
     def process_request(self, request: MessageRequest) -> MessageRequest | None:  # noqa: D102
         # TODO(lasuillard): Hacky way to stop the request, need to find a better way
         #                   Some extra field (request.meta) could be added to share control context
-        if request.context.get("__final__", False):
+        if request.context.get(self._RECURSION_DETECTION_CONTEXT_KEY, False):
             return request
 
         code = request.channel
@@ -138,17 +149,32 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
 
         requests: list[MessageRequest] = []
         for recipient in policy.recipients.all():
-            req = MessageRequest(
-                channel=recipient.channel,
-                template_key=policy.code,
-                context={**request.context, "__final__": True},
-                # TODO(lasuillard): Want some cleaner way to merge models
-                header=MessageHeader.from_any({**policy.header_defaults, **request.header.model_dump()}),
+            default_context = self._get_default_context(recipient)
+            context = {
+                **default_context,
+                **request.context,
+                self._RECURSION_DETECTION_CONTEXT_KEY: True,
+            }
+            header = MessageHeader.model_validate(
+                {
+                    **policy.header_defaults,
+                    **request.header.model_dump(),
+                },
             )
+            req = MessageRequest(channel=recipient.channel, template_key=policy.code, context=context, header=header)
             requests.append(req)
 
+        # TODO(lasuillard): How to provide users access the newly created messages?
+        #                   currently, it's possible with persisters but it would require some additional work
         for req in requests:
             self.messenger.send_request(req)
 
         # Stop current request
         return None
+
+    def _get_default_context(self, recipient: SlackMessageRecipient) -> dict:
+        """Create default context for the recipient."""
+        mentions = [mention.mention for mention in recipient.mentions.all()]
+        return {
+            "mentions": mentions,
+        }

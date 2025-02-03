@@ -6,6 +6,7 @@ import faker
 from django.utils import timezone
 from factory import Faker, LazyAttribute, post_generation
 from factory.django import DjangoModelFactory
+from factory.fuzzy import FuzzyChoice
 
 from django_slack_tools.slack_messages.models import (
     SlackMention,
@@ -21,7 +22,7 @@ class SlackMentionFactory(DjangoModelFactory):
     class Meta:
         model = SlackMention
 
-    type = SlackMention.MentionType.UNKNOWN
+    type = FuzzyChoice(SlackMention.MentionType)
     name = Faker("name")
     mention_id = Faker("pystr", max_chars=12)
 
