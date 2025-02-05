@@ -38,6 +38,8 @@ jobs:
   test:
     name: Test (Python ${{ matrix.python-version }}, Django ${{ matrix.django-version }})
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -73,10 +75,11 @@ jobs:
         run: uv run nox
 
       - name: Upload test results to Codecov
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@v5
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
           fail_ci_if_error: false
+          report_type: test_results
           files: junit.xml
           flags: >-
             python-${{ matrix.python-version }},
@@ -88,7 +91,7 @@ jobs:
           PYTHON: ${{ matrix.python-version }}
           DJANGO: ${{ matrix.django-version }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
           fail_ci_if_error: false
           files: coverage.xml
           env_vars: PYTHON,DJANGO
