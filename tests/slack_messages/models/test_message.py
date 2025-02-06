@@ -15,11 +15,11 @@ class TestSlackMessage(ModelTestBase):
     factory_cls = SlackMessageFactory
 
     @pytest.mark.parametrize(
-        argnames=["kwargs", "expect"],
+        argnames=("kwargs", "expect"),
         argvalues=[
-            [{"ts": "1703393199.592689", "ok": True}, "Message (1703393199.592689, OK)"],
-            [{"id": 1, "ok": False}, "Message (1, not OK)"],
-            [{"id": 2, "ok": None}, "Message (2, not sent)"],
+            ({"ts": "1703393199.592689", "ok": True}, "Message (1703393199.592689, OK)"),
+            ({"id": 1, "ok": False}, "Message (1, not OK)"),
+            ({"id": 2, "ok": None}, "Message (2, not sent)"),
         ],
         ids=["ok", "not ok", "not sent"],
     )

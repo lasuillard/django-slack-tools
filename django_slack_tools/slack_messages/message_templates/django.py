@@ -16,12 +16,15 @@ if TYPE_CHECKING:
     from typing import Any
 
     from django.template.backends.base import BaseEngine
+    from django.template.base import Template
 
 logger = logging.getLogger(__name__)
 
 
 class DjangoTemplate(BaseTemplate):
     """Template utilizing Django built-in template engine."""
+
+    template: Template
 
     @overload
     def __init__(self, *, file: str, engine: BaseEngine | None = None) -> None: ...  # pragma: no cover
@@ -45,7 +48,6 @@ class DjangoTemplate(BaseTemplate):
 
         Raises:
             TypeError: Some of the arguments are missing or multiple are provided.
-            ValueError: Unsupported value provided.
         """
         engine = engines["django"] if engine is None else engine
 
@@ -61,13 +63,11 @@ class DjangoTemplate(BaseTemplate):
             msg = "Unreachable code"
             raise NotImplementedError(msg)
 
-        self.template = template
+        self.template = template  # type: ignore[assignment] # False-positive error
 
-    def render(self, *, context: dict[str, Any] | None = None) -> dict:  # noqa: D102
-        context = {} if context is None else context
-
+    def render(self, context: dict[str, Any]) -> Any:  # noqa: D102
         logger.debug("Rendering template with context: %r", context)
-        rendered = self.template.render(context=context)
+        rendered = self.template.render(context=context)  # type: ignore[arg-type] # False-positive error
         return _xml_to_dict(rendered)
 
 

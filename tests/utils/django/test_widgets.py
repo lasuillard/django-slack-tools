@@ -1,4 +1,4 @@
-from django_slack_tools.utils.widgets import JSONWidget
+from django_slack_tools.utils.django.widgets import JSONWidget
 
 
 class TestJSONWidget:

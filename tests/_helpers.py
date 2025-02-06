@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -101,3 +102,17 @@ class ModelTestBase:
     def test_instance_creation(self) -> None:
         obj = self.factory_cls.create()
         assert isinstance(obj, self.model_cls)
+
+
+# ? Also see: https://github.com/jwodder/anys
+class AnyRegex:
+    """An helper class to match any string against a regex pattern, similarly to `unittest.mock.ANY`."""
+
+    def __init__(self, pattern: str) -> None:
+        self.pattern = pattern
+
+    def __eq__(self, other: object) -> bool:
+        return bool(re.match(self.pattern, str(other)))
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}({self.pattern!r})>"

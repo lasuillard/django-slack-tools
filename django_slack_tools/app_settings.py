@@ -1,123 +1,87 @@
 """Application settings."""
+# flake8: noqa: UP007
 
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 from slack_bolt import App
+from typing_extensions import NotRequired, Self
 
-from django_slack_tools.slack_messages.backends.base import BaseBackend
+from django_slack_tools.utils.import_helper import LazyInitSpec, lazy_init
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import NotRequired
-
-APP_SETTINGS_KEY = "DJANGO_SLACK_TOOLS"
-"Django settings key for this application."
+    from django_slack_tools.slack_messages.messenger import Messenger
 
 logger = getLogger(__name__)
 
 
-# TODO(lasuillard): Configuration getting dirty, need refactoring
+class SettingsDict(TypedDict):
+    """Dictionary input for app settings."""
+
+    slack_app: str
+    messengers: NotRequired[dict[str, LazyInitSpec]]
+
+
 class AppSettings:
     """Application settings."""
 
-    backend: BaseBackend
+    slack_app: App
+    messengers: dict[str, Messenger]
 
-    def __init__(self, settings_dict: ConfigDict | None = None) -> None:
-        """Initialize app settings.
-
-        Args:
-            settings_dict: Settings dictionary. If `None`, try to load from Django settings (const `APP_SETTINGS_KEY`).
-                Defaults to `None`.
-
-        Raises:
-            ImproperlyConfigured: Required configuration not provided or is unexpected.
-        """
-        if not settings_dict:
-            settings_dict = getattr(settings, APP_SETTINGS_KEY, None)
-
-        if settings_dict is None:
-            msg = "Neither `settings_dict` provided or `django_slack_tools` settings found in Django settings."
-            raise ImproperlyConfigured(msg)
-
-        # Slack app
-        slack_app = settings_dict["SLACK_APP"]
-        if isinstance(slack_app, str):
-            slack_app = import_string(slack_app)
-
-        if callable(slack_app):
-            slack_app = slack_app()
-
+    def __init__(self, slack_app: App, messengers: dict[str, Messenger]) -> None:  # noqa: D107
         if not isinstance(slack_app, App):
-            msg = "Provided `SLACK_APP` config is not Slack app."
-            raise ImproperlyConfigured(msg)
+            msg = f"Expected {App!s} instance, got {type(slack_app)}"
+            raise TypeError(msg)
 
-        self._slack_app = slack_app
+        self.slack_app = slack_app
+        self.messengers = messengers
 
-        # Find backend class
-        messaging_backend = import_string(settings_dict["BACKEND"]["NAME"])
-        if not issubclass(messaging_backend, BaseBackend):
-            msg = "Provided backend is not a subclass of `{qualified_path}` class.".format(
-                qualified_path=f"{BaseBackend.__module__}.{BaseBackend.__name__}",
+    @classmethod
+    def from_dict(cls, settings_dict: SettingsDict) -> Self:
+        """Initialize settings from a dictionary."""
+        try:
+            slack_app = import_string(settings_dict["slack_app"])
+            messengers = {
+                name: cls._create_messenger(spec) for name, spec in settings_dict.get("messengers", {}).items()
+            }
+            return cls(
+                slack_app=slack_app,
+                messengers=messengers,
             )
-            raise ImproperlyConfigured(msg)
+        except Exception as err:
+            msg = f"Couldn't initialize app settings: {err!s}"
+            raise ImproperlyConfigured(msg) from err
 
-        # Initialize with provided options
-        self.backend = messaging_backend(**settings_dict["BACKEND"]["OPTIONS"])
+    @classmethod
+    def _create_messenger(cls, spec: LazyInitSpec) -> Messenger:
+        class_ = import_string(spec["class"])
+        args, kwargs = spec.get("args", ()), spec.get("kwargs", {})
 
-        # Message delivery default
-        self.default_policy_code = settings_dict.get("DEFAULT_POLICY_CODE", "DEFAULT")
+        # Lazy-init all the things
+        kwargs = kwargs.copy()
+        kwargs["template_loaders"] = [lazy_init(tl) for tl in kwargs["template_loaders"]]
+        kwargs["middlewares"] = [lazy_init(tl) for tl in kwargs["middlewares"]]
+        kwargs["messaging_backend"] = lazy_init(kwargs["messaging_backend"])
 
-        # Lazy policy defaults
-        self.lazy_policy_enabled = settings_dict.get("LAZY_POLICY_ENABLED", False)
-        self.default_template = settings_dict.get(
-            "DEFAULT_POLICY_CODE",
-            {"text": "No template configured for lazily created policy {policy}"},
-        )
-        self.default_recipient = settings_dict.get("DEFAULT_RECIPIENT", "DEFAULT")
-
-    @property
-    def slack_app(self) -> App:
-        """Registered Slack app or `None`."""
-        return self._slack_app
+        # Create the messenger
+        return class_(*args, **kwargs)  # type: ignore[no-any-return]
 
 
-app_settings = AppSettings()
+def get_settings_from_django(settings_key: str = "DJANGO_SLACK_TOOLS") -> AppSettings:
+    """Get application settings."""
+    django_settings: SettingsDict = getattr(settings, settings_key)
+    return AppSettings.from_dict(django_settings or {})
 
 
-class ConfigDict(TypedDict):
-    """Root config dict."""
-
-    SLACK_APP: App | str | None
-    "Import string to Slack app. Used for workspace-related stuffs."
-
-    BACKEND: BackendConfig
-    "Nested backend config."
-
-    LAZY_POLICY_ENABLED: NotRequired[bool]
-    "Whether to enable lazy policy by default."
-
-    DEFAULT_POLICY_CODE: NotRequired[str]
-    "Default policy code used when sending messages via policy with no policy specified."
-
-    DEFAULT_TEMPLATE: NotRequired[Any]
-    "Default template for lazy policy."
-
-    DEFAULT_RECIPIENT: NotRequired[str]
-    "Default recipient alias for lazy policy."
+app_settings = get_settings_from_django()
 
 
-class BackendConfig(TypedDict):
-    """Backend config dict."""
-
-    NAME: str
-    "Import path to backend class."
-
-    OPTIONS: dict[str, Any]
-    "Options to pass to backend class on initialization."
+def get_messenger(name: str | None = None) -> Messenger:
+    """Get a messenger instance by name."""
+    name = name or "default"
+    return app_settings.messengers[name]

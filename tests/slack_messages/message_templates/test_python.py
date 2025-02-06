@@ -1,9 +1,9 @@
-from django_slack_tools.utils.template import DictTemplate
+from django_slack_tools.slack_messages.message_templates import PythonTemplate
 
 
-class TestDictTemplate:
+class TestPythonTemplate:
     def test_render(self) -> None:
-        template = DictTemplate(
+        template = PythonTemplate(
             {
                 "blocks": [
                     {
