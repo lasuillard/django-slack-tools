@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 from unittest import mock
 
@@ -7,7 +9,11 @@ import pytest
 
 from django_slack_tools.slack_messages.backends import DummyBackend
 from django_slack_tools.slack_messages.messenger import Messenger
-from django_slack_tools.slack_messages.middlewares import DjangoDatabasePersister, DjangoDatabasePolicyHandler
+from django_slack_tools.slack_messages.middlewares import (
+    BaseMiddleware,
+    DjangoDatabasePersister,
+    DjangoDatabasePolicyHandler,
+)
 from django_slack_tools.slack_messages.models import SlackMessage
 from django_slack_tools.slack_messages.models.messaging_policy import SlackMessagingPolicy
 from django_slack_tools.slack_messages.request import MessageRequest
@@ -19,6 +25,7 @@ from tests.slack_messages._factories import (
     MessageResponseFactory,
     SlackGetPermalinkResponseFactory,
 )
+from tests.slack_messages._helpers import MockTemplateLoader
 from tests.slack_messages.models._factories import (
     SlackMentionFactory,
     SlackMessageRecipientFactory,
@@ -26,6 +33,8 @@ from tests.slack_messages.models._factories import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from slack_bolt import App
 
     from django_slack_tools.app_settings import SettingsDict
@@ -288,3 +297,68 @@ class TestDjangoDatabasePolicyHandler:
                 "ok": True,
             },
         ]
+
+    def test_process_request_recursion_detection(self) -> None:
+        """Test recursion detection mechanism. Fanned-out requests should contain special context key for detection."""
+        # Arrange
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[],
+            messaging_backend=DummyBackend(),
+        )
+        messenger.middlewares = [
+            DjangoDatabasePolicyHandler(messenger=messenger),
+            DjangoDatabasePersister(),
+        ]
+        policy = SlackMessagingPolicyFactory(
+            code="test-channel",
+            recipients=SlackMessageRecipientFactory.create_batch(size=3, channel="test-channel"),
+        )
+
+        # Act
+        messenger.send(policy.code, context={"name": "Daniel"})
+
+        # Assert
+        assert SlackMessage.objects.all().count() == 3
+
+    @pytest.mark.skip(reason="Can't run this test because pytest session crashes. Is there a way to test this?")
+    def test_process_request_force_infinite_recursion(self) -> None:
+        """Demonstrate what happens if detection key is corrupted."""
+        # Arrange
+
+        # This middleware will corrupt the detection key
+        class BadMiddlewareCorruptDetectionKey(BaseMiddleware):
+            def process_request(self, request: MessageRequest) -> MessageRequest | None:
+                request.context[DjangoDatabasePolicyHandler._RECURSION_DETECTION_CONTEXT_KEY] = "corrupted"
+                return request
+
+        messenger = Messenger(
+            template_loaders=[MockTemplateLoader()],
+            middlewares=[],
+            messaging_backend=DummyBackend(),
+        )
+        messenger.middlewares = [
+            BadMiddlewareCorruptDetectionKey(),
+            DjangoDatabasePolicyHandler(messenger=messenger),
+            DjangoDatabasePersister(),
+        ]
+        policy = SlackMessagingPolicyFactory(
+            code="test-channel",
+            recipients=SlackMessageRecipientFactory.create_batch(size=3, channel="test-channel"),
+        )
+
+        # Act
+        with pytest.raises(RecursionError), recursion_limit(40):
+            messenger.send(policy.code, context={"name": "Daniel"})
+
+        # Assert
+        assert SlackMessage.objects.all().count() == 3
+
+
+@contextmanager
+def recursion_limit(new_limit: int) -> Iterator[None]:
+    """Set the recursion limit to a low value."""
+    old_limit = sys.getrecursionlimit()
+    sys.setrecursionlimit(new_limit)
+    yield
+    sys.setrecursionlimit(old_limit)

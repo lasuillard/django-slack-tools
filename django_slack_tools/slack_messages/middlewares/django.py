@@ -91,16 +91,15 @@ class DjangoDatabasePersister(BaseMiddleware):
 class DjangoDatabasePolicyHandler(BaseMiddleware):
     """Middleware to handle Slack messaging policies stored in the database.
 
-    This middleware includes functionality to distribute messages to multiple recipients, which could lead to unwanted infinite loop or recursion.
+    Be cautious when using this middleware because it includes functionality to distribute messages to multiple recipients,
+    which could lead to unwanted infinite loop or recursion if used improperly.
 
-    To avoid recursion, follow these rules:
-
-    - Do not use the same messenger instance for the policy handler and the messenger itself. Define and use a new messenger instance for the policy handler.
-    - If using same messenger instance, make sure not to modify the context key `__final__` in the request object. This key is used to detect the final request in the recursion chain.
+    This middleware contains a secondary protection against infinite loops by injecting a context key to the message context.
+    If the key is found in the context, the middleware will stop the message from being sent. So be careful when modifying the context.
     """  # noqa: E501
 
     _RECURSION_DETECTION_CONTEXT_KEY = "__final__"
-    """Key to detect recursion in the request context."""
+    """Recursion detection key injected to message context for fanned-out messages to provide secondary protection against infinite loops."""  # noqa: E501
 
     def __init__(self, *, messenger: Messenger | str, auto_create_policy: bool = False) -> None:
         """Initialize the middleware.
@@ -109,6 +108,9 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
 
         Args:
             messenger: Messenger instance or name to use for sending messages.
+                The messenger instance should be different from the one used in the policy handler,
+                because this middleware cannot properly handle fanned-out messages modified by this middleware.
+                Also, there are chances of infinite loops if the same messenger is used.
             auto_create_policy: If `True`, will create a policy if not found in the database.
         """
         self._messenger = messenger
