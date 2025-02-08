@@ -139,11 +139,10 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
             policy = SlackMessagingPolicy.objects.get(code=code)
         except SlackMessagingPolicy.DoesNotExist:
             if self.auto_create_policy:
-                # TODO(lasuillard): Provide default template (render all elements in context)
                 logger.warning("No policy found for template key, creating one: %s", code)
-                policy = SlackMessagingPolicy.objects.create(code=code)
-
-            raise
+                policy = self._create_policy(code=code)
+            else:
+                raise
 
         if not policy.enabled:
             logger.debug("Policy %s is disabled, skipping further messaging", policy)
@@ -180,3 +179,18 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
         return {
             "mentions": mentions,
         }
+
+    def _create_policy(self, *, code: str) -> SlackMessagingPolicy:
+        """Create a policy with the given code.
+
+        Policy created is disabled by default, thus no message will be sent.
+        To modify the default policy creation behavior, simply override this method.
+        """
+        policy = SlackMessagingPolicy.objects.create(
+            code=code,
+            enabled=False,
+            template_type=SlackMessagingPolicy.TemplateType.UNKNOWN,
+        )
+        default_recipients = SlackMessageRecipient.objects.filter(alias="DEFAULT")
+        policy.recipients.set(default_recipients)
+        return policy

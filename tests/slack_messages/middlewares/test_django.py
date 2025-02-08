@@ -25,7 +25,7 @@ from tests.slack_messages._factories import (
     MessageResponseFactory,
     SlackGetPermalinkResponseFactory,
 )
-from tests.slack_messages._helpers import MockTemplateLoader
+from tests.slack_messages._helpers import MockBackend, MockTemplateLoader
 from tests.slack_messages.models._factories import (
     SlackMentionFactory,
     SlackMessageRecipientFactory,
@@ -353,6 +353,53 @@ class TestDjangoDatabasePolicyHandler:
 
         # Assert
         assert SlackMessage.objects.all().count() == 3
+
+    def test_process_request_policy_not_exists(self) -> None:
+        """If policy does not exists and `create_if_not_exists` is `False`, it should throw an error."""
+        # Arrange
+        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=False)
+
+        # Act & Assert
+        with pytest.raises(SlackMessagingPolicy.DoesNotExist):
+            middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code"))
+
+    def test_process_request_policy_create_if_not_exists(self) -> None:
+        """If policy does not exists but `create_if_not_exists` is `True`, it should create the policy."""
+        # Arrange
+        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=True)
+
+        # Act
+        request = middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code", context={}))
+
+        # Assert
+        assert request is None
+
+        created_policy = SlackMessagingPolicy.objects.get(code="nonexistent-policy-code")
+        assert created_policy.enabled is False
+        assert list(created_policy.recipients.values_list("alias", flat=True)) == ["DEFAULT"]
+        assert created_policy.header_defaults == {}
+        assert created_policy.template_type == SlackMessagingPolicy.TemplateType.UNKNOWN
+        assert created_policy.template is None
+
+    def test_process_request_policy_exists_but_disabled(self) -> None:
+        """if the policy exists but is disabled, it shouldn't send any message -- simply ignored."""
+        # Arrange
+        messenger = Messenger(
+            template_loaders=[],
+            middlewares=[DjangoDatabasePersister()],
+            messaging_backend=MockBackend(should_error=True),
+        )
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=False)
+        policy = SlackMessagingPolicyFactory(enabled=False)
+
+        # Act
+        # Policy is disabled, so no message to send -- shouldn't raise any error.
+        request = middleware.process_request(MessageRequestFactory(channel=policy.code))
+
+        # Assert
+        assert request is None
 
 
 @contextmanager
