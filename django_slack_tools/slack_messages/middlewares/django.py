@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
@@ -88,6 +88,9 @@ class DjangoDatabasePersister(BaseMiddleware):
             return ""
 
 
+OnPolicyNotExists = Literal["create", "default", "error"]
+
+
 class DjangoDatabasePolicyHandler(BaseMiddleware):
     """Middleware to handle Slack messaging policies stored in the database.
 
@@ -101,7 +104,12 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
     _RECURSION_DETECTION_CONTEXT_KEY = "__final__"
     """Recursion detection key injected to message context for fanned-out messages to provide secondary protection against infinite loops."""  # noqa: E501
 
-    def __init__(self, *, messenger: Messenger | str, auto_create_policy: bool = False) -> None:
+    def __init__(
+        self,
+        *,
+        messenger: Messenger | str,
+        on_policy_not_exists: OnPolicyNotExists = "error",
+    ) -> None:
         """Initialize the middleware.
 
         This middleware will load the policy from the database and send the message to all recipients.
@@ -111,10 +119,14 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
                 The messenger instance should be different from the one used in the policy handler,
                 because this middleware cannot properly handle fanned-out messages modified by this middleware.
                 Also, there are chances of infinite loops if the same messenger is used.
-            auto_create_policy: If `True`, will create a policy if not found in the database.
+            on_policy_not_exists: Action to take when policy is not found.
         """
+        if on_policy_not_exists not in ("create", "default", "error"):
+            msg = f'Unknown value for `on_policy_not_exists`: "{on_policy_not_exists}"'
+            raise ValueError(msg)
+
         self._messenger = messenger
-        self.auto_create_policy = auto_create_policy
+        self.on_policy_not_exists = on_policy_not_exists
 
     # * It's not desirable to put import in the method,
     # * but it's the only way to avoid circular imports for now (what's the fix?)
@@ -135,15 +147,7 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
             return request
 
         code = request.channel
-        try:
-            policy = SlackMessagingPolicy.objects.get(code=code)
-        except SlackMessagingPolicy.DoesNotExist:
-            if self.auto_create_policy:
-                logger.warning("No policy found for template key, creating one: %s", code)
-                policy = self._create_policy(code=code)
-            else:
-                raise
-
+        policy = self._get_policy(code=code)
         if not policy.enabled:
             logger.debug("Policy %s is disabled, skipping further messaging", policy)
             return None
@@ -165,20 +169,32 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
             req = MessageRequest(channel=recipient.channel, template_key=policy.code, context=context, header=header)
             requests.append(req)
 
-        # TODO(lasuillard): How to provide users access the newly created messages?
+        # TODO(lasuillard): How to provide users the access the newly created messages?
         #                   currently, it's possible with persisters but it would require some additional work
+        # TODO(lasuillard): Can `sys.setrecursionlimit` be used to prevent spamming if recursion occurs?
         for req in requests:
             self.messenger.send_request(req)
 
         # Stop current request
         return None
 
-    def _get_default_context(self, recipient: SlackMessageRecipient) -> dict:
-        """Create default context for the recipient."""
-        mentions = [mention.mention for mention in recipient.mentions.all()]
-        return {
-            "mentions": mentions,
-        }
+    def _get_policy(self, *, code: str) -> SlackMessagingPolicy:
+        """Get the policy for the given code."""
+        try:
+            policy = SlackMessagingPolicy.objects.get(code=code)
+        except SlackMessagingPolicy.DoesNotExist:
+            if self.on_policy_not_exists == "create":
+                logger.warning("No policy found for template key, creating one: %s", code)
+                policy = self._create_policy(code=code)
+            elif self.on_policy_not_exists == "default":
+                policy = SlackMessagingPolicy.objects.get(code="DEFAULT")
+            elif self.on_policy_not_exists == "error":
+                raise
+            else:
+                msg = f'Unknown value for `on_policy_not_exists`: "{self.on_policy_not_exists}"'
+                raise ValueError(msg) from None
+
+        return policy
 
     def _create_policy(self, *, code: str) -> SlackMessagingPolicy:
         """Create a policy with the given code.
@@ -194,3 +210,10 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
         default_recipients = SlackMessageRecipient.objects.filter(alias="DEFAULT")
         policy.recipients.set(default_recipients)
         return policy
+
+    def _get_default_context(self, recipient: SlackMessageRecipient) -> dict:
+        """Create default context for the recipient."""
+        mentions = [mention.mention for mention in recipient.mentions.all()]
+        return {
+            "mentions": mentions,
+        }

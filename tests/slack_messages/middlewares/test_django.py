@@ -169,17 +169,20 @@ class TestDjangoDatabasePolicyHandler:
         """Test various instance creation scenarios."""
         messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
 
-        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=False)
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger)
         assert middleware.messenger == messenger
 
-        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=True)
-        assert middleware.messenger == messenger
+        with pytest.raises(ValueError, match='Unknown value for `on_policy_not_exists`: "unknown-behavior"'):
+            middleware = DjangoDatabasePolicyHandler(messenger=messenger, on_policy_not_exists="unknown-behavior")  # type: ignore[arg-type]
 
-        middleware = DjangoDatabasePolicyHandler(messenger="test-django-middleware", auto_create_policy=False)
+        middleware = DjangoDatabasePolicyHandler(messenger="test-django-middleware")
         assert isinstance(middleware.messenger, Messenger)
 
-        middleware = DjangoDatabasePolicyHandler(messenger="test-django-middleware", auto_create_policy=True)
-        assert isinstance(middleware.messenger, Messenger)
+        with pytest.raises(ValueError, match='Unknown value for `on_policy_not_exists`: "unknown-behavior"'):
+            middleware = DjangoDatabasePolicyHandler(
+                messenger="test-django-middleware",
+                on_policy_not_exists="unknown-behavior",  # type: ignore[arg-type]
+            )
 
     def test_process_request(self) -> None:
         """Test processing the request."""
@@ -355,20 +358,20 @@ class TestDjangoDatabasePolicyHandler:
         assert SlackMessage.objects.all().count() == 3
 
     def test_process_request_policy_not_exists(self) -> None:
-        """If policy does not exists and `create_if_not_exists` is `False`, it should throw an error."""
+        """If policy does not exists and `on_policy_not_exists` is `"error"`, it should throw an error."""
         # Arrange
         messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
-        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=False)
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger)
 
         # Act & Assert
         with pytest.raises(SlackMessagingPolicy.DoesNotExist):
             middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code"))
 
-    def test_process_request_policy_create_if_not_exists(self) -> None:
-        """If policy does not exists but `create_if_not_exists` is `True`, it should create the policy."""
+    def test_process_request_policy_on_policy_not_exists_create(self) -> None:
+        """If policy does not exists but `on_policy_not_exists` is `"create"`, it should create the policy."""
         # Arrange
         messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
-        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=True)
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger, on_policy_not_exists="create")
 
         # Act
         request = middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code", context={}))
@@ -383,6 +386,19 @@ class TestDjangoDatabasePolicyHandler:
         assert created_policy.template_type == SlackMessagingPolicy.TemplateType.UNKNOWN
         assert created_policy.template is None
 
+    def test_process_request_policy_on_policy_not_exists_use_default(self) -> None:
+        """If policy does not exists but `on_policy_not_exists` is `"default"`, it should use the default policy."""
+        # Arrange
+        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger, on_policy_not_exists="default")
+
+        # Act
+        request = middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code", context={}))
+
+        # Assert
+        assert request is None
+        assert list(SlackMessagingPolicy.objects.all().values_list("code", flat=True)) == ["DEFAULT"]
+
     def test_process_request_policy_exists_but_disabled(self) -> None:
         """if the policy exists but is disabled, it shouldn't send any message -- simply ignored."""
         # Arrange
@@ -391,7 +407,7 @@ class TestDjangoDatabasePolicyHandler:
             middlewares=[DjangoDatabasePersister()],
             messaging_backend=MockBackend(should_error=True),
         )
-        middleware = DjangoDatabasePolicyHandler(messenger=messenger, auto_create_policy=False)
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger)
         policy = SlackMessagingPolicyFactory(enabled=False)
 
         # Act
@@ -400,6 +416,17 @@ class TestDjangoDatabasePolicyHandler:
 
         # Assert
         assert request is None
+
+    def test_process_request_policy_bad_value_for_on_policy_not_exists(self) -> None:
+        """If `on_policy_not_exists` is set to a bad value, it should raise an error."""
+        # Arrange
+        messenger = Messenger(template_loaders=[], middlewares=[], messaging_backend=DummyBackend())
+        middleware = DjangoDatabasePolicyHandler(messenger=messenger)
+        middleware.on_policy_not_exists = "unknown-behavior"  # type: ignore[assignment]
+
+        # Act & Assert
+        with pytest.raises(ValueError, match='Unknown value for `on_policy_not_exists`: "unknown-behavior"'):
+            middleware.process_request(MessageRequestFactory())
 
 
 @contextmanager
