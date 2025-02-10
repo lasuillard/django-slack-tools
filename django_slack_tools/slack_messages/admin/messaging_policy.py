@@ -12,8 +12,8 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_tools.slack_messages.models import SlackMessagingPolicy
+from django_slack_tools.utils.django.widgets import JSONWidget
 from django_slack_tools.utils.slack import get_block_kit_builder_url
-from django_slack_tools.utils.widgets import JSONWidget
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -90,7 +90,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     # ------------------------------------------------------------------------
     date_hierarchy = "last_modified"
     search_fields = ("code",)
-    list_display = ("id", "code", "enabled", "_count_recipients", "created", "last_modified")
+    list_display = ("id", "code", "enabled", "_count_recipients", "template_type", "created", "last_modified")
     list_display_links = ("id", "code")
     list_filter = (
         "enabled",
@@ -107,7 +107,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ("code", "enabled", "recipients", "header_defaults", "template"),
+                "fields": ("code", "enabled", "recipients", "header_defaults", "template_type", "template"),
             },
         ),
         (

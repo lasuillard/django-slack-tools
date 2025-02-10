@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from django.template import TemplateDoesNotExist
 
-from django_slack_tools.utils.template.django import DjangoTemplate
+from django_slack_tools.slack_messages.message_templates import DjangoTemplate
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +32,7 @@ class TestDjangoTemplate:
     )
     def test_render(self, xml_input: str, json_expect: str, data_dir: Path) -> None:
         expect = json.loads((data_dir / json_expect).read_text())
-        actual = DjangoTemplate(inline=(data_dir / xml_input).read_text()).render()
+        actual = DjangoTemplate(inline=(data_dir / xml_input).read_text()).render({})
         assert actual == expect
 
     def test_render_complex_with_context(self, data_dir: Path) -> None:

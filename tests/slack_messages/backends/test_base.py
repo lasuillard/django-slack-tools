@@ -1,3 +1,1 @@
-# TODO(lasuillard): Test backend base class
-class TestBaseBackend:
-    pass
+# Test here covered by derived classes instead

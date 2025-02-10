@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_slack_tools.utils.model_mixins import TimestampMixin
-from django_slack_tools.utils.slack import header_validator
+from django_slack_tools.slack_messages.validators import header_validator
+from django_slack_tools.utils.django.model_mixins import TimestampMixin
 
 from .message_recipient import SlackMessageRecipient
 
@@ -26,7 +26,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
     class TemplateType(models.TextChoices):
         """Possible template types."""
 
-        DICT = "D", _("Dictionary")
+        PYTHON = "P", _("Python")
         "Dictionary-based template."
 
         DJANGO = "DJ", _("Django")
@@ -66,7 +66,7 @@ class SlackMessagingPolicy(TimestampMixin, models.Model):
         help_text=_("Type of message template."),
         max_length=2,
         choices=TemplateType.choices,
-        default=TemplateType.DICT,
+        default=TemplateType.PYTHON,
     )
     template: models.JSONField[Any] = models.JSONField(
         verbose_name=_("Message template object"),
