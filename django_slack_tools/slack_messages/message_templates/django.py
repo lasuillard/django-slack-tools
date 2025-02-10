@@ -137,4 +137,8 @@ def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # n
     if value == "false":
         return key, False
 
+    # TODO(lasuillard): Should coerce all numeric-like strings to numbers?
+    if key == "indent":
+        return key, int(value)
+
     return key, value
