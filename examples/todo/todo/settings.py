@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
 
+import environ
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = "django-insecure-kv)x7pa__5ls#_zi*-hgi-mi@&&v7*ebtg3vmfvlxg*a###*ug"  # noqa: S105
 
@@ -136,15 +140,35 @@ LOGGING = {
     },
 }
 
-SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN", default="i-am-a-cookie")
-SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET", default="stupid-potato")
+SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
+SLACK_SIGNING_SECRET = os.environ["SLACK_SIGNING_SECRET"]
 
 DJANGO_SLACK_TOOLS = {
-    "SLACK_APP": "todo.slack_app.app",
-    "BACKEND": {
-        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
-        "OPTIONS": {
-            "slack_app": "todo.slack_app.app",
+    "slack_app": "todo.slack_app.app",
+    "messengers": {
+        "default": {
+            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "kwargs": {
+                "template_loaders": [
+                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
+                    "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                ],
+                "middlewares": [
+                    {
+                        "class": "django_slack_tools.slack_messages.middlewares.DjangoDatabasePolicyHandler",
+                        "kwargs": {
+                            "messenger": "default",
+                        },
+                    },
+                    "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                ],
+                "messaging_backend": {
+                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "kwargs": {
+                        "slack_app": "todo.slack_app.app",
+                    },
+                },
+            },
         },
     },
 }

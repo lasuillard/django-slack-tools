@@ -22,13 +22,12 @@ install:  ## Install deps
 	uv sync --frozen --all-extras
 .PHONY: install
 
-update:  ## Update deps and tools
-	uv sync --upgrade --all-extras
-.PHONY: update
-
 run:  ## Run development server
+	docker compose up -d
 	uv run python manage.py runserver \
 		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
+
+	docker compose down
 .PHONY: run
 
 run-celery-worker:
@@ -47,9 +46,9 @@ shell:  ## Run test project' Django shell
 	uv run python manage.py shell
 .PHONY: shell
 
-migration:  ## Make migrations
-	uv run python manage.py makemigrations
-.PHONY: migration
+setup: install migrate superuser  ## Set up the example project
+	uv run python manage.py loaddata ./dump.json
+.PHONY: setup
 
 migrate:  ## Apply migrations
 	uv run python manage.py migrate

@@ -1,0 +1,26 @@
+<root>
+    <block type="rich_text">
+        <element type="rich_text_section">
+            <element type="text">
+                Task being updated:
+            </element>
+        </element>
+        <element type="rich_text_list" style="bullet" indent="0">
+            <element type="rich_text_section">
+                <element type="text">
+                    Title: {{ old_values.title }} -> {{ new_values.title }}
+                </element>
+            </element>
+            <element type="rich_text_section">
+                <element type="text">
+                    Description: {{ old_values.description }} -> {{ new_values.description }}
+                </element>
+            </element>
+            <element type="rich_text_section">
+                <element type="text">
+                    Completed: {{ old_values.completed }} -> {{ new_values.completed }}
+                </element>
+            </element>
+        </element>
+    </block>
+</root>

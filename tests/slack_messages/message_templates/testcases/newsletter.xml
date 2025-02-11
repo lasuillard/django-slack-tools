@@ -1,0 +1,85 @@
+<root>
+    <block type="header">
+        <text type="plain_text">:newspaper:  Paper Company Newsletter  :newspaper:</text>
+    </block>
+    <block type="context">
+        <element type="mrkdwn">*November 12, 2019*  |  Sales Team Announcements</element>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">:loud_sound: *IN CASE YOU MISSED IT* :loud_sound:</text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">Replay our screening of *Threat Level Midnight* and pick up a copy of the DVD to give to your customers at the front desk.</text>
+        <accessory type="button">
+            <text type="plain_text" emoji="true">Watch Now</text>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            The *2019 Dundies* happened.
+
+            Awards were given, heroes were recognized.
+
+            Check out *#dundies-2019* to see who won awards.
+        </text>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">:calendar: |   *UPCOMING EVENTS*  | :calendar:</text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">`11/20-11/22` *Beet the Competition* _ annual retreat at Schrute Farms_</text>
+        <accessory type="button">
+            <text type="plain_text" emoji="true">RSVP</text>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">`12/01` *Toby's Going Away Party* at _Benihana_</text>
+        <accessory type="button">
+            <text type="plain_text" emoji="true">Learn More</text>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">`11/13` :pretzel: *Pretzel Day* :pretzel: at _Scranton Office_</text>
+        <accessory type="button">
+            <text type="plain_text" emoji="true">RSVP</text>
+        </accessory>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">:calendar: |   *PAST EVENTS*  | :calendar:</text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">`10/21` *Conference Room Meeting*</text>
+        <accessory type="button">
+            <text type="plain_text" emoji="true">Watch Recording</text>
+        </accessory>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">*FOR YOUR INFORMATION*</text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn" verbatim="false">:printer: *Sabre Printers* are no longer catching on fire! The newest version of our printers are safe to use. Make sure to tell your customers today.</text>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">
+            Please join me in welcoming our 3 *new hires* to the Paper Company family!
+
+
+            *Robert California*, CEO
+
+
+            *Ryan Howard*, Temp
+
+
+            *Erin Hannon*, Receptionist
+        </text>
+    </block>
+    <block type="divider" />
+    <block type="context">
+        <element type="mrkdwn">:pushpin: Do you have something to include in the newsletter? Here's *how to submit content*.</element>
+    </block>
+</root>
