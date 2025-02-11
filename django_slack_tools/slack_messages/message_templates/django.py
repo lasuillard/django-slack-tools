@@ -93,7 +93,7 @@ def _xml_to_dict(xml: str) -> dict:
         xml,
         attr_prefix="",
         cdata_key="text",
-        force_list=("blocks", "elements"),
+        force_list=("blocks", "elements", "options"),
         postprocessor=_xml_postprocessor,
     )
     return dict(next(iter(obj.values())))
@@ -121,6 +121,9 @@ def _rename_tag(tag: str) -> str:
 
     if tag == "element":
         return "elements"
+
+    if tag == "option":
+        return "options"
 
     return tag
 
