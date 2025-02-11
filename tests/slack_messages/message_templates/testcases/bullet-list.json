@@ -1,0 +1,52 @@
+{
+	"blocks": [
+		{
+			"elements": [
+				{
+					"elements": [
+						{
+							"text": "Items:",
+							"type": "text"
+						}
+					],
+					"type": "rich_text_section"
+				},
+				{
+					"elements": [
+						{
+							"elements": [
+								{
+									"text": "Stone",
+									"type": "text"
+								}
+							],
+							"type": "rich_text_section"
+						},
+						{
+							"elements": [
+								{
+									"text": "Wood",
+									"type": "text"
+								}
+							],
+							"type": "rich_text_section"
+						},
+						{
+							"elements": [
+								{
+									"text": "Iron",
+									"type": "text"
+								}
+							],
+							"type": "rich_text_section"
+						}
+					],
+					"indent": 0,
+					"style": "bullet",
+					"type": "rich_text_list"
+				}
+			],
+			"type": "rich_text"
+		}
+	]
+}

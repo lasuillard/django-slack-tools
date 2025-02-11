@@ -27,17 +27,25 @@ class TestDjangoTemplate:
     @pytest.mark.parametrize(
         ("xml_input", "json_expect"),
         [
-            ("001.xml", "001.json"),
+            ("complex-template.xml", "complex-template.json"),
+            ("bullet-list.xml", "bullet-list.json"),
         ],
     )
     def test_render(self, xml_input: str, json_expect: str, data_dir: Path) -> None:
+        # Arrange
         expect = json.loads((data_dir / json_expect).read_text())
+
+        # Act
         actual = DjangoTemplate(inline=(data_dir / xml_input).read_text()).render({})
+
+        # Assert
         assert actual == expect
 
     def test_render_complex_with_context(self, data_dir: Path) -> None:
         # Arrange
-        template = DjangoTemplate(file="001-template.xml")
+        template = DjangoTemplate(file="complex-template-with-context.xml")
+
+        # Act
         context = {
             "restaurants": [
                 {
@@ -93,10 +101,8 @@ class TestDjangoTemplate:
                 },
             ],
         }
-
-        # Act
         actual = template.render(context=context)
 
         # Assert
-        expect = json.loads((data_dir / "001.json").read_text())
+        expect = json.loads((data_dir / "complex-template.json").read_text())
         assert actual == expect
