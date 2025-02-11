@@ -29,6 +29,14 @@ class TestDjangoTemplate:
         [
             ("complex-template.xml", "complex-template.json"),
             ("bullet-list.xml", "bullet-list.json"),
+            ("approval.xml", "approval.json"),
+            ("newsletter.xml", "newsletter.json"),
+            ("notification.xml", "notification.json"),
+            ("onboarding-1.xml", "onboarding-1.json"),
+            ("onboarding-2.xml", "onboarding-2.json"),
+            ("poll.xml", "poll.json"),
+            ("search-results-1.xml", "search-results-1.json"),
+            ("search-results-2.xml", "search-results-2.json"),
         ],
     )
     def test_render(self, xml_input: str, json_expect: str, data_dir: Path) -> None:
@@ -41,6 +49,7 @@ class TestDjangoTemplate:
         # Assert
         assert actual == expect
 
+    # TODO(lasuillard): Add more tests rendering with context (pick complex templates for test): search-results-1.xml, search-results-2.xml  # noqa: E501
     def test_render_complex_with_context(self, data_dir: Path) -> None:
         # Arrange
         template = DjangoTemplate(file="complex-template-with-context.xml")
