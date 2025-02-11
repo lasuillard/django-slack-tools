@@ -105,7 +105,7 @@ def _preprocess_xml(xml: str) -> str:
     for node in root.iter():
         node.tag = _rename_tag(node.tag)
 
-        if node.tag == "text" and node.text:
+        if node.tag in ("text", "elements") and node.text:
             text = dedent(node.text)
             text = _remove_single_newline(text)
             logger.debug("Normalized text node: %r -> %r", node.text, text)
