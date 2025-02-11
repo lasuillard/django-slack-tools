@@ -114,25 +114,6 @@ def _preprocess_xml(xml: str) -> str:
     return ET.tostring(root, encoding="unicode")
 
 
-def _rename_tag(tag: str) -> str:
-    """Rename tags."""
-    if tag == "block":
-        return "blocks"
-
-    if tag == "element":
-        return "elements"
-
-    if tag == "option":
-        return "options"
-
-    return tag
-
-
-def _remove_single_newline(text: str) -> str:
-    """Remove a single newline from repeated newlines. If the are just one newline, replace it with space."""
-    return re.sub(r"([\n]+)", lambda m: "\n" * (m.group(1).count("\n") - 1) or " ", text)
-
-
 def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # noqa: ARG001
     if value == "true":
         return key, True
@@ -145,3 +126,20 @@ def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # n
         return key, int(value)
 
     return key, value
+
+
+_TAG_MAPPING = {
+    "block": "blocks",
+    "element": "elements",
+    "option": "options",
+}
+
+
+def _rename_tag(tag: str) -> str:
+    """Rename tags."""
+    return _TAG_MAPPING.get(tag, tag)
+
+
+def _remove_single_newline(text: str) -> str:
+    """Remove a single newline from repeated newlines. If the are just one newline, replace it with space."""
+    return re.sub(r"([\n]+)", lambda m: "\n" * (m.group(1).count("\n") - 1) or " ", text)
