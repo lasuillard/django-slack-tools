@@ -38,6 +38,14 @@ serve-docs:  ## Serve dev documents
 		--dev-addr $$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: serve-docs
 
+makemessages:  ## Update translation files
+	uv run python manage.py makemessages --all --ignore 'examples/*' --no-obsolete
+.PHONY: makemessages
+
+compilemessages:  ## Compile translation files
+	uv run python manage.py compilemessages --ignore 'examples/*'
+.PHONY: compilemessages
+
 
 # =============================================================================
 # CI
