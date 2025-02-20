@@ -1,0 +1,35 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            You have a new request:
+
+            *&lt;google.com|Fred Enriquez - Time Off request&gt;*
+        </text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            *Type:*
+
+            Paid time off
+
+            *When:*
+
+            Aug 10-Aug 13
+
+            *Hours:* 16.0 (2 days)
+
+            *Remaining balance:* 32.0 hours (4 days)
+
+            *Comments:* "Family in town, going camping!"
+        </text>
+        <accessory type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/approvalsNewDevice.png" alt_text="computer thumbnail"/>
+    </block>
+    <block type="actions">
+        <element type="button" style="primary" value="click_me_123">
+            <text type="plain_text" emoji="true">Approve</text>
+        </element>
+        <element type="button" style="danger" value="click_me_123">
+            <text type="plain_text" emoji="true">Deny</text>
+        </element>
+    </block>
+</root>

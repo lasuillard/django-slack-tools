@@ -1,0 +1,60 @@
+[
+  {
+    "model": "slack_messages.slackmessagingpolicy",
+    "pk": 1,
+    "fields": {
+      "created": "2025-02-10T12:53:59.149Z",
+      "last_modified": "2025-02-10T12:53:59.149Z",
+      "code": "DEFAULT",
+      "enabled": false,
+      "header_defaults": {},
+      "template_type": "P",
+      "template": null,
+      "recipients": []
+    }
+  },
+  {
+    "model": "slack_messages.slackmessagingpolicy",
+    "pk": 2,
+    "fields": {
+      "created": "2025-02-10T13:31:41.828Z",
+      "last_modified": "2025-02-10T13:31:41.828Z",
+      "code": "TODO-CREATE",
+      "enabled": true,
+      "header_defaults": {},
+      "template_type": "DJ",
+      "template": "todo-created.xml",
+      "recipients": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "slack_messages.slackmessagingpolicy",
+    "pk": 3,
+    "fields": {
+      "created": "2025-02-10T13:39:49.220Z",
+      "last_modified": "2025-02-10T13:40:05.394Z",
+      "code": "TODO-UPDATE",
+      "enabled": true,
+      "header_defaults": {},
+      "template_type": "DJ",
+      "template": "todo-updated.xml",
+      "recipients": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "slack_messages.slackmessagerecipient",
+    "pk": 1,
+    "fields": {
+      "created": "2025-02-10T12:53:59.165Z",
+      "last_modified": "2025-02-10T13:32:07.896Z",
+      "alias": "DEFAULT",
+      "channel": "<UPDATE-ME>",
+      "channel_name": "",
+      "mentions": []
+    }
+  }
+]

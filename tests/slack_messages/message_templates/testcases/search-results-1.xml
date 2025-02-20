@@ -1,0 +1,76 @@
+<root>
+	<block type="section">
+		<text type="mrkdwn">We found *205 Hotels* in New Orleans, LA from *12/14 to 12/17*</text>
+		<accessory type="overflow">
+			<option value="value-0">
+				<text type="plain_text" emoji="true">Option One</text>
+			</option>
+			<option value="value-1">
+				<text type="plain_text" emoji="true">Option Two</text>
+			</option>
+			<option value="value-2">
+				<text type="plain_text" emoji="true">Option Three</text>
+			</option>
+			<option value="value-3">
+				<text type="plain_text" emoji="true">Option Four</text>
+			</option>
+		</accessory>
+	</block>
+	<block type="divider" />
+	<block type="section">
+		<text type="mrkdwn">
+			*&lt;fakeLink.toHotelPage.com|Windsor Court Hotel&gt;*
+
+			★★★★★
+
+			$340 per night
+
+			Rated: 9.4 - Excellent
+		</text>
+		<accessory type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgent_1.png" alt_text="Windsor Court Hotel thumbnail" />
+	</block>
+	<block type="context">
+		<element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgentLocationMarker.png" alt_text="Location Pin Icon" />
+		<element type="plain_text" emoji="true">Location: Central Business District</element>
+	</block>
+	<block type="divider" />
+	<block type="section">
+		<text type="mrkdwn">
+			*&lt;fakeLink.toHotelPage.com|The Ritz-Carlton New Orleans&gt;*
+
+			★★★★★
+
+			$340 per night
+
+			Rated: 9.1 - Excellent
+		</text>
+		<accessory type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgent_2.png" alt_text="Ritz-Carlton New Orleans thumbnail" />
+	</block>
+	<block type="context">
+		<element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgentLocationMarker.png" alt_text="Location Pin Icon" />
+		<element type="plain_text" emoji="true">Location: French Quarter</element>
+	</block>
+	<block type="divider" />
+	<block type="section">
+		<text type="mrkdwn">
+			*&lt;fakeLink.toHotelPage.com|Omni Royal Orleans Hotel&gt;*
+
+			★★★★★
+
+			$419 per night
+
+			Rated: 8.8 - Excellent
+		</text>
+		<accessory type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgent_3.png" alt_text="Omni Royal Orleans Hotel thumbnail" />
+	</block>
+	<block type="context">
+		<element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/tripAgentLocationMarker.png" alt_text="Location Pin Icon" />
+		<element type="plain_text" emoji="true">Location: French Quarter</element>
+	</block>
+	<block type="divider" />
+	<block type="actions">
+		<element type="button" value="click_me_123">
+			<text type="plain_text" emoji="true">Next 2 Results</text>
+		</element>
+	</block>
+</root>
