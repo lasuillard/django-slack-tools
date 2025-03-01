@@ -36,7 +36,7 @@ test = [
 	"pytest-sugar~=1.0",
 	"pytest-xdist~=3.6",
 	"pytest~=8.0",
-    "nox~=2024.10.9",
+    "nox>=2024.10.9,<2025.3.0",
 ]
 
 [build-system]
