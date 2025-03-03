@@ -8,7 +8,7 @@ Little helpers working with Slack bot 🤖 in Django.
 
 This project aims to implementing helpful features making Slack bot and providing reusable Django apps integrated with database.
 
-## Features
+## ✨ Features
 
 Key features are:
 

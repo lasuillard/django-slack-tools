@@ -27,7 +27,7 @@ def slack_message(
     header: dict[str, Any] | None = None,
     context: dict[str, Any] | None = None,
 ) -> str | None:
-    """Celery task wrapper for `message.slack_message`.
+    """Celery task wrapper for `.shortcuts.slack_message`.
 
     Args:
         to: Recipient.
