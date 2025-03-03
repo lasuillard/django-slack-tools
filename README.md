@@ -35,7 +35,7 @@ Currently it is focused on messaging features. In future, hoping to bring more h
 
 ## 🚀 Installation
 
-**django-slack-tools** supports Python 3.8+ and Django 4.2+. Supports for each deps will be dropped as soon as the ends of security updates.
+**django-slack-tools** supports Python 3.9+ and Django 4.2+. Supports for each deps will be dropped as soon as the ends of security updates.
 
 > [!WARNING]
 > 0.x versions are for development. Breaking changes can be made at any time. If gonna use this package, recommend to pin down the version.
@@ -61,33 +61,51 @@ Add configuration for application:
 
 ```python
 DJANGO_SLACK_TOOLS = {
-    # Module path to Slack Bolt application or callable returns the app
-    "SLACK_APP": "path.to.your.slack.app",
-
-    # Messaging backend configuration
-    "BACKEND": {
-        "NAME": "django_slack_tools.slack_messages.backends.SlackBackend",
-        "OPTIONS": {
-            # TODO(#44): Reasonable defaults to reduce some duplicates
-            "slack_app": "path.to.your.slack.app",
-        }
+    "messengers": {
+        "default": {
+            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "kwargs": {
+                "template_loaders": [
+                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
+                ],
+                "middlewares": [],
+                "messaging_backend": {
+                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "kwargs": {
+                        "slack_app": "<module.path.to.your-slack-app>",
+                    },
+                },
+            },
+        },
     }
 }
 ```
 
-Then, run the database migration and send messages:
+Then, run the database migration and create `greet.xml` file in `templates/` directory:
+
+```xml
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            {{ greet }}
+        </text>
+    </block>
+</root>
+```
+
+Send a message:
 
 ```python
-from django_slack_tools.slack_messages.message import slack_message
+from django_slack_tools.slack_messages.shortcuts import slack_message
 
 message = slack_message(
-    "I like threading",
-    channel="id-of-channel",
-    header={"reply_broadcast": True},
+    "<channel-id>",
+    template="greet.xml",
+    context={"greet": "Hello, World!"},
 )
 ```
 
-Please check the [documentation](https://lasuillard.github.io/django-slack-tools/) for more about details.
+Please check the [documentation](https://lasuillard.github.io/django-slack-tools/) and [examples](./examples/) for more about details.
 
 ## 💖 Contributing
 
