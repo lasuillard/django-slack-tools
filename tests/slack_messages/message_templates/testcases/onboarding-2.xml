@@ -1,0 +1,29 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">Hi David :wave:</text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            Great to see you here! App helps you to stay up-to-date with your meetings and events right here within Slack. These are just a few things which you will be able to do:
+        </text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            • Schedule meetings
+
+            • Manage and update attendees
+
+            • Get notified about changes of your meetings
+        </text>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            But before you can do all these amazing things, we need you to connect your calendar to App. Simply click the button below:
+        </text>
+    </block>
+    <block type="actions">
+        <element type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Connect account</text>
+        </element>
+    </block>
+</root>
