@@ -1,0 +1,58 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">
+            *Where should we order lunch from?* Poll by &lt;fakeLink.toUser.com|Mark&gt;
+        </text>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">
+            :sushi: *Ace Wasabi Rock-n-Roll Sushi Bar*
+
+            The best landlocked sushi restaurant.
+        </text>
+        <accessory type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Vote</text>
+        </accessory>
+    </block>
+    <block type="context">
+        <element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/profile_1.png" alt_text="Michael Scott" />
+        <element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/profile_2.png" alt_text="Dwight Schrute" />
+        <element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/profile_3.png" alt_text="Pam Beasely" />
+        <element type="plain_text" emoji="true">3 votes</element>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            :hamburger: *Super Hungryman Hamburgers*
+
+            Only for the hungriest of the hungry.
+        </text>
+        <accessory type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Vote</text>
+        </accessory>
+    </block>
+    <block type="context">
+        <element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/profile_4.png" alt_text="Angela" />
+        <element type="image" image_url="https://api.slack.com/img/blocks/bkb_template_images/profile_2.png" alt_text="Dwight Schrute" />
+        <element type="plain_text" emoji="true">2 votes</element>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            :ramen: *Kagawa-Ya Udon Noodle Shop*
+
+            Do you like to shop for noodles? We have noodles.
+        </text>
+        <accessory type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Vote</text>
+        </accessory>
+    </block>
+    <block type="context">
+        <element type="mrkdwn">No votes</element>
+    </block>
+    <block type="divider" />
+    <block type="actions">
+        <element type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Add a suggestion</text>
+        </element>
+    </block>
+</root>

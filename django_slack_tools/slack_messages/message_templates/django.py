@@ -93,7 +93,7 @@ def _xml_to_dict(xml: str) -> dict:
         xml,
         attr_prefix="",
         cdata_key="text",
-        force_list=("blocks", "elements"),
+        force_list=("blocks", "elements", "options"),
         postprocessor=_xml_postprocessor,
     )
     return dict(next(iter(obj.values())))
@@ -105,29 +105,13 @@ def _preprocess_xml(xml: str) -> str:
     for node in root.iter():
         node.tag = _rename_tag(node.tag)
 
-        if node.tag == "text" and node.text:
+        if node.tag in ("text", "elements") and node.text:
             text = dedent(node.text)
             text = _remove_single_newline(text)
             logger.debug("Normalized text node: %r -> %r", node.text, text)
             node.text = text
 
     return ET.tostring(root, encoding="unicode")
-
-
-def _rename_tag(tag: str) -> str:
-    """Rename tags."""
-    if tag == "block":
-        return "blocks"
-
-    if tag == "element":
-        return "elements"
-
-    return tag
-
-
-def _remove_single_newline(text: str) -> str:
-    """Remove a single newline from repeated newlines. If the are just one newline, replace it with space."""
-    return re.sub(r"([\n]+)", lambda m: "\n" * (m.group(1).count("\n") - 1) or " ", text)
 
 
 def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # noqa: ARG001
@@ -137,4 +121,25 @@ def _xml_postprocessor(path: Any, key: str, value: Any) -> tuple[str, Any]:  # n
     if value == "false":
         return key, False
 
+    # TODO(lasuillard): Should coerce all numeric-like strings to numbers?
+    if key == "indent":
+        return key, int(value)
+
     return key, value
+
+
+_TAG_MAPPING = {
+    "block": "blocks",
+    "element": "elements",
+    "option": "options",
+}
+
+
+def _rename_tag(tag: str) -> str:
+    """Rename tags."""
+    return _TAG_MAPPING.get(tag, tag)
+
+
+def _remove_single_newline(text: str) -> str:
+    """Remove a single newline from repeated newlines. If the are just one newline, replace it with space."""
+    return re.sub(r"([\n]+)", lambda m: "\n" * (m.group(1).count("\n") - 1) or " ", text)

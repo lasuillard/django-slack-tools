@@ -64,6 +64,8 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
+            # Used only for testing
+            BASE_DIR.parent / "tests" / "slack_messages" / "message_templates" / "testcases",
         ],
         "APP_DIRS": True,
         "OPTIONS": {

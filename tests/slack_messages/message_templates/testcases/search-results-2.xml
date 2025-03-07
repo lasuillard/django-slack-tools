@@ -1,0 +1,122 @@
+<root>
+    <block type="section">
+        <text type="mrkdwn">:mag: Search results for *Cata*</text>
+    </block>
+    <block type="divider" />
+    <block type="section">
+        <text type="mrkdwn">
+            *&lt;fakeLink.toYourApp.com|Use Case Catalogue&gt;*
+
+            Use Case Catalogue for the following departments/roles...
+        </text>
+        <accessory type="static_select">
+            <placeholder type="plain_text" emoji="true">Manage</placeholder>
+            <option>
+                <text type="plain_text" emoji="true">Edit it</text>
+                <value>value-0</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Read it</text>
+                <value>value-1</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Save it</text>
+                <value>value-2</value>
+            </option>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            *&lt;fakeLink.toYourApp.com|Customer Support - Workflow Diagram Catalogue&gt;*
+
+            This resource was put together by members of...
+        </text>
+        <accessory type="static_select">
+            <placeholder type="plain_text" emoji="true">Manage</placeholder>
+            <option>
+                <text type="plain_text" emoji="true">Manage it</text>
+                <value>value-0</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Read it</text>
+                <value>value-1</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Save it</text>
+                <value>value-2</value>
+            </option>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            *&lt;fakeLink.toYourApp.com|Self-Serve Learning Options Catalogue&gt;*
+
+            See the learning and development options we...
+        </text>
+        <accessory type="static_select">
+            <placeholder type="plain_text" emoji="true">Manage</placeholder>
+            <option>
+                <text type="plain_text" emoji="true">Manage it</text>
+                <value>value-0</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Read it</text>
+                <value>value-1</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Save it</text>
+                <value>value-2</value>
+            </option>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            *&lt;fakeLink.toYourApp.com|Use Case Catalogue - CF Presentation - [June 12, 2018]&gt;*
+
+            This is presentation will continue to be updated as...
+        </text>
+        <accessory type="static_select">
+            <placeholder type="plain_text" emoji="true">Manage</placeholder>
+            <option>
+                <text type="plain_text" emoji="true">Manage it</text>
+                <value>value-0</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Read it</text>
+                <value>value-1</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Save it</text>
+                <value>value-2</value>
+            </option>
+        </accessory>
+    </block>
+    <block type="section">
+        <text type="mrkdwn">
+            *&lt;fakeLink.toYourApp.com|Comprehensive Benefits Catalogue - 2019&gt;*
+
+            Information about all the benefits we offer is...
+        </text>
+        <accessory type="static_select">
+            <placeholder type="plain_text" emoji="true">Manage</placeholder>
+            <option>
+                <text type="plain_text" emoji="true">Manage it</text>
+                <value>value-0</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Read it</text>
+                <value>value-1</value>
+            </option>
+            <option>
+                <text type="plain_text" emoji="true">Save it</text>
+                <value>value-2</value>
+            </option>
+        </accessory>
+    </block>
+    <block type="divider" />
+    <block type="actions">
+        <element type="button" value="click_me_123">
+            <text type="plain_text" emoji="true">Next 5 Results</text>
+        </element>
+    </block>
+</root>

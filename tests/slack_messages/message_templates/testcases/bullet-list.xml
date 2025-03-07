@@ -1,0 +1,26 @@
+<root>
+    <block type="rich_text">
+        <element type="rich_text_section">
+            <element type="text">
+                Items:
+            </element>
+        </element>
+        <element type="rich_text_list" style="bullet" indent="0">
+            <element type="rich_text_section">
+                <element type="text">
+                    Stone
+                </element>
+            </element>
+            <element type="rich_text_section">
+                <element type="text">
+                    Wood
+                </element>
+            </element>
+            <element type="rich_text_section">
+                <element type="text">
+                    Iron
+                </element>
+            </element>
+        </element>
+    </block>
+</root>
