@@ -28,7 +28,6 @@ class DjangoDatabasePersister(BaseMiddleware):
         Args:
             slack_app: Slack app instance to use for certain tasks, such as getting permalinks.
             get_permalink: If `True`, will try to get the permalink of the message.
-            log_level_if_no_request: Log level to use if no request is found in response.
         """
         if get_permalink and not isinstance(slack_app, App):
             msg = "`slack_app` must be an instance of `App` if `get_permalink` is set `True`."
