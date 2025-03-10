@@ -14,14 +14,13 @@ plugins:
   - search
 nav:
   - Introduction: index.md
-  - Tutorials:
-    - Quick Start: tutorials/quick-start.md
+  - Quick Start: quick-start.md
   - API References:
     - Slack Messages:
-      - Models: api-references/slack-messages/models.md
-      - Messaging Backends: api-references/slack-messages/messaging-backends.md
+      - Django Integration: api-references/slack-messages/django-integration.md
+      - Messenger Framework: api-references/slack-messages/messenger-framework.md
       - Sending Messages: api-references/slack-messages/sending-messages.md
-      - Celery Support: api-references/slack-messages/celery.md
+      - Celery Support: api-references/slack-messages/celery-support.md
 markdown_extensions:
   - def_list
   - pymdownx.tasklist:
