@@ -1,3 +1,4 @@
+import uuid
 from collections.abc import Sequence
 from datetime import datetime
 from typing import Any
@@ -52,6 +53,7 @@ class SlackMessageFactory(DjangoModelFactory):
     class Meta:
         model = SlackMessage
 
+    id = LazyAttribute(lambda _: str(uuid.uuid4()))
     policy = None
     channel = LazyAttribute(lambda _: f"#{_fake.pystr()}")
     header: dict = {}  # noqa: RUF012
