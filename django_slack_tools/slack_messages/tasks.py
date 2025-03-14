@@ -19,33 +19,17 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def slack_message(
-    to: str,
-    *,
-    messenger_name: str | None = None,
-    template: str,
-    header: dict[str, Any] | None = None,
-    context: dict[str, Any] | None = None,
-) -> str | None:
+def slack_message(*args: Any, **kwargs: Any) -> str | None:
     """Celery task wrapper for `.shortcuts.slack_message`.
 
     Args:
-        to: Recipient.
-        messenger_name: Messenger name. If not set, default messenger is used.
-        template: Message template key.
-        header: Slack message control header.
-        context: Context for rendering the template.
+        args: Positional arguments.
+        kwargs: Keyword arguments.
 
     Returns:
         ID of sent message if any, `None` otherwise.
     """
-    response = shortcuts.slack_message(
-        to,
-        messenger_name=messenger_name,
-        template=template,
-        header=header,
-        context=context,
-    )
+    response = shortcuts.slack_message(*args, **kwargs)
     return response.ts if response else None
 
 
