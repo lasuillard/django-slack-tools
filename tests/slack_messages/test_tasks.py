@@ -33,7 +33,6 @@ class TestSlackMessage:
 
         m.assert_called_once_with(
             "test",
-            messenger_name=None,
             template="simple",
             header={"key": "value"},
             context={"greet": "Hello, world!"},
