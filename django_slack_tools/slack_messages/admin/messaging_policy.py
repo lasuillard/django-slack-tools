@@ -35,7 +35,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[SlackMessagingPolicyWithAnnotates]:  # noqa: D102
         return cast(
-            QuerySet["SlackMessagingPolicyWithAnnotates"],  # Unsafe force type casting
+            "QuerySet[SlackMessagingPolicyWithAnnotates]",  # Unsafe force type casting
             super()
             .get_queryset(request)
             .annotate(

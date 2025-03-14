@@ -69,7 +69,7 @@ class TestMessenger:
             messenger.send(to="channel", template="template", context={"key": "value"}, header={"thread_ts": "123"})
             # ? `send_request.assert_called_once_with` not applicable due to `id_`; unable to mock it
             assert send_request.call_count == 1
-            assert cast(MessageRequest, send_request.call_args.kwargs["request"]).model_dump(
+            assert cast("MessageRequest", send_request.call_args.kwargs["request"]).model_dump(
                 exclude={"id_"},
             ) == MessageRequest(
                 template_key="template",

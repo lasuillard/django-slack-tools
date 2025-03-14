@@ -25,7 +25,7 @@ class SlackMessageRecipientAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[SlackMessageRecipientWithAnnotates]:  # noqa: D102
         return cast(
-            QuerySet["SlackMessageRecipientWithAnnotates"],  # Unsafe force type casting
+            "QuerySet[SlackMessageRecipientWithAnnotates]",  # Unsafe force type casting
             super()
             .get_queryset(request)
             .annotate(
