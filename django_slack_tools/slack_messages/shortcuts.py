@@ -30,7 +30,7 @@ def slack_message(
     *,
     messenger_name: str | None = None,
     header: MessageHeader | dict[str, Any] | None = None,
-    template: str,
+    template: str | None = None,
     context: dict[str, Any] | None = None,
 ) -> MessageResponse | None: ...  # pragma: no cover
 
