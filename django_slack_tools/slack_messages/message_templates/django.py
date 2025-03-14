@@ -101,7 +101,7 @@ def _xml_to_dict(xml: str) -> dict:
 
 def _preprocess_xml(xml: str) -> str:
     """Normalize XML text nodes."""
-    root = ET.fromstring(xml)  # noqa: S314; TODO(lasuillard): Naive belief that XML is safe
+    root = ET.fromstring(xml)  # noqa: S314 ; TODO(lasuillard): Naive belief that XML is safe
     for node in root.iter():
         node.tag = _rename_tag(node.tag)
 

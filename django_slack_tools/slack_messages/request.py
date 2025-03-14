@@ -1,5 +1,6 @@
 # noqa: D100
-# flake8: noqa: UP006, UP007, UP035; Subscription syntax available since Python 3.10
+# flake8: noqa: UP006, UP007, UP035
+# #? Subscription syntax available since Python 3.10
 from __future__ import annotations
 
 import uuid
