@@ -65,7 +65,7 @@ def test_slack_message_simplest_message(mock_slack_client: Mock) -> None:
             "icon_emoji": None,
             "icon_url": None,
             "metadata": None,
-            "text": "Hello, World!,",
+            "text": "Hello, World!",
             "username": None,
         },
         "channel": "whatever-channel",
