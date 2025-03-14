@@ -110,7 +110,7 @@ def test_slack_message_with_template(mock_slack_client: Mock) -> None:
         },
         "channel": "whatever-channel",
         "context": {
-            "greet": "Hello, World!",
+            "greet": "Hello, World!,",
         },
         "header": {
             "mrkdwn": None,
