@@ -113,6 +113,10 @@ class Messenger:
 
     def _render_message(self, request: MessageRequest) -> None:
         """Updates the request with rendered message, in-place."""
+        if request.body is not None:
+            logger.debug("Request already has a body, skipping rendering")
+            return
+
         if request.template_key is None:
             msg = "Template key is required to render the message"
             raise ValueError(msg)
