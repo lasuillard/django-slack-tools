@@ -4,7 +4,7 @@ from typing import Any
 
 import faker
 from django.utils import timezone
-from factory import Faker, LazyAttribute, post_generation
+from factory import Faker, LazyAttribute, post_generation  # type: ignore[attr-defined]
 from factory.django import DjangoModelFactory
 from factory.fuzzy import FuzzyChoice
 
@@ -36,7 +36,7 @@ class SlackMessageRecipientFactory(DjangoModelFactory):
     channel_name = LazyAttribute(lambda _: f"#{_fake.pystr()}")
 
     @post_generation
-    def mentions(
+    def mentions(  # type: ignore[misc]
         self: SlackMessageRecipient,
         create: bool,  # noqa: FBT001
         extracted: Sequence[SlackMention],
@@ -64,7 +64,12 @@ class SlackMessageFactory(DjangoModelFactory):
 
     # Hook to set the created(`auto_now_add` set) field after creation
     @post_generation
-    def created(self: SlackMessage, create: bool, extracted: datetime, **kwargs: Any) -> None:  # noqa: ARG002, FBT001
+    def created(  # type: ignore[misc]
+        self: SlackMessage,
+        create: bool,  # noqa: FBT001
+        extracted: datetime,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> None:
         if not create or not extracted:
             return
 
@@ -80,7 +85,7 @@ class SlackMessagingPolicyFactory(DjangoModelFactory):
     enabled = True
 
     @post_generation
-    def recipients(
+    def recipients(  # type: ignore[misc]
         self: SlackMessagingPolicy,
         create: bool,  # noqa: FBT001
         extracted: Sequence[SlackMessageRecipient],

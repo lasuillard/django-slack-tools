@@ -1,4 +1,4 @@
-from factory import Factory, SubFactory
+from factory import Factory, SubFactory  # type: ignore[attr-defined]
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web import SlackResponse
 
