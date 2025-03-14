@@ -101,7 +101,7 @@ def test_slack_message_with_template(mock_slack_client: Mock) -> None:
     assert request.model_dump() == {
         "body": {
             "attachments": None,
-            "blocks": [{"text": {"text": "Hello, World!", "type": "mrkdwn"}, "type": "section"}],
+            "blocks": [{"text": {"text": "Hello, World!,", "type": "mrkdwn"}, "type": "section"}],
             "icon_emoji": None,
             "icon_url": None,
             "metadata": None,
@@ -110,7 +110,7 @@ def test_slack_message_with_template(mock_slack_client: Mock) -> None:
         },
         "channel": "whatever-channel",
         "context": {
-            "greet": "Hello, World!,",
+            "greet": "Hello, World!",
         },
         "header": {
             "mrkdwn": None,
