@@ -24,7 +24,7 @@ class TestDjangoPolicyTemplateLoader:
     pytestmark = pytest.mark.django_db
 
     def test_load_python_template(self) -> None:
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             template_type=SlackMessagingPolicy.TemplateType.PYTHON,
             template={
                 "attachments": [
@@ -55,7 +55,7 @@ class TestDjangoPolicyTemplateLoader:
         }
 
     def test_load_django_template_pass_policy_by_code(self) -> None:
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             template_type=SlackMessagingPolicy.TemplateType.DJANGO,
             template="greet.xml",
         )
@@ -69,7 +69,7 @@ class TestDjangoPolicyTemplateLoader:
 
     def test_load_django_template_pass_policy_by_object(self) -> None:
         """Support passing policy object for convenience."""
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             template_type=SlackMessagingPolicy.TemplateType.DJANGO,
             template="greet.xml",
         )
@@ -87,7 +87,7 @@ class TestDjangoPolicyTemplateLoader:
         assert template is None
 
     def test_load_django_template_template_not_found(self) -> None:
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             template_type=SlackMessagingPolicy.TemplateType.DJANGO,
             template="NOT_FOUND",
         )
@@ -107,7 +107,7 @@ class TestDjangoPolicyTemplateLoader:
     </block>
 </root>
 """.lstrip()
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             template_type=SlackMessagingPolicy.TemplateType.DJANGO_INLINE,
             template=inline_template,
         )

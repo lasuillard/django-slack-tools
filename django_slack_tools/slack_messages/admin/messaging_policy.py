@@ -7,7 +7,6 @@ from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
 from django.db import models
 from django.db.models import Count
-from django.db.models.query import QuerySet
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -16,6 +15,7 @@ from django_slack_tools.utils.django.widgets import JSONWidget
 from django_slack_tools.utils.slack import get_block_kit_builder_url
 
 if TYPE_CHECKING:
+    from django.db.models.query import QuerySet
     from django.http import HttpRequest
     from django_stubs_ext import StrOrPromise
 
@@ -35,7 +35,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[SlackMessagingPolicyWithAnnotates]:  # noqa: D102
         return cast(
-            QuerySet["SlackMessagingPolicyWithAnnotates"],  # Unsafe force type casting
+            "QuerySet[SlackMessagingPolicyWithAnnotates]",  # Unsafe force type casting
             super()
             .get_queryset(request)
             .annotate(

@@ -40,10 +40,10 @@ class BaseBackend(ABC):
             response = err.response
             error = traceback.format_exc()
 
-        ok = cast(bool, response.get("ok"))
+        ok = cast("bool", response.get("ok"))
         data: Any
         if ok:
-            ts = cast(Optional[str], response.get("ts", None))
+            ts = cast("Optional[str]", response.get("ts", None))
             data = response.get("message", {})
             parent_ts = data.get("thread_ts", None)
         else:

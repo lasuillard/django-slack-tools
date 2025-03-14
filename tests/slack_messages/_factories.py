@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from factory import Factory, LazyAttribute, SubFactory, lazy_attribute
+from factory import Factory, LazyAttribute, SubFactory, lazy_attribute  # type: ignore[attr-defined]
 
 from django_slack_tools.slack_messages.request import MessageHeader, MessageRequest
 from django_slack_tools.slack_messages.response import MessageResponse
@@ -45,14 +45,14 @@ class SlackMessageResponseFactory(SlackResponseFactory):
             "message": {
                 "bot_id": "<REDACTED>",
                 "type": "message",
-                "text": self.text,
+                "text": self.text,  # type: ignore[attr-defined]
                 "user": "<REDACTED>",
                 "ts": ts,
                 "app_id": "<REDACTED>",
-                "blocks": self.blocks,
+                "blocks": self.blocks,  # type: ignore[attr-defined]
                 "team": "<REDACTED>",
                 "bot_profile": {},
-                "attachments": self.attachments,
+                "attachments": self.attachments,  # type: ignore[attr-defined]
             },
         }
 
@@ -86,7 +86,7 @@ class SlackGetPermalinkResponseFactory(SlackResponseFactory):
         return {
             "ok": True,
             "channel": "whatever-channel",
-            "permalink": self.permalink,
+            "permalink": self.permalink,  # type: ignore[attr-defined]
         }
 
     class Params:

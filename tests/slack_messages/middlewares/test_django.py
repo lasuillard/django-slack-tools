@@ -95,7 +95,7 @@ class TestDjangoDatabasePersister:
         mock_slack_client.chat_getPermalink.return_value = SlackGetPermalinkResponseFactory(permalink=permalink)
         persister = DjangoDatabasePersister(slack_app=slack_app, get_permalink=True)
 
-        response = MessageResponseFactory()
+        response = MessageResponseFactory.create()
         result = persister.process_response(response)
         saved_message = SlackMessage.objects.get(id=response.request.id_)
 
@@ -124,13 +124,13 @@ class TestDjangoDatabasePersister:
         persister = DjangoDatabasePersister()
         with mock.patch("django_slack_tools.slack_messages.models.SlackMessage.save") as mock_save:
             mock_save.side_effect = Exception("Some error occurred")
-            persister.process_response(MessageResponseFactory())
+            persister.process_response(MessageResponseFactory.create())
 
     def test_process_response_skip_persist_if_request_none(self) -> None:
         """Test skipping persisting if `response.request` is `None`."""
         persister = DjangoDatabasePersister()
 
-        response = MessageResponseFactory(request=None)
+        response = MessageResponseFactory.create(request=None)
         result = persister.process_response(response)
 
         assert result is response
@@ -206,7 +206,7 @@ class TestDjangoDatabasePolicyHandler:
         # Act
         # Original request will be stopped, and 3 new requests will be created
         response = middleware.process_request(
-            MessageRequestFactory(
+            MessageRequestFactory.create(
                 channel=policy.code,
                 context={"greet": "Nice to meet you"},
             ),
@@ -313,7 +313,7 @@ class TestDjangoDatabasePolicyHandler:
             DjangoDatabasePolicyHandler(messenger=messenger),
             DjangoDatabasePersister(),
         ]
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             code="test-channel",
             recipients=SlackMessageRecipientFactory.create_batch(size=3, channel="test-channel"),
         )
@@ -345,7 +345,7 @@ class TestDjangoDatabasePolicyHandler:
             DjangoDatabasePolicyHandler(messenger=messenger),
             DjangoDatabasePersister(),
         ]
-        policy = SlackMessagingPolicyFactory(
+        policy = SlackMessagingPolicyFactory.create(
             code="test-channel",
             recipients=SlackMessageRecipientFactory.create_batch(size=3, channel="test-channel"),
         )
@@ -365,7 +365,7 @@ class TestDjangoDatabasePolicyHandler:
 
         # Act & Assert
         with pytest.raises(SlackMessagingPolicy.DoesNotExist):
-            middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code"))
+            middleware.process_request(MessageRequestFactory.create(channel="nonexistent-policy-code"))
 
     def test_process_request_policy_on_policy_not_exists_create(self) -> None:
         """If policy does not exists but `on_policy_not_exists` is `"create"`, it should create the policy."""
@@ -374,7 +374,9 @@ class TestDjangoDatabasePolicyHandler:
         middleware = DjangoDatabasePolicyHandler(messenger=messenger, on_policy_not_exists="create")
 
         # Act
-        request = middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code", context={}))
+        request = middleware.process_request(
+            MessageRequestFactory.create(channel="nonexistent-policy-code", context={}),
+        )
 
         # Assert
         assert request is None
@@ -393,7 +395,9 @@ class TestDjangoDatabasePolicyHandler:
         middleware = DjangoDatabasePolicyHandler(messenger=messenger, on_policy_not_exists="default")
 
         # Act
-        request = middleware.process_request(MessageRequestFactory(channel="nonexistent-policy-code", context={}))
+        request = middleware.process_request(
+            MessageRequestFactory.create(channel="nonexistent-policy-code", context={}),
+        )
 
         # Assert
         assert request is None
@@ -412,7 +416,7 @@ class TestDjangoDatabasePolicyHandler:
 
         # Act
         # Policy is disabled, so no message to send -- shouldn't raise any error.
-        request = middleware.process_request(MessageRequestFactory(channel=policy.code))
+        request = middleware.process_request(MessageRequestFactory.create(channel=policy.code))
 
         # Assert
         assert request is None
@@ -426,7 +430,7 @@ class TestDjangoDatabasePolicyHandler:
 
         # Act & Assert
         with pytest.raises(ValueError, match='Unknown value for `on_policy_not_exists`: "unknown-behavior"'):
-            middleware.process_request(MessageRequestFactory())
+            middleware.process_request(MessageRequestFactory.create())
 
 
 @contextmanager

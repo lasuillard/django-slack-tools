@@ -46,14 +46,14 @@ class TestCleanupOldMessages:
         ts = datetime(2024, 10, 9, 3, 48, 22, tzinfo=timezone.utc)
         _should_deleted = [
             # Should be deleted
-            SlackMessageFactory(created=ts - timedelta(minutes=6)),
-            SlackMessageFactory(created=ts - timedelta(minutes=5, seconds=1)),
+            SlackMessageFactory.create(created=ts - timedelta(minutes=6)),
+            SlackMessageFactory.create(created=ts - timedelta(minutes=5, seconds=1)),
         ]
         should_remain = [
             # Should not be deleted
-            SlackMessageFactory(created=ts - timedelta(minutes=5)),
-            SlackMessageFactory(created=ts - timedelta(minutes=4, seconds=59)),
-            SlackMessageFactory(created=ts - timedelta(minutes=4)),
+            SlackMessageFactory.create(created=ts - timedelta(minutes=5)),
+            SlackMessageFactory.create(created=ts - timedelta(minutes=4, seconds=59)),
+            SlackMessageFactory.create(created=ts - timedelta(minutes=4)),
         ]
 
         # Act

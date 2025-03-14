@@ -69,7 +69,7 @@ class TestMessenger:
             messenger.send(to="channel", template="template", context={"key": "value"}, header={"thread_ts": "123"})
             # ? `send_request.assert_called_once_with` not applicable due to `id_`; unable to mock it
             assert send_request.call_count == 1
-            assert cast(MessageRequest, send_request.call_args.kwargs["request"]).model_dump(
+            assert cast("MessageRequest", send_request.call_args.kwargs["request"]).model_dump(
                 exclude={"id_"},
             ) == MessageRequest(
                 template_key="template",
@@ -85,7 +85,7 @@ class TestMessenger:
             middlewares=[MockMiddleware()],
             messaging_backend=MockBackend(),
         )
-        response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
+        response = messenger.send_request(request=MessageRequestFactory.create(context={"name": "Daniel"}))
         assert response
         assert response.model_dump() == {
             "data": {},
@@ -125,7 +125,7 @@ class TestMessenger:
             middlewares=[MockMiddleware(process_request=lambda _: None)],
             messaging_backend=MockBackend(),
         )
-        response = messenger.send_request(request=MessageRequestFactory())
+        response = messenger.send_request(request=MessageRequestFactory.create())
         assert response is None
 
     def test_send_request_request_middleware_raised_error(self) -> None:
@@ -141,7 +141,7 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):
-            messenger.send_request(request=MessageRequestFactory())
+            messenger.send_request(request=MessageRequestFactory.create())
 
     def test_send_request_template_key_is_not_set(self) -> None:
         """Template key is required to render the message."""
@@ -151,7 +151,7 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(ValueError, match="Template key is required to render the message"):
-            messenger.send_request(request=MessageRequestFactory(template_key=None))
+            messenger.send_request(request=MessageRequestFactory.create(template_key=None))
 
     def test_send_request_template_load_not_found(self) -> None:
         """When template is not found, it should raise an error."""
@@ -161,7 +161,7 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(TemplateNotFoundError, match="Template with key 'some-template-key' not found"):
-            messenger.send_request(request=MessageRequestFactory(template_key="some-template-key"))
+            messenger.send_request(request=MessageRequestFactory.create(template_key="some-template-key"))
 
     def test_send_request_message_rendering_failed_missing_context_key(self) -> None:
         """Rendering fails if required context key is not provided."""
@@ -171,7 +171,7 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(KeyError, match="name"):
-            messenger.send_request(request=MessageRequestFactory(context={}))
+            messenger.send_request(request=MessageRequestFactory.create(context={}))
 
     def test_send_request_message_rendering_failed_template_error_propagates_to_caller(self) -> None:
         """Error in rendering propagates to caller."""
@@ -186,7 +186,7 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):
-            messenger.send_request(request=MessageRequestFactory())
+            messenger.send_request(request=MessageRequestFactory.create())
 
     def test_send_request_response_middleware_returned_none(self) -> None:
         """When response middleware returned `None`, it should return the `None`."""
@@ -195,7 +195,7 @@ class TestMessenger:
             middlewares=[MockMiddleware(process_response=lambda _: None)],
             messaging_backend=MockBackend(),
         )
-        response = messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
+        response = messenger.send_request(request=MessageRequestFactory.create(context={"name": "Daniel"}))
         assert response is None
 
     def test_send_request_response_middleware_raise_error(self) -> None:
@@ -211,4 +211,4 @@ class TestMessenger:
             messaging_backend=MockBackend(),
         )
         with pytest.raises(Exception, match="Some error occurred"):
-            messenger.send_request(request=MessageRequestFactory(context={"name": "Daniel"}))
+            messenger.send_request(request=MessageRequestFactory.create(context={"name": "Daniel"}))
