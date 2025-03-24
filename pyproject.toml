@@ -39,6 +39,11 @@ test = [
     "nox>=2024.10.9,<2025.3.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/lasuillard/django-slack-tools"
+Repository = "https://github.com/lasuillard/django-slack-tools.git"
+Issues = "https://github.com/lasuillard/django-slack-tools/issues"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
