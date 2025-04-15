@@ -107,7 +107,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no blocks.")
 
         url = get_block_kit_builder_url(blocks=template["blocks"])
-        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+        return format_html("<a href='{url}' target=\"_blank\">Link to Block Kit Builder</a>", url=url)
 
     @admin.display(description=_("Attachments Preview"))
     def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
@@ -123,7 +123,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no attachments.")
 
         url = get_block_kit_builder_url(attachments=template["attachments"])
-        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+        return format_html("<a href='{url}' target=\"_blank\">Link to Block Kit Builder</a>", url=url)
 
     # Actions
     actions = ()
