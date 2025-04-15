@@ -97,6 +97,9 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     def _blocks_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
         template = instance.template
+        if instance.template_type != SlackMessagingPolicy.TemplateType.PYTHON:
+            return _("Block Kit Builder link is only available for Python templates.")
+
         if not instance.template:
             return _("Template is empty, no link available.")
 
@@ -110,6 +113,9 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
         template = instance.template
+        if instance.template_type != SlackMessagingPolicy.TemplateType.PYTHON:
+            return _("Block Kit Builder link is only available for Python templates.")
+
         if not instance.template:
             return _("Template is empty, no link available.")
 
