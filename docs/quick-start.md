@@ -29,14 +29,14 @@ Add configuration for application:
 DJANGO_SLACK_TOOLS = {
     "messengers": {
         "default": {
-            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "class": "django_slack_tools.messenger.shortcuts.Messenger",
             "kwargs": {
                 "template_loaders": [
-                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
+                    "django_slack_tools.slack_messages.messenger.DjangoTemplateLoader",
                 ],
                 "middlewares": [],
                 "messaging_backend": {
-                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                     "kwargs": {
                         "slack_app": "<module.path.to.your-slack-app>",
                     },
