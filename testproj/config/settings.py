@@ -64,8 +64,8 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
-            # Used only for testing
-            BASE_DIR.parent / "tests" / "slack_messages" / "message_templates" / "testcases",
+            # ? Used only for testing; hoping to find better solution than this (at test time)
+            BASE_DIR.parent / "tests" / "slack_messages" / "messenger" / "testcases",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -177,17 +177,17 @@ DJANGO_SLACK_TOOLS = {
     "slack_app": "testproj.config.slack_app.app",
     "messengers": {
         "default": {
-            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "class": "django_slack_tools.messenger.shortcuts.Messenger",
             "kwargs": {
                 "template_loaders": [
-                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
-                    "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                    "django_slack_tools.slack_messages.messenger.DjangoTemplateLoader",
+                    "django_slack_tools.slack_messages.messenger.DjangoPolicyTemplateLoader",
                 ],
                 "middlewares": [
-                    "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                    "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                 ],
                 "messaging_backend": {
-                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                     "kwargs": {
                         "slack_app": "testproj.config.slack_app.app",
                     },

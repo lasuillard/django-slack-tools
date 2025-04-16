@@ -15,7 +15,7 @@ from typing_extensions import NotRequired, Self
 from django_slack_tools.utils.import_helper import LazyInitSpec, lazy_init
 
 if TYPE_CHECKING:
-    from django_slack_tools.slack_messages.messenger import Messenger
+    from django_slack_tools.messenger.shortcuts import Messenger
 
 logger = getLogger(__name__)
 

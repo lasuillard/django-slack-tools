@@ -6,10 +6,10 @@ import logging
 from typing import TYPE_CHECKING, Any, overload
 
 from django_slack_tools.app_settings import get_messenger
-from django_slack_tools.slack_messages.request import MessageBody, MessageHeader, MessageRequest
+from django_slack_tools.messenger.shortcuts import MessageBody, MessageHeader, MessageRequest
 
 if TYPE_CHECKING:
-    from django_slack_tools.slack_messages.response import MessageResponse
+    from django_slack_tools.messenger.shortcuts import MessageResponse
 
 logger = logging.getLogger(__name__)
 
