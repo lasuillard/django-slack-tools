@@ -1,3 +1,6 @@
+import pytest
+from django.core.exceptions import ValidationError
+
 from django_slack_tools.slack_messages.validators import body_validator, header_validator
 
 
@@ -13,6 +16,12 @@ def test_header_validator() -> None:
             "unfurl_media": None,
         },
     )
+    with pytest.raises(ValidationError, match=".+"):
+        header_validator(
+            {
+                "_unknown_": "Give me an error",
+            },
+        )
 
 
 def test_body_validator() -> None:
@@ -28,3 +37,5 @@ def test_body_validator() -> None:
             "username": None,
         },
     )
+    with pytest.raises(ValidationError, match=".+"):
+        body_validator({})

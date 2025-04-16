@@ -7,7 +7,7 @@ from django.core.exceptions import ImproperlyConfigured
 from slack_bolt import App
 
 from django_slack_tools.app_settings import AppSettings, get_settings_from_django
-from django_slack_tools.slack_messages.messenger import Messenger
+from django_slack_tools.messenger.shortcuts import Messenger
 
 if TYPE_CHECKING:
     from pytest_django.fixtures import SettingsWrapper
@@ -21,11 +21,11 @@ config_fixtures: dict[str, SettingsDict] = {
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.slack_messages.backends.DummyBackend",
+                    "messaging_backend": "django_slack_tools.messenger.shortcuts.DummyBackend",
                 },
             },
         },
@@ -34,11 +34,11 @@ config_fixtures: dict[str, SettingsDict] = {
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.slack_messages.backends.LoggingBackend",
+                    "messaging_backend": "django_slack_tools.messenger.shortcuts.LoggingBackend",
                 },
             },
         },
@@ -47,12 +47,12 @@ config_fixtures: dict[str, SettingsDict] = {
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
                     "messaging_backend": {
-                        "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },
@@ -65,12 +65,12 @@ config_fixtures: dict[str, SettingsDict] = {
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
                     "messaging_backend": {
-                        "class": "django_slack_tools.slack_messages.backends.SlackRedirectBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackRedirectBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                             "redirect_channel": "some-redirect-channel",
@@ -84,23 +84,23 @@ config_fixtures: dict[str, SettingsDict] = {
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [
-                        "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
-                        "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                        "django_slack_tools.slack_messages.messenger.DjangoTemplateLoader",
+                        "django_slack_tools.slack_messages.messenger.DjangoPolicyTemplateLoader",
                     ],
                     "middlewares": [
                         {
-                            "class": "django_slack_tools.slack_messages.middlewares.DjangoDatabasePolicyHandler",
+                            "class": "django_slack_tools.slack_messages.messenger.DjangoDatabasePolicyHandler",
                             "kwargs": {
                                 "messenger": "default",
                             },
                         },
-                        "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                        "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                     ],
                     "messaging_backend": {
-                        "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },

@@ -11,16 +11,18 @@ plugins:
         python:
           options:
             show_submodules: false
+            filters:
+              - "!^_[^_]"
   - search
 nav:
   - Introduction: index.md
   - Quick Start: quick-start.md
+  - Usages:
+      - Sending Messages: usages/sending-messages.md
+      - Celery Support: usages/celery-support.md
   - API References:
-    - Slack Messages:
-      - Django Integration: api-references/slack-messages/django-integration.md
-      - Messenger Framework: api-references/slack-messages/messenger-framework.md
-      - Sending Messages: api-references/slack-messages/sending-messages.md
-      - Celery Support: api-references/slack-messages/celery-support.md
+      - Messenger: api-references/messenger.md
+      - Slack Messages: api-references/slack-messages.md
 markdown_extensions:
   - def_list
   - pymdownx.tasklist:

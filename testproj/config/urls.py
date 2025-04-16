@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from django_slack_tools.views import SlackEventHandlerView
+from django_slack_tools.slack_events.views import SlackEventHandlerView
 from testproj.config.slack_app import app
 
 urlpatterns = [
