@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.12, <4.0"
 resolution-markers = [
     "python_full_version < '3.13'",
@@ -194,7 +195,7 @@ wheels = [
 
 [[package]]
 name = "django-slack-tools"
-version = "0.2.2"
+version = "0.3.1"
 source = { directory = "../../" }
 dependencies = [
     { name = "django" },
@@ -209,17 +210,17 @@ requires-dist = [
     { name = "coverage", marker = "extra == 'test'", specifier = "~=7.3" },
     { name = "django", specifier = ">=4.2,<5.2" },
     { name = "django-coverage-plugin", marker = "extra == 'test'", specifier = "~=3.1" },
-    { name = "django-debug-toolbar", marker = "extra == 'dev'", specifier = "~=4.4" },
+    { name = "django-debug-toolbar", marker = "extra == 'dev'", specifier = ">=4.4,<6.0" },
     { name = "django-extensions", marker = "extra == 'dev'", specifier = "~=3.2" },
     { name = "django-stubs", extras = ["compatible-mypy"], marker = "extra == 'dev'", specifier = "~=5.1" },
     { name = "factory-boy", marker = "extra == 'test'", specifier = "~=3.3" },
-    { name = "faker", marker = "extra == 'test'", specifier = ">=30.3,<34.0" },
+    { name = "faker", marker = "extra == 'test'", specifier = ">=30.3,<37.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = "~=6.27" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = "~=1.6" },
     { name = "mkdocs-material", marker = "extra == 'dev'", specifier = "~=9.5" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'dev'", specifier = "~=0.26" },
     { name = "mypy", marker = "extra == 'dev'", specifier = "~=1.11" },
-    { name = "nox", marker = "extra == 'test'", specifier = "~=2024.10.9" },
+    { name = "nox", marker = "extra == 'test'", specifier = ">=2024.10.9,<2025.3.0" },
     { name = "pydantic", specifier = ">=2,<3" },
     { name = "pytest", marker = "extra == 'test'", specifier = "~=8.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=5,<7" },
@@ -230,6 +231,7 @@ requires-dist = [
     { name = "slack-bolt", specifier = ">=1,<2" },
     { name = "xmltodict", specifier = ">=0.14.1,<1" },
 ]
+provides-extras = ["celery", "dev", "test"]
 
 [[package]]
 name = "django-timezone-field"

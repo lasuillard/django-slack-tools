@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from django_slack_tools.slack_messages.response import MessageResponse
+from django_slack_tools.messenger.shortcuts import MessageResponse
 from django_slack_tools.slack_messages.shortcuts import slack_message
 
 from ._factories import SlackMessageResponseFactory
@@ -27,17 +27,17 @@ def app_settings() -> SettingsDict:
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [
-                        "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
-                        "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                        "django_slack_tools.slack_messages.messenger.DjangoTemplateLoader",
+                        "django_slack_tools.slack_messages.messenger.DjangoPolicyTemplateLoader",
                     ],
                     "middlewares": [
-                        "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                        "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                     ],
                     "messaging_backend": {
-                        "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.backends.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },

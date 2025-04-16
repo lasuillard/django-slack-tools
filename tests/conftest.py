@@ -38,11 +38,11 @@ def app_settings() -> SettingsDict:
         "slack_app": "testproj.config.slack_app.app",
         "messengers": {
             "default": {
-                "class": "django_slack_tools.slack_messages.messenger.Messenger",
+                "class": "django_slack_tools.messenger.shortcuts.Messenger",
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.slack_messages.backends.DummyBackend",
+                    "messaging_backend": "django_slack_tools.messenger.backends.DummyBackend",
                 },
             },
         },

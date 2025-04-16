@@ -147,23 +147,23 @@ DJANGO_SLACK_TOOLS = {
     "slack_app": "todo.slack_app.app",
     "messengers": {
         "default": {
-            "class": "django_slack_tools.slack_messages.messenger.Messenger",
+            "class": "django_slack_tools.messenger.shortcuts.Messenger",
             "kwargs": {
                 "template_loaders": [
-                    "django_slack_tools.slack_messages.template_loaders.DjangoTemplateLoader",
-                    "django_slack_tools.slack_messages.template_loaders.DjangoPolicyTemplateLoader",
+                    "django_slack_tools.slack_messages.messenger.DjangoTemplateLoader",
+                    "django_slack_tools.slack_messages.messenger.DjangoPolicyTemplateLoader",
                 ],
                 "middlewares": [
                     {
-                        "class": "django_slack_tools.slack_messages.middlewares.DjangoDatabasePolicyHandler",
+                        "class": "django_slack_tools.slack_messages.messenger.DjangoDatabasePolicyHandler",
                         "kwargs": {
                             "messenger": "default",
                         },
                     },
-                    "django_slack_tools.slack_messages.middlewares.DjangoDatabasePersister",
+                    "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                 ],
                 "messaging_backend": {
-                    "class": "django_slack_tools.slack_messages.backends.SlackBackend",
+                    "class": "django_slack_tools.messenger.backends.SlackBackend",
                     "kwargs": {
                         "slack_app": "todo.slack_app.app",
                     },

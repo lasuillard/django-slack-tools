@@ -9,8 +9,8 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.utils import timezone
 
-from django_slack_tools.slack_messages import shortcuts
-from django_slack_tools.slack_messages.models import SlackMessage
+from . import shortcuts
+from .models import SlackMessage
 
 if TYPE_CHECKING:
     from typing import Any
