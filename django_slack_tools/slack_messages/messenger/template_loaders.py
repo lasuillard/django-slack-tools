@@ -6,10 +6,7 @@ from typing import TYPE_CHECKING
 
 from django.template import TemplateDoesNotExist, engines
 
-from django_slack_tools.messenger.shortcuts import (
-    BaseTemplateLoader,
-    PythonTemplate,
-)
+from django_slack_tools.messenger.shortcuts import BaseTemplateLoader, PythonTemplate
 from django_slack_tools.slack_messages.models import SlackMessagingPolicy
 
 from .message_templates import DjangoTemplate

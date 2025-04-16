@@ -7,11 +7,7 @@ from typing import TYPE_CHECKING, Literal
 from slack_bolt import App
 from slack_sdk.errors import SlackApiError
 
-from django_slack_tools.messenger.shortcuts import (
-    BaseMiddleware,
-    MessageHeader,
-    MessageRequest,
-)
+from django_slack_tools.messenger.shortcuts import BaseMiddleware, MessageHeader, MessageRequest
 from django_slack_tools.slack_messages.models import SlackMessage, SlackMessageRecipient, SlackMessagingPolicy
 
 if TYPE_CHECKING:

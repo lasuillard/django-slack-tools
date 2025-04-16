@@ -10,16 +10,13 @@ from typing import TYPE_CHECKING, overload
 import xmltodict
 from django.template import engines
 
-from django_slack_tools.messenger.shortcuts import (
-    BaseTemplate,
-)
+from django_slack_tools.messenger.shortcuts import BaseTemplate
 
 if TYPE_CHECKING:
     from typing import Any
 
     from django.template.backends.base import BaseEngine
     from django.template.base import Template
-
 
 logger = logging.getLogger(__name__)
 
