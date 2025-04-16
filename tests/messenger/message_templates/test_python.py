@@ -1,4 +1,4 @@
-from django_slack_tools.messenger.message_templates import PythonTemplate
+from django_slack_tools.messenger.shortcuts import PythonTemplate
 
 
 class TestPythonTemplate:

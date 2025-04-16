@@ -5,8 +5,14 @@ from typing import TYPE_CHECKING
 import pytest
 from slack_bolt import App
 
-from django_slack_tools.messenger.backends import SlackBackend, SlackRedirectBackend
-from django_slack_tools.messenger.shortcuts import MessageBody, MessageHeader, MessageRequest, MessageResponse
+from django_slack_tools.messenger.shortcuts import (
+    MessageBody,
+    MessageHeader,
+    MessageRequest,
+    MessageResponse,
+    SlackBackend,
+    SlackRedirectBackend,
+)
 from tests._factories import SlackApiErrorFactory
 from tests.slack_messages._factories import SlackMessageResponseFactory
 

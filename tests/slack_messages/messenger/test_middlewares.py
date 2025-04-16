@@ -7,9 +7,13 @@ from unittest import mock
 
 import pytest
 
-from django_slack_tools.messenger.backends import DummyBackend
-from django_slack_tools.messenger.middlewares import BaseMiddleware
-from django_slack_tools.messenger.shortcuts import MessageRequest, MessageResponse, Messenger
+from django_slack_tools.messenger.shortcuts import (
+    BaseMiddleware,
+    DummyBackend,
+    MessageRequest,
+    MessageResponse,
+    Messenger,
+)
 from django_slack_tools.slack_messages.messenger import DjangoDatabasePersister, DjangoDatabasePolicyHandler
 from django_slack_tools.slack_messages.models import SlackMessage
 from django_slack_tools.slack_messages.models.messaging_policy import SlackMessagingPolicy
@@ -59,7 +63,7 @@ def app_settings() -> SettingsDict:
                         },
                     ],
                     "messaging_backend": {
-                        "class": "django_slack_tools.messenger.backends.DummyBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.DummyBackend",
                         "kwargs": {},
                     },
                 },

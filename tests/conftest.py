@@ -42,7 +42,7 @@ def app_settings() -> SettingsDict:
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.messenger.backends.DummyBackend",
+                    "messaging_backend": "django_slack_tools.messenger.shortcuts.DummyBackend",
                 },
             },
         },

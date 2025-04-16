@@ -37,7 +37,7 @@ def app_settings() -> SettingsDict:
                         "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                     ],
                     "messaging_backend": {
-                        "class": "django_slack_tools.messenger.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },

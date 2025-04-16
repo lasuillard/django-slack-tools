@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from django_slack_tools.messenger.backends import LoggingBackend
-from django_slack_tools.messenger.shortcuts import MessageBody, MessageHeader, MessageRequest, MessageResponse
+from django_slack_tools.messenger.shortcuts import (
+    LoggingBackend,
+    MessageBody,
+    MessageHeader,
+    MessageRequest,
+    MessageResponse,
+)
 
 
 class TestLoggingBackend:

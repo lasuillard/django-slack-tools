@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
 
-from django_slack_tools.messenger.backends import DummyBackend
-from django_slack_tools.messenger.message_templates import BaseTemplate, PythonTemplate
-from django_slack_tools.messenger.middlewares import BaseMiddleware
-from django_slack_tools.messenger.template_loaders import BaseTemplateLoader
+from django_slack_tools.messenger.shortcuts import (
+    BaseMiddleware,
+    BaseTemplate,
+    BaseTemplateLoader,
+    DummyBackend,
+    PythonTemplate,
+)
 
 if TYPE_CHECKING:
     from django_slack_tools.messenger.shortcuts import MessageRequest, MessageResponse

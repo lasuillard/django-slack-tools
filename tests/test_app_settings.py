@@ -25,7 +25,7 @@ config_fixtures: dict[str, SettingsDict] = {
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.messenger.backends.DummyBackend",
+                    "messaging_backend": "django_slack_tools.messenger.shortcuts.DummyBackend",
                 },
             },
         },
@@ -38,7 +38,7 @@ config_fixtures: dict[str, SettingsDict] = {
                 "kwargs": {
                     "template_loaders": [],
                     "middlewares": [],
-                    "messaging_backend": "django_slack_tools.messenger.backends.LoggingBackend",
+                    "messaging_backend": "django_slack_tools.messenger.shortcuts.LoggingBackend",
                 },
             },
         },
@@ -52,7 +52,7 @@ config_fixtures: dict[str, SettingsDict] = {
                     "template_loaders": [],
                     "middlewares": [],
                     "messaging_backend": {
-                        "class": "django_slack_tools.messenger.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },
@@ -70,7 +70,7 @@ config_fixtures: dict[str, SettingsDict] = {
                     "template_loaders": [],
                     "middlewares": [],
                     "messaging_backend": {
-                        "class": "django_slack_tools.messenger.backends.SlackRedirectBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackRedirectBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                             "redirect_channel": "some-redirect-channel",
@@ -100,7 +100,7 @@ config_fixtures: dict[str, SettingsDict] = {
                         "django_slack_tools.slack_messages.messenger.DjangoDatabasePersister",
                     ],
                     "messaging_backend": {
-                        "class": "django_slack_tools.messenger.backends.SlackBackend",
+                        "class": "django_slack_tools.messenger.shortcuts.SlackBackend",
                         "kwargs": {
                             "slack_app": "testproj.config.slack_app.app",
                         },

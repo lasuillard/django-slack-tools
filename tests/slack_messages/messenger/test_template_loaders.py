@@ -1,6 +1,6 @@
 import pytest
 
-from django_slack_tools.messenger.message_templates import PythonTemplate
+from django_slack_tools.messenger.shortcuts import PythonTemplate
 from django_slack_tools.slack_messages.messenger import DjangoPolicyTemplateLoader, DjangoTemplate, DjangoTemplateLoader
 from django_slack_tools.slack_messages.models import SlackMessagingPolicy
 from tests.slack_messages.models._factories import SlackMessagingPolicyFactory
