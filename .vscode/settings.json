@@ -28,15 +28,16 @@
   "yaml.format.enable": true,
   "json.format.enable": true,
   "cSpell.words": [
+    "dataclass",
+    "dataclasses",
     "lasuillard",
     "mrkdwn",
+    "ngrok",
     "Pylance",
     "pytestmark",
     "subteam",
     "usergroup",
-    "usergroups",
-    "dataclasses",
-    "dataclass"
+    "usergroups"
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,

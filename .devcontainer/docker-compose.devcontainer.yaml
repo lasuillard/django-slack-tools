@@ -1,0 +1,17 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: ./.devcontainer/Dockerfile
+    volumes:
+      - .:/workspaces/django-slack-tools
+      - ngrok:/home/vscode/.config/ngrok
+      - cache:/home/vscode/.cache:delegated
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+    healthcheck:
+      disable: true
+
+volumes:
+  cache:
+  ngrok:

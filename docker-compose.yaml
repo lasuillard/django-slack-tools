@@ -1,0 +1,5 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - ${REDIS_HOST:-127.0.0.1}:${REDIS_PORT:-6379}:6379
