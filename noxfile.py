@@ -13,7 +13,6 @@ nox.options.default_venv_backend = "uv"
     "extras",
     [
         [],
-        ["celery"],
     ],
 )
 def tests(
