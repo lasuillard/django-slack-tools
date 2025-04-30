@@ -38,7 +38,6 @@ test = [
 	"pytest-cov>=5,<7",
 	"pytest-django~=4.9",
 	"pytest-sugar~=1.0",
-	"pytest-xdist~=3.6",
 	"pytest~=8.0",
 	"testcontainers>=4.10.0",
 ]
@@ -93,7 +92,6 @@ django_settings_module = "testproj.config.settings"
 
 [tool.pytest.ini_options]
 addopts = [
-	"--numprocesses=auto",
 	"--strict-markers",
 	"--doctest-modules",
 	"--ds=testproj.config.settings",
