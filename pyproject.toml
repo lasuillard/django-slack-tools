@@ -40,6 +40,7 @@ test = [
 	"pytest-sugar~=1.0",
 	"pytest-xdist~=3.6",
 	"pytest~=8.0",
+	"testcontainers>=4.10.0",
 ]
 
 [project.urls]
@@ -105,7 +106,12 @@ addopts = [
 	"-rs",
 ]
 testpaths = ["tests"]
-markers = ["slack: Tests working with Slack."]
+markers = [
+	"unit: Unit tests.",
+	"integration: Integration tests.",
+	"slack: Tests working with Slack.",
+	"celery: Tests working with Celery.",
+]
 
 [tool.coverage.run]
 include = ["django_slack_tools/*"]
