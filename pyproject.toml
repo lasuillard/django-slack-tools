@@ -7,15 +7,18 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9, <4.0"
 dependencies = [
-    "django>=4.2,<5.2",
-    "slack-bolt>=1,<2",
-    "xmltodict>=0.14.1,<1",
-	"pydantic>=2,<3"
+	"django>=4.2,<5.2",
+	"pydantic>=2,<3",
+	"slack-bolt>=1,<2",
+	"xmltodict>=0.14.1,<1",
 ]
 
 [project.optional-dependencies]
 celery = ["celery>=5,<6"]
 dev = [
+	"celery[django,redis]>=5,<6",
+	"django-celery-beat>=2,<3",
+	"django-celery-results>=2,<3",
 	"django-debug-toolbar>=4.4,<6.0",
 	"django-extensions~=3.2",
 	"django-stubs[compatible-mypy]~=5.1",
@@ -31,12 +34,12 @@ test = [
 	"django-coverage-plugin~=3.1",
 	"factory-boy~=3.3",
 	"faker>=30.3,<37.0",
+	"nox>=2024.10.9,<2025.3.0",
 	"pytest-cov>=5,<7",
 	"pytest-django~=4.9",
 	"pytest-sugar~=1.0",
 	"pytest-xdist~=3.6",
 	"pytest~=8.0",
-    "nox>=2024.10.9,<2025.3.0",
 ]
 
 [project.urls]
@@ -99,7 +102,7 @@ addopts = [
 	"--cov-report=xml",
 	"--show-capture=no",
 	"--junitxml=junit.xml",
-	"-rs"
+	"-rs",
 ]
 testpaths = ["tests"]
 markers = ["slack: Tests working with Slack."]

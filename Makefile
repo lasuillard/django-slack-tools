@@ -33,6 +33,14 @@ run:  ## Run development server
 		$$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')
 .PHONY: run
 
+run-celery-worker:  ## Run Celery worker
+	uv run celery -A testproj.config.celery.app worker -l DEBUG
+.PHONY: run-celery-worker
+
+run-celery-beat:
+	uv run celery -A testproj.config.celery.app beat -l DEBUG
+.PHONY: run-celery-beat
+
 serve-docs:  ## Serve dev documents
 	uv run mkdocs serve \
 		--dev-addr $$([ ! -z "$${CONTAINER:-}" ] && echo '0.0.0.0:8000' || echo '127.0.0.1:8000')

@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "debug_toolbar",
+    "django_celery_results",
+    "django_celery_beat",
     "django_slack_tools.slack_messages",
 ]
 
