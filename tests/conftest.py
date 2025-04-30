@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import TYPE_CHECKING
 from unittest import mock
 
 import pytest
+from celery.contrib.testing.worker import start_worker
 from slack_bolt import App
+from testcontainers.redis import RedisContainer
 
 from django_slack_tools.app_settings import AppSettings
+from testproj.config.celery import app
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -55,3 +59,19 @@ def override_app_settings(app_settings: SettingsDict) -> Iterator[None]:
     override = AppSettings.from_dict(app_settings)
     with mock.patch("django_slack_tools.app_settings.app_settings", override):
         yield
+
+
+@pytest.fixture(scope="session")
+def redis_url() -> Iterator[str]:
+    with RedisContainer("redis:7-alpine") as container:
+        yield f"redis://{container.get_container_host_ip()}:{container.get_exposed_port(6379)}"
+
+
+@pytest.fixture(scope="module")
+def celery_worker(redis_url: str) -> Iterator[None]:
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setenv("CELERY_BROKER_URL", redis_url)
+    with start_worker(app, perform_ping_check=False, pool="threads", concurrency=4):
+        yield
+
+    monkeypatch.undo()

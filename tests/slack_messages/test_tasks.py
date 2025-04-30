@@ -3,24 +3,12 @@ from unittest import mock
 
 import pytest
 
+from django_slack_tools.slack_messages import tasks
 from django_slack_tools.slack_messages.models import SlackMessage
 from tests.slack_messages.models._factories import SlackMessageFactory
 
-try:
-    import celery  # noqa: F401
-except ImportError:
-    celery_installed = False
-else:
-    from django_slack_tools.slack_messages import tasks
 
-    celery_installed = True
-
-pytestmark = [
-    pytest.mark.django_db,
-    pytest.mark.skipif(not celery_installed, reason="Celery is not installed"),
-]
-
-
+@pytest.mark.django_db
 class TestSlackMessage:
     def test_slack_message(self) -> None:
         with mock.patch("django_slack_tools.slack_messages.shortcuts.slack_message") as m:
@@ -39,6 +27,9 @@ class TestSlackMessage:
         )
 
 
+@pytest.mark.usefixtures("celery_worker")
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.integration
 class TestCleanupOldMessages:
     def test_cleanup_old_messages(self) -> None:
         # Arrange
@@ -56,7 +47,7 @@ class TestCleanupOldMessages:
         ]
 
         # Act
-        num_deleted = tasks.cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=5 * 60)  # 5 minutes
+        num_deleted = tasks.cleanup_old_messages.delay(base_ts=ts.isoformat(), threshold_seconds=5 * 60).get(timeout=10)
 
         # Assert
         assert num_deleted == 2
@@ -70,7 +61,7 @@ class TestCleanupOldMessages:
         SlackMessageFactory()
 
         # Act
-        num_deleted = tasks.cleanup_old_messages(base_ts=ts.isoformat(), threshold_seconds=None)
+        num_deleted = tasks.cleanup_old_messages.delay(base_ts=ts.isoformat(), threshold_seconds=None).get(timeout=10)
 
         # Assert
         assert num_deleted == 0
