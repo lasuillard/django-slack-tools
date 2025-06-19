@@ -2,8 +2,8 @@
   "name": "lasuillard/django-slack-tools",
   "image": "mcr.microsoft.com/devcontainers/base:1-bookworm",
   "features": {
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
-    "ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+    "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
+    "ghcr.io/devcontainers-extra/features/apt-get-packages:1": {
       "packages": "gettext"
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
