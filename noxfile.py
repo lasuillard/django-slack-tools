@@ -21,9 +21,6 @@ def tests(
     *,
     extras: list[str],
 ) -> None:
-    # Test dependencies are required and always installed
-    extras.extend(["dev", "test"])
-
     # Run the tests via `uv`
     session.run_install("uv", "sync", "--quiet", *[f"--extra={extra}" for extra in extras])
     session.run("uv", "run", "pytest", "--cov-append")
