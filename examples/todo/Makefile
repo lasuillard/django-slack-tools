@@ -19,7 +19,7 @@ help: Makefile  ## Show help
 # =============================================================================
 install:  ## Install deps
 	uv python install
-	uv sync --frozen --all-extras
+	uv sync --frozen
 .PHONY: install
 
 run:  ## Run development server

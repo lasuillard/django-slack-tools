@@ -4,7 +4,8 @@ on:
   push:
     tags: [v*]
 
-permissions: read-all
+env:
+  UV_FROZEN: 1
 
 jobs:
   release:
@@ -23,7 +24,7 @@ jobs:
           enable-cache: true
 
       - name: Install deps
-        run: uv sync --frozen --all-extras
+        run: uv sync
 
       - name: Build package
         run: uv build
