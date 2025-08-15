@@ -1,17 +1,18 @@
 # noqa: D100
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from django.contrib import admin
 from django.contrib.admin.filters import DateFieldListFilter
-from django.db import models
 from django.db.models import Count
+from django.forms import ModelForm
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from django_slack_tools.slack_messages.models import SlackMessagingPolicy
-from django_slack_tools.utils.django.widgets import JSONWidget
+from django_slack_tools.utils.django.form_fields import JSONStringField
+from django_slack_tools.utils.django.widgets import JSONTextarea, JSONTextInput, JSONWidget
 from django_slack_tools.utils.slack import get_block_kit_builder_url
 
 if TYPE_CHECKING:
@@ -29,9 +30,44 @@ else:
     SlackMessagingPolicyWithAnnotates = SlackMessagingPolicy
 
 
+class SlackMessagingPolicyForm(ModelForm):
+    """Form for SlackMessagingPolicy."""
+
+    class Meta:  # noqa: D106
+        model = SlackMessagingPolicy
+        fields = "__all__"  # noqa: DJ007
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D107
+        super().__init__(*args, **kwargs)
+
+        # Dynamic field / widget selection for message template object
+        if self.instance.template_type == SlackMessagingPolicy.TemplateType.PYTHON:
+            self.fields["template"].widget = JSONWidget()
+
+        elif self.instance.template_type == SlackMessagingPolicy.TemplateType.DJANGO:
+            self.fields["template"] = JSONStringField(
+                widget=JSONTextInput(
+                    attrs={
+                        "placeholder": _("Name of Django template"),
+                        "rows": 1,
+                        "cols": len(self.instance.template) + 5,
+                    },
+                ),
+            )
+
+        elif self.instance.template_type == SlackMessagingPolicy.TemplateType.DJANGO_INLINE:
+            self.fields["template"] = JSONStringField(
+                widget=JSONTextarea(
+                    attrs={"placeholder": _("Inline Django template")},
+                ),
+            )
+
+
 @admin.register(SlackMessagingPolicy)
 class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     """Admin for messaging policies."""
+
+    form = SlackMessagingPolicyForm
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[SlackMessagingPolicyWithAnnotates]:  # noqa: D102
         return cast(
@@ -61,6 +97,9 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
     def _blocks_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
         template = instance.template
+        if instance.template_type != SlackMessagingPolicy.TemplateType.PYTHON:
+            return _("Block Kit Builder link is only available for Python templates.")
+
         if not instance.template:
             return _("Template is empty, no link available.")
 
@@ -68,12 +107,15 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no blocks.")
 
         url = get_block_kit_builder_url(blocks=template["blocks"])
-        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+        return format_html("<a href='{url}' target=\"_blank\">Link to Block Kit Builder</a>", url=url)
 
     @admin.display(description=_("Attachments Preview"))
     def _attachments_block_kit_builder_url(self, instance: SlackMessagingPolicy) -> StrOrPromise:
         """Generate shortcut URL to Slack Block Kit Builder page for current policy template."""
         template = instance.template
+        if instance.template_type != SlackMessagingPolicy.TemplateType.PYTHON:
+            return _("Block Kit Builder link is only available for Python templates.")
+
         if not instance.template:
             return _("Template is empty, no link available.")
 
@@ -81,7 +123,7 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
             return _("Template has no attachments.")
 
         url = get_block_kit_builder_url(attachments=template["attachments"])
-        return format_html("<a href='{url}'>Link to Block Kit Builder</a>", url=url)
+        return format_html("<a href='{url}' target=\"_blank\">Link to Block Kit Builder</a>", url=url)
 
     # Actions
     actions = ()
@@ -100,9 +142,6 @@ class SlackMessagingPolicyAdmin(admin.ModelAdmin):
 
     # Change
     # ------------------------------------------------------------------------
-    formfield_overrides = {  # noqa: RUF012
-        models.JSONField: {"widget": JSONWidget},
-    }
     fieldsets = (
         (
             None,
