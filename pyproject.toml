@@ -59,7 +59,7 @@ default-groups = ["dev", "test"]
 [tool.ruff]
 target-version = "py39"
 lint.select = ["ALL"]
-lint.ignore = ["ANN401", "TD003", "FIX002", "D105"]
+lint.ignore = ["ANN401", "TD003", "FIX002", "D105", "UP045"]
 line-length = 120
 
 [tool.ruff.lint.extend-per-file-ignores]
