@@ -1,6 +1,6 @@
 [project]
 name = "django-slack-tools"
-version = "0.3.1"
+version = "0.3.2"
 description = "Little helpers working with Slack bot 🤖 in Django."
 authors = [{ name = "Yuchan Lee", email = "lasuillard@gmail.com" }]
 readme = "README.md"
