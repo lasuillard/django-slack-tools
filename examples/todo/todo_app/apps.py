@@ -6,4 +6,4 @@ class TodoAppConfig(AppConfig):
     name = "todo_app"
 
     def ready(self) -> None:  # noqa: D102
-        from . import signals, slack_listeners  # noqa: F401
+        from . import signals, slack_listeners  # noqa: F401, PLC0415

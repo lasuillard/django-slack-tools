@@ -130,7 +130,7 @@ class DjangoDatabasePolicyHandler(BaseMiddleware):
     def messenger(self) -> Messenger:
         """Get the messenger instance. If it's a string, will get the messenger from the app settings."""
         if isinstance(self._messenger, str):
-            from django_slack_tools.app_settings import get_messenger
+            from django_slack_tools.app_settings import get_messenger  # noqa: PLC0415
 
             self._messenger = get_messenger(self._messenger)
 

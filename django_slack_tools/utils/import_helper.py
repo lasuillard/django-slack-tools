@@ -1,5 +1,4 @@
 """Application settings."""
-# flake8: noqa: UP007
 
 from __future__ import annotations
 

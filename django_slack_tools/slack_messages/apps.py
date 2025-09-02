@@ -13,8 +13,8 @@ class DjangoSlackBotConfig(AppConfig):  # noqa: D101
     def ready(self) -> None:  # pragma: no cover
         """Auto-discover Celery tasks, if Celery is installed."""
         try:
-            import celery  # noqa: F401
+            import celery  # noqa: F401, PLC0415
         except ImportError:
             pass
         else:
-            from . import tasks  # noqa: F401
+            from . import tasks  # noqa: F401, PLC0415

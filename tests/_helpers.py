@@ -105,7 +105,7 @@ class ModelTestBase:
 
 
 # ? Also see: https://github.com/jwodder/anys
-class AnyRegex:
+class AnyRegex:  # noqa: PLW1641
     """An helper class to match any string against a regex pattern, similarly to `unittest.mock.ANY`."""
 
     def __init__(self, pattern: str) -> None:
